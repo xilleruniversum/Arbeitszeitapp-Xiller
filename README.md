@@ -70,7 +70,7 @@ Timesheet lets employees record their working hours directly in Nextcloud. They 
 
 Human Resources (HR) gets an overview of employees and their recorded hours. Timesheets can be downloaded as Excel files for further processing.
 
-This project builds on [Timesheet 1.2.0 by Repa1253](https://github.com/Repa1253/timesheet/releases/tag/1.2.0) and is being continued for XiLLeR GmbH. The original developer is David Gun (Repa1253).
+This project builds on [Timesheet 1.2.0 by XiLLeR]((https://github.com/Xiller/nextcloud-arbeitszeitnachweis)) and is being continued by XiLLeR GmbH.
 
 ## Features
 
