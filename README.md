@@ -9,7 +9,7 @@ Mit Timesheet erfassen Mitarbeitende ihre Arbeitszeiten direkt in Nextcloud. Sie
 
 Die Personalabteilung (HR) erhält eine Übersicht über Mitarbeitende und ihre erfassten Zeiten. Arbeitszeitnachweise lassen sich als Exceldatei herunterladen und weiterverarbeiten.
 
-Dieses Projekt baut auf [Timesheet 1.2.0 von Repa1253](https://github.com/Repa1253/timesheet/releases/tag/1.2.0) auf und wird für die XiLLeR GmbH weitergeführt. Der ursprüngliche Entwickler ist David Gun (Repa1253).
+Dieses Projekt basiert auf [Timesheet 1.2.0 von XiLLeR]((https://github.com/Xiller/nextcloud-arbeitszeitnachweis)) und wird von der XiLLeR GmbH geführt.
 
 ## Funktionen
 
