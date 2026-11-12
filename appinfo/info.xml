@@ -99,7 +99,7 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="dgu@xiller.com">David Gun (www.xiller-academy.de)</author>
 	<category>tools</category>
-	<bugs>https://github.com/Repa1253/timesheet/issues</bugs>
+	<bugs>https://github.com/xilleruniversum/Arbeitszeitapp-Xiller/issues</bugs>
 
 	<dependencies>
 		<php min-version="8.2" max-version="8.5"/>
