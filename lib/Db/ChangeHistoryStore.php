@@ -8,7 +8,7 @@ use OCA\Timesheet\Service\HistoryChangeSet;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
-/** Stores immutable HR change records; all reads receive the caller's employee scope. */
+/** Stores immutable change records; all reads receive the caller's employee scope. */
 class ChangeHistoryStore {
 	public function __construct(private IDBConnection $database) {
 	}
@@ -66,6 +66,9 @@ class ChangeHistoryStore {
 			$query->andWhere($query->expr()->isNull('actor_id'));
 		} elseif ($filters['actor'] !== '') {
 			$query->andWhere($query->expr()->eq('actor_id', $query->createNamedParameter($filters['actor'])));
+		}
+		if ($filters['employeeChanges']) {
+			$query->andWhere($query->expr()->eq('actor_id', 'employee_id'));
 		}
 		if ($filters['kind'] === 'comment') {
 			$query->andWhere($query->expr()->in('kind', $query->createNamedParameter(['created', 'updated'], IQueryBuilder::PARAM_STR_ARRAY)));

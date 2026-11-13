@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const coreSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-core.js'), 'utf8');
+const coreSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-runtime.js'), 'utf8');
 const mainSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-main.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
 const initialRevision = '0'.repeat(64);
@@ -119,7 +119,7 @@ async function openTimesheet({ savedMode, viewer = 'alice', readyState = 'comple
 		},
 	});
 	context.window = context;
-	vm.runInContext(coreSource, context, { filename: 'timesheet-core.js' });
+	vm.runInContext(coreSource, context, { filename: 'timesheet-runtime.js' });
 	const timesheet = context.Timesheet;
 	timesheet.copy = { init() {} };
 	timesheet.hr = { init() {}, loadHrUserList() {} };

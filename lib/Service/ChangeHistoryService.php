@@ -8,8 +8,9 @@ use OC\ForbiddenException;
 use OCA\Timesheet\Db\ChangeHistoryStore;
 use OCA\Timesheet\Db\ChangeHistoryAccountQueue;
 use OCA\Timesheet\Db\ChangeHistoryRecordingStore;
-use OCP\AppFramework\Services\IAppConfig;
+use OCA\Timesheet\Db\EmploymentStatusStore;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\IGroupManager;
 use OCP\IUserSession;
 
 /** Resolves current HR scope before interpreting filters or returning any historical data. */
@@ -20,7 +21,7 @@ class ChangeHistoryService {
 		private ChangeHistoryStore $history,
 		private HrService $hrService,
 		private IUserSession $userSession,
-		private IAppConfig $appConfig,
+		private IGroupManager $groupManager,
 		private ITimeFactory $timeFactory,
 		private ChangeHistoryAccountQueue $accountQueue,
 		private ChangeHistoryRecordingStore $recording,
@@ -28,16 +29,23 @@ class ChangeHistoryService {
 	}
 
 	public function list(array $query): array {
-		$userId = $this->userSession->getUser()?->getUID();
+		$user = $this->userSession->getUser();
+		$userId = $user?->getUID();
 		if (!$userId || !$this->hrService->isHr($userId)) {
 			throw new ForbiddenException();
 		}
-		$employees = $this->hrService->getAccessibleUsers($userId);
+		$assignedEmployees = $this->hrService->getAccessibleUsers($userId);
+		$employees = [['id' => $userId, 'name' => $user->getDisplayName()]];
+		foreach ($assignedEmployees as $employee) {
+			if ($employee['id'] !== $userId) {
+				$employees[] = $employee;
+			}
+		}
 		$employeeIds = array_column($employees, 'id');
 		$cutoff = $this->retentionCutoff();
 		$actors = $this->history->actors($employeeIds, $cutoff);
 		$pendingIds = $this->accountQueue->pendingAccountIds();
-		if (array_intersect($pendingIds, [$userId, ...$employeeIds, ...array_column($actors, 'id')]) !== []) {
+		if (array_intersect($pendingIds, [...$employeeIds, ...array_column($actors, 'id')]) !== []) {
 			throw new \RuntimeException('Account history cleanup is pending.');
 		}
 		$filters = $this->filters($query);
@@ -57,7 +65,13 @@ class ChangeHistoryService {
 			'nextCursor' => $hasMore ? $items[count($items) - 1]['id'] : null,
 			'recordingStartedAt' => $this->recording->getStartedAt(),
 			'retentionMonths' => self::RETENTION_MONTHS,
-			'filters' => ['employees' => $employees, 'actors' => $actors],
+			'filters' => [
+				'employees' => array_map(fn (array $employee): array => [
+					...$employee,
+					'isActive' => $this->groupManager->isInGroup($employee['id'], EmploymentStatusStore::ACTIVE_GROUP_ID),
+				], $employees),
+				'actors' => $actors,
+			],
 		];
 	}
 
@@ -79,17 +93,20 @@ class ChangeHistoryService {
 		$employee = $this->identifier($query['employee'] ?? '');
 		$actor = $this->identifier($query['actor'] ?? '');
 		$actorDeleted = $query['actorDeleted'] ?? false;
-		if (!in_array($actorDeleted, [false, true, 0, 1, '0', '1'], true)) {
+		$employeeChanges = $query['employeeChanges'] ?? false;
+		$booleanValues = [false, true, 0, 1, '0', '1'];
+		if (!in_array($actorDeleted, $booleanValues, true) || !in_array($employeeChanges, $booleanValues, true)) {
 			throw new \InvalidArgumentException('Invalid history filter');
 		}
 		$actorDeleted = in_array($actorDeleted, [true, 1, '1'], true);
+		$employeeChanges = in_array($employeeChanges, [true, 1, '1'], true);
 		$kind = $this->identifier($query['kind'] ?? '');
 		if (!in_array($kind, ['', 'created', 'updated', 'deleted', 'settings', 'comment'], true) || ($actorDeleted && $actor !== '')) {
 			throw new \InvalidArgumentException('Invalid history filter');
 		}
 		$beforeId = isset($query['beforeId']) && $query['beforeId'] !== '' ? $this->positiveInteger($query['beforeId']) : null;
 		return ['from' => $from->getTimestamp(), 'through' => $to->modify('+1 day')->getTimestamp(), 'employee' => $employee,
-			'actor' => $actor, 'actorDeleted' => $actorDeleted, 'kind' => $kind, 'beforeId' => $beforeId];
+			'actor' => $actor, 'actorDeleted' => $actorDeleted, 'employeeChanges' => $employeeChanges, 'kind' => $kind, 'beforeId' => $beforeId];
 	}
 
 	private function date(mixed $value, \DateTimeZone $zone): \DateTimeImmutable {

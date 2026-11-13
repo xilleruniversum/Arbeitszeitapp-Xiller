@@ -51,11 +51,15 @@ if ($tourEnabled) {
 			<div class="ts-month-row">
 				<h3><?php p($l->t('My entries')) ?></h3>
 
-				<button type="button" class="month-nav" id="month-prev"><</button>
-				<button type="button" id="month-display" class="month-display month-display-btn">Month Year</button>
-				<button type="button" class="month-nav" id="month-next">></button>
+				<div class="ts-month-navigation">
+					<button type="button" class="month-nav" id="month-prev"><</button>
+					<button type="button" id="month-display" class="month-display month-display-btn">Month Year</button>
+					<button type="button" class="month-nav" id="month-next">></button>
+				</div>
 
-				<button type="button" id="export-mine-xlsx" class="primary"><?php p($l->t('Export')) ?></button>
+				<div class="ts-entry-export">
+					<button type="button" id="export-mine-xlsx" class="primary"><?php p($l->t('Export')) ?></button>
+				</div>
 
 				<div class="ts-stats">
 					<div><strong><?php p($l->t('Worked (month):')) ?></strong> <span id="worked-hours-month">--:--</span></div>
@@ -95,25 +99,27 @@ if ($tourEnabled) {
 		</div>
 
 		<!-- Personal entries -->
-		<table id="ts-table">
-			<thead>
-				<tr>
-					<th colspan="2"><?php p($l->t('Date')) ?></th>
-					<th><?php p($l->t('Status')) ?></th>
-					<th><?php p($l->t('Start')) ?></th>
-					<th><?php p($l->t('Break')) ?></th>
-					<th><?php p($l->t('End')) ?></th>
-					<th><?php p($l->t('Duration')) ?></th>
-					<th><?php p($l->t('Difference')) ?></th>
-					<th><?php p($l->t('Comment')) ?></th>
-					<th><?php p($l->t('Warning')) ?></th>
-				</tr>
-			</thead>
+		<div class="ts-entry-table-scroll" role="region" aria-label="<?php p($l->t('My entries')); ?>" tabindex="0">
+			<table id="ts-table">
+				<thead>
+					<tr>
+						<th colspan="2"><?php p($l->t('Date')) ?></th>
+						<th><?php p($l->t('Status')) ?></th>
+						<th><?php p($l->t('Start')) ?></th>
+						<th><?php p($l->t('Break')) ?></th>
+						<th><?php p($l->t('End')) ?></th>
+						<th><?php p($l->t('Duration')) ?></th>
+						<th><?php p($l->t('Difference')) ?></th>
+						<th><?php p($l->t('Comment')) ?></th>
+						<th><?php p($l->t('Warning')) ?></th>
+					</tr>
+				</thead>
 
-			<tbody id="ts-body">
-				<!-- Rows are rendered by JavaScript. -->
-			</tbody>
-		</table>
+				<tbody id="ts-body">
+					<!-- Rows are rendered by JavaScript. -->
+				</tbody>
+			</table>
+		</div>
 
 		<!-- Break input format -->
 		<div class="ts-break-toggle" id="ts-break-toggle" role="group" aria-label="<?php p($l->t('Break input format')) ?>">
@@ -151,22 +157,18 @@ if ($tourEnabled) {
 
 	<!-- HR overview -->
 	<?php if ($_['isHR']): ?>
+		<?php require __DIR__ . '/partials/hr-help-popup.php'; ?>
 		<div id="tab-hr" class="ts-tabview">
 			<div class="ts-hr-row">
-				<!-- HR guidance -->
-				<div id="hr-infobox-section" class="ts-hr-section ts-infobox">
-					<p class="ts-infobox-text">
-						<?php p($l->t('Time rules are managed under Profile → Settings → Timesheet. Email settings are available below under Notifications. Administrators manage HR and employee assignments.')) ?>
-					</p>
-					<p class="ts-infobox-text">
-						<?php p($l->t('For days without start and end times, only the exact comments "%1$s" and "%2$s" prevent a reminder. Letter case and surrounding spaces are ignored. Entries with only one time remain incomplete.', [$absenceCommentTerms['vacation'], $absenceCommentTerms['timeOffInLieu']])) ?>
-					</p>
-				</div>
-
-				<!-- Employee list -->
-				<div id="hr-userlist-section" class="ts-hr-section">
+				<section id="hr-userlist-section" class="ts-hr-section" aria-labelledby="hr-userlist-heading">
 					<div class="hr-employee-list-header">
-						<h4><?php p($l->t('Employee list')) ?></h4>
+						<div class="hr-employee-list-title">
+							<h4 id="hr-userlist-heading"><?php p($l->t('Employee list')); ?></h4>
+							<?php $renderHelpPopup('hr-overview-help', $l->t('Employee list'), [
+								$l->t('Time rules are managed under Profile → Settings → Timesheet. Email settings are available below under Notifications. Administrators manage HR and employee assignments.'),
+								$l->t('For days without start and end times, only the exact comments "%1$s" and "%2$s" prevent a reminder. Letter case and surrounding spaces are ignored. Entries with only one time remain incomplete.', [$absenceCommentTerms['vacation'], $absenceCommentTerms['timeOffInLieu']]),
+							]); ?>
+						</div>
 						<button type="button" id="hr-employee-filter-button" aria-haspopup="dialog" aria-expanded="false" aria-controls="hr-employee-filter-popup"><?php p($l->t('Filter')); ?></button>
 					</div>
 					<div id="hr-employee-filter-popup" class="hr-employee-filter-popup" role="dialog" aria-labelledby="hr-employee-filter-heading" hidden>
@@ -205,44 +207,40 @@ if ($tourEnabled) {
 							</tbody>
 						</table>
 					</div>
-				</div>
-
-				<!-- HR statistics -->
-				<div id="hr-stats-section" class="ts-hr-section">
-					<h4><?php p($l->t('Statistics')) ?></h4>
-					<table class="grid hr-stats-table">
-						<tbody>
-							<tr>
-								<th><?php p($l->t('Total hours of employees (this Month)')); ?></th>
-								<td id="hr-stat-total-hours">-</td>
-							</tr>
-							<tr>
-								<th><?php p($l->t('Employees with overtime')); ?></th>
-								<td id="hr-stat-employees-overtime">-</td>
-							</tr>
-							<tr>
-								<th><?php p($l->t('Employees with negative overtime')); ?></th>
-								<td id="hr-stat-employees-negative">-</td>
-							</tr>
-							<tr>
-								<th><?php p($l->t('Total overtime')); ?></th>
-								<td id="hr-stat-total-overtime">-</td>
-							</tr>
-							<tr>
-								<th><?php p($l->t('Total negative overtime')); ?></th>
-								<td id="hr-stat-total-negative">-</td>
-							</tr>
-							<tr>
-								<th><?php p($l->t('Sum of +/- overtimes')); ?></th>
-								<td id="hr-stat-sum-overtimes">-</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+					<section id="hr-stats-section" aria-labelledby="hr-stats-heading">
+						<h4 id="hr-stats-heading"><?php p($l->t('Statistics')); ?></h4>
+						<dl class="hr-stats">
+							<div>
+								<dt><?php p($l->t('Total hours of employees (this Month)')); ?></dt>
+								<dd id="hr-stat-total-hours">-</dd>
+							</div>
+							<div>
+								<dt><?php p($l->t('Employees with overtime')); ?></dt>
+								<dd id="hr-stat-employees-overtime">-</dd>
+							</div>
+							<div>
+								<dt><?php p($l->t('Employees with negative overtime')); ?></dt>
+								<dd id="hr-stat-employees-negative">-</dd>
+							</div>
+							<div>
+								<dt><?php p($l->t('Total overtime')); ?></dt>
+								<dd id="hr-stat-total-overtime">-</dd>
+							</div>
+							<div>
+								<dt><?php p($l->t('Total negative overtime')); ?></dt>
+								<dd id="hr-stat-total-negative">-</dd>
+							</div>
+							<div>
+								<dt><?php p($l->t('Sum of +/- overtimes')); ?></dt>
+								<dd id="hr-stat-sum-overtimes">-</dd>
+							</div>
+						</dl>
+					</section>
+				</section>
 
 				<?php
 				$appRequestHref = $mailDraft(
-					'info@xiller.com',
+					'kontakt@nextcloud-agentur.de',
 					$l->t('Change request for the Timesheet app'),
 					implode("\r\n\r\n", [
 						$l->t('Dear Timesheet team,'),
@@ -266,7 +264,9 @@ if ($tourEnabled) {
 				<div class="hr-user-header-bar">
 					<button id="hr-back-button" class="hr-back-button"><?php p($l->t('Back')) ?></button>
 					<h4 id="hr-user-title"><?php p($l->t('Entries for:')) ?> <span></span></h4>
-					<button type="button" id="export-hr-xlsx" class="primary"><?php p($l->t('Export')) ?></button>
+					<div class="ts-entry-export">
+						<button type="button" id="export-hr-xlsx" class="primary"><?php p($l->t('Export')) ?></button>
+					</div>
 				</div>
 
 				<!-- Month controls, statistics and settings -->
@@ -278,9 +278,11 @@ if ($tourEnabled) {
 				</div>
 				<div class="hr-user-controls-row">
 					<div class="ts-month-row">
-						<button type="button" class="month-nav" id="hr-month-prev"><</button>
-						<button type="button" id="hr-month-display" class="month-display month-display-btn">Month Year</button>
-						<button type="button" class="month-nav" id="hr-month-next">></button>
+						<div class="ts-month-navigation">
+							<button type="button" class="month-nav" id="hr-month-prev"><</button>
+							<button type="button" id="hr-month-display" class="month-display month-display-btn">Month Year</button>
+							<button type="button" class="month-nav" id="hr-month-next">></button>
+						</div>
 
 						<div class="ts-stats">
 							<div><strong><?php p($l->t('Worked (month):')) ?></strong> <span id="worked-hours-month">--:--</span></div>
@@ -320,24 +322,26 @@ if ($tourEnabled) {
 				</div>
 
 				<!-- Employee entries -->
-				<table id="hr-user-table" class="grid hr-table">
-					<thead>
-						<tr>
-							<th colspan="2"><?php p($l->t('Date')) ?></th>
-							<th><?php p($l->t('Status')) ?></th>
-							<th><?php p($l->t('Start')) ?></th>
-							<th><?php p($l->t('Break')) ?></th>
-							<th><?php p($l->t('End')) ?></th>
-							<th><?php p($l->t('Duration')) ?></th>
-							<th><?php p($l->t('Difference')) ?></th>
-							<th><?php p($l->t('Comment')) ?></th>
-							<th><?php p($l->t('Warning')) ?></th>
-						</tr>
-					</thead>
-					<tbody id="hr-user-body">
-						<!-- Rows are rendered by JavaScript. -->
-					</tbody>
-				</table>
+				<div class="ts-entry-table-scroll" role="region" aria-labelledby="hr-user-title" tabindex="0">
+					<table id="hr-user-table" class="grid hr-table">
+						<thead>
+							<tr>
+								<th colspan="2"><?php p($l->t('Date')) ?></th>
+								<th><?php p($l->t('Status')) ?></th>
+								<th><?php p($l->t('Start')) ?></th>
+								<th><?php p($l->t('Break')) ?></th>
+								<th><?php p($l->t('End')) ?></th>
+								<th><?php p($l->t('Duration')) ?></th>
+								<th><?php p($l->t('Difference')) ?></th>
+								<th><?php p($l->t('Comment')) ?></th>
+								<th><?php p($l->t('Warning')) ?></th>
+							</tr>
+						</thead>
+						<tbody id="hr-user-body">
+							<!-- Rows are rendered by JavaScript. -->
+						</tbody>
+					</table>
+				</div>
 
 				<!-- Break input format -->
 				<div class="ts-break-toggle" id="ts-break-toggle-hr" role="group" aria-label="<?php p($l->t('Break input format')) ?>">
@@ -362,6 +366,9 @@ if ($tourEnabled) {
 		</div>
 		<!-- HR changes are read-only and limited to the current employee assignments. -->
 		<div id="tab-change-history" class="ts-tabview" aria-labelledby="history-heading"
+			data-employee-editor-label="<?php p($l->t('Changed by the employee')); ?>"
+			data-empty-history-message="<?php p($l->t('No changes have been recorded yet.')); ?>"
+			data-invalid-date-range-message="<?php p($l->t('Select a valid date range.')); ?>"
 			data-history-view="<?php p($usesHistoryTable ? 'table' : 'cards'); ?>"
 			data-history-view-revision="<?php p($_['historyViewRevision'] ?? ''); ?>"
 			data-history-view-available="<?php p(($_['historyViewAvailable'] ?? false) ? '1' : '0'); ?>">
@@ -369,16 +376,21 @@ if ($tourEnabled) {
 				<h3 id="history-heading"><?php p($l->t('Change history')); ?></h3>
 				<div class="ts-history-toolbar">
 					<button type="button" id="history-refresh"><?php p($l->t('Refresh')); ?></button>
-					<button type="button" id="history-reset"><?php p($l->t('Clear filters')); ?></button>
 				</div>
 			</div>
 			<p id="history-recording" class="ts-history-note"></p>
 			<p class="ts-history-note"><?php p($l->t('Changes are kept for twelve months.')); ?></p>
-			<form id="history-filters" class="ts-history-filters">
+			<div id="history-filters" class="ts-history-filters">
 				<label for="history-from"><?php p($l->t('Changed from')); ?><input type="date" id="history-from" required></label>
 				<label for="history-to"><?php p($l->t('Changed through')); ?><input type="date" id="history-to" required></label>
 				<label for="history-employee"><?php p($l->t('Employee')); ?><select id="history-employee"><option value=""><?php p($l->t('All employees')); ?></option></select></label>
-				<label for="history-actor"><?php p($l->t('Changed by')); ?><select id="history-actor"><option value=""><?php p($l->t('All editors')); ?></option></select></label>
+				<div class="ts-history-editor-filters">
+					<label for="history-actor"><?php p($l->t('Changed by')); ?><select id="history-actor"><option value=""><?php p($l->t('All editors')); ?></option></select></label>
+					<label class="ts-history-employee-changes" for="history-employee-changes" title="<?php p($l->t('Show only changes employees made to their own time records.')); ?>">
+						<input type="checkbox" id="history-employee-changes">
+						<span><?php p($l->t('Employee changes')); ?></span>
+					</label>
+				</div>
 				<label for="history-kind"><?php p($l->t('Change type')); ?><select id="history-kind">
 					<option value=""><?php p($l->t('All changes')); ?></option>
 					<option value="created"><?php p($l->t('Time entry created')); ?></option>
@@ -387,10 +399,7 @@ if ($tourEnabled) {
 					<option value="deleted"><?php p($l->t('Time entry deleted')); ?></option>
 					<option value="settings"><?php p($l->t('Work settings updated')); ?></option>
 				</select></label>
-				<div class="ts-history-filter-actions">
-					<button type="submit" id="history-apply"><?php p($l->t('Apply filters')); ?></button>
-				</div>
-			</form>
+			</div>
 			<p id="history-message" class="ts-history-message" role="status" aria-live="polite"></p>
 			<div class="ts-history-view-switch" role="group" aria-label="<?php p($l->t('History view')); ?>">
 				<button type="button" id="history-view-cards" aria-pressed="<?php p($usesHistoryTable ? 'false' : 'true'); ?>"><?php p($l->t('Tile view')); ?></button>

@@ -7,6 +7,7 @@ namespace OC { class ForbiddenException extends \Exception {} }
 namespace OCP {
 	interface IDBConnection { public function beginTransaction(): void; public function commit(): void; public function rollBack(): void; }
 	interface IUserSession { public function getUser(); }
+	interface IGroupManager { public function isInGroup(string $userId, string $groupId): bool; }
 	interface IUserManager { public function get($userId); }
 	interface IConfig {}
 }
@@ -83,6 +84,7 @@ namespace {
 	require __DIR__ . '/../../lib/Db/ChangeHistoryStore.php';
 	require __DIR__ . '/../../lib/Db/ChangeHistoryAccountQueue.php';
 	require __DIR__ . '/../../lib/Db/ChangeHistoryRecordingStore.php';
+	require __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
 	require __DIR__ . '/../../lib/Service/HistoryChangeSet.php';
 	require __DIR__ . '/../../lib/Service/HistoryWriteCoordinator.php';
 	require __DIR__ . '/../../lib/Service/WorkSettingsService.php';
@@ -108,12 +110,12 @@ namespace {
 		public function from($table) { if ($table !== 'ts_change_history') throw new RuntimeException('Unexpected history table'); return $this; }
 		public function where($condition) { $this->conditions = [$condition]; return $this; }
 		public function andWhere($condition) { $this->conditions[] = $condition; return $this; }
-		public function createNamedParameter($value, $type = null) { return $value; }
+		public function createNamedParameter($value, $type = null) { return (object)['value' => $value]; }
 		public function expr() { return $this; }
-		public function eq($field, $value) { return static fn($row) => $row[$field] === $value; }
-		public function in($field, $value) { return static fn($row) => in_array($row[$field], $value, true); }
-		public function gte($field, $value) { return static fn($row) => $row[$field] >= $value; }
-		public function lt($field, $value) { return static fn($row) => $row[$field] < $value; }
+		public function eq($field, $operand) { return static fn($row) => $row[$field] === (is_string($operand) ? $row[$operand] : $operand->value); }
+		public function in($field, $parameter) { return static fn($row) => in_array($row[$field], $parameter->value, true); }
+		public function gte($field, $parameter) { return static fn($row) => $row[$field] >= $parameter->value; }
+		public function lt($field, $parameter) { return static fn($row) => $row[$field] < $parameter->value; }
 		public function isNull($field) { return static fn($row) => $row[$field] === null; }
 		public function orderBy($field, $direction) { if ($field !== 'id' || $direction !== 'DESC') throw new RuntimeException('Unexpected history order'); return $this; }
 		public function setMaxResults($limit) { $this->limit = $limit; return $this; }
@@ -156,7 +158,11 @@ namespace {
 		public function getTime() { return $this->now->getTimestamp(); }
 		public function getDateTime($time = 'now', ?DateTimeZone $zone = null) { $value = $this->now->setTimezone($zone ?? new DateTimeZone('UTC')); if ($time === 'today') $value = $value->setTime(0, 0); return DateTime::createFromImmutable($value); }
 	}
-	class HistoryAppConfig implements \OCP\AppFramework\Services\IAppConfig { public function getAppValueString($key, $default = '') { return $key === 'change_history_started_at' ? '1793600000' : $default; } }
+	class HistoryGroups implements \OCP\IGroupManager {
+		public function isInGroup(string $userId, string $groupId): bool {
+			return $groupId === 'Zeitnachweis' && in_array($userId, ['employee', 'freelancer', 'foreign'], true);
+		}
+	}
 	class HistoryMemoryRecording extends \OCA\Timesheet\Db\ChangeHistoryRecordingStore {
 		public function __construct() {}
 		public function getStartedAt(): int { return 1793600000; }
@@ -202,7 +208,7 @@ namespace {
 		$mapper = new \OCA\Timesheet\Db\EntryMapper($db); $balances = new \OCA\Timesheet\Service\MonthlyBalanceService($db);
 		$entries = new \OCA\Timesheet\Service\EntryService($mapper, $session, $balances, $writes);
 		$configs = new \OCA\Timesheet\Service\WorkSettingsService(new \OCA\Timesheet\Db\UserConfigMapper($db), $balances, $writes);
-		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, new HistoryAppConfig(), $clock, $queue, new HistoryMemoryRecording());
+		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, new HistoryGroups(), $clock, $queue, new HistoryMemoryRecording());
 		return compact('db', 'users', 'session', 'hr', 'locks', 'clock', 'history', 'queue', 'writes', 'mapper', 'entries', 'configs', 'reader');
 	}
 	$checks = 0; $failures = 0;
@@ -219,9 +225,66 @@ namespace {
 		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $f['session']->user = $f['users']->get('hr-b'); $f['entries']->update($entry->getId(), ['comment' => 'Changed']);
 		sameHistory($f['db']->records[1]['actor']['id'], 'hr-b'); sameHistory($f['db']->records[1]['changes'], [['field' => 'comment', 'before' => 'Original', 'after' => 'Changed']]);
 	});
-	checkHistory('employee and HR own writes are serialized but never audited', function () use ($entryData): void {
-		$f = historyFixture(); foreach (['employee', 'hr-a'] as $uid) { $f['session']->user = $f['users']->get($uid); $entry = $f['entries']->create($entryData, $uid); $f['entries']->update($entry->getId(), ['comment' => 'Own']); $f['entries']->delete($entry->getId()); }
-		sameHistory($f['db']->records, []); sameHistory($f['db']->commits, 6); sameHistory($f['locks']->held, []);
+	checkHistory('ordinary employees audit their own time-entry changes but not work settings', function () use ($entryData): void {
+		$f = historyFixture();
+		$f['session']->user = $f['users']->get('employee');
+		$entry = $f['entries']->create($entryData);
+		$f['entries']->update($entry->getId(), ['comment' => 'Own']);
+		$f['entries']->update($entry->getId(), ['comment' => 'Own']);
+		$f['entries']->delete($entry->getId());
+		$f['configs']->save('employee', 480, 'BY');
+		sameHistory(array_column($f['db']->records, 'kind'), ['created', 'updated', 'deleted']);
+		sameHistory($f['db']->records[1]['changes'], [['field' => 'comment', 'before' => 'Original', 'after' => 'Own']]);
+		sameHistory(array_column(array_column($f['db']->records, 'actor'), 'id'), array_fill(0, 3, 'employee'));
+		sameHistory(array_column(array_column($f['db']->records, 'employee'), 'id'), array_fill(0, 3, 'employee'));
+		sameHistory($f['db']->commits, 5);
+		sameHistory($f['locks']->held, []);
+		failsHistory(fn() => $f['reader']->list(['employeeChanges' => 1]), \OC\ForbiddenException::class);
+	});
+	checkHistory('employee changes filter combines with scope, editor, subject, date, comment and pagination', function (): void {
+		$f = historyFixture();
+		$f['session']->user = $f['users']->get('employee');
+		$f['entries']->upsertCommentOnly('employee', '2026-11-01', 'First');
+		$f['entries']->upsertCommentOnly('employee', '2026-11-01', 'Second');
+		$f['session']->user = $f['users']->get('hr-a');
+		$f['entries']->upsertCommentOnly('employee', '2026-11-01', 'HR correction');
+		$f['session']->user = $f['users']->get('foreign');
+		$f['entries']->upsertCommentOnly('foreign', '2026-11-01', 'Out of scope');
+		$f['session']->user = $f['users']->get('hr-a');
+		$f['entries']->upsertCommentOnly('hr-a', '2026-11-01', 'Own HR comment');
+		sameHistory(array_column($f['reader']->list(['employeeChanges' => 0])['items'], 'id'), [5, 3, 2, 1]);
+		sameHistory(array_column($f['reader']->list(['employeeChanges' => '1'])['items'], 'id'), [5, 2, 1]);
+		$query = ['employeeChanges' => 1, 'employee' => 'employee', 'actor' => 'employee',
+			'from' => '2026-11-03', 'to' => '2026-11-03', 'kind' => 'comment', 'limit' => 1];
+		$page = $f['reader']->list($query);
+		sameHistory(array_column($page['items'], 'id'), [2]);
+		sameHistory($page['nextCursor'], 2);
+		sameHistory(array_column($f['reader']->list($query + ['beforeId' => $page['nextCursor']])['items'], 'id'), [1]);
+		sameHistory($f['reader']->list(['employeeChanges' => 1, 'employee' => 'employee', 'actor' => 'hr-a'])['items'], []);
+		failsHistory(fn() => $f['reader']->list(['employeeChanges' => 1, 'employee' => 'foreign']), \OC\ForbiddenException::class);
+		failsHistory(fn() => $f['reader']->list(['employeeChanges' => 'true']), InvalidArgumentException::class);
+	});
+	checkHistory('HR can read and filter its own changes without an employee-group assignment', function () use ($entryData): void {
+		$f = historyFixture();
+		$entry = $f['entries']->create($entryData);
+		$f['entries']->update($entry->getId(), ['comment' => 'Own']);
+		$f['entries']->update($entry->getId(), ['comment' => 'Own']);
+		$f['entries']->delete($entry->getId());
+		$f['configs']->save('hr-a', 480, 'BY');
+
+		$record = $f['reader']->list(['employee' => 'hr-a', 'actor' => 'hr-a']);
+		sameHistory(array_column($record['items'], 'kind'), ['settings', 'deleted', 'updated', 'created']);
+		sameHistory(array_column(array_column($record['items'], 'employee'), 'id'), array_fill(0, 4, 'hr-a'));
+		sameHistory($record['items'][2]['changes'], [['field' => 'comment', 'before' => 'Original', 'after' => 'Own']]);
+		sameHistory($record['filters']['employees'][0]['id'], 'hr-a');
+		sameHistory($f['reader']->list([])['items'], $record['items']);
+		sameHistory($f['locks']->held, []);
+
+		$f['session']->user = $f['users']->get('hr-b');
+		$otherHistory = $f['reader']->list([]);
+		sameHistory($otherHistory['items'], []);
+		sameHistory(in_array('hr-a', array_column($otherHistory['filters']['employees'], 'id'), true), false);
+		failsHistory(fn () => $f['reader']->list(['employee' => 'hr-a']), \OC\ForbiddenException::class);
 	});
 	checkHistory('no-op updates, repeated comment posts and duplicate creates never add events', function () use ($entryData): void {
 		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $dirty = $f['db']->dirty;
@@ -256,6 +319,18 @@ namespace {
 		sameHistory(array_column($page['items'], 'id'), [4, 3, 2, 1]);
 		sameHistory(array_column($page['items'], 'kind'), ['updated', 'updated', 'updated', 'created']);
 		sameHistory($page['nextCursor'], null); sameHistory(serialize($f['db']->records), $before);
+	});
+	checkHistory('assigned inactive employees can be selected even without history events', function () use ($entryData): void {
+		$f = historyFixture();
+		$filters = $f['reader']->list(['employee' => 'inactive'])['filters'];
+		sameHistory(array_column($filters['employees'], 'isActive', 'id'), [
+			'hr-a' => false, 'employee' => true, 'inactive' => false, 'freelancer' => true,
+		]);
+		$f['entries']->create($entryData, 'employee');
+		$f['entries']->create($entryData, 'inactive');
+		$filtered = $f['reader']->list(['employee' => 'inactive']);
+		sameHistory(array_column(array_column($filtered['items'], 'employee'), 'id'), ['inactive']);
+		failsHistory(fn () => $f['reader']->list(['employee' => 'foreign']), \OC\ForbiddenException::class);
 	});
 	checkHistory('comment filter scans past sparse nonmatching batches while keeping scope and other filters', function () use ($entryData): void {
 		$f = historyFixture(); $f['entries']->create($entryData, 'employee'); $template = $f['db']->records[0]; $f['db']->records = [];
@@ -305,8 +380,10 @@ namespace {
 	});
 	checkHistory('foreign accounts are denied regardless of supplied HR boolean', function () use ($entryData): void {
 		$f = historyFixture(); $f['session']->user = $f['users']->get('foreign'); $entry = $f['entries']->create($entryData, 'foreign'); $f['session']->user = $f['users']->get('hr-a');
+		$records = $f['db']->records;
 		foreach ([fn() => $f['entries']->update($entry->getId(), ['comment' => 'No'], true), fn() => $f['entries']->delete($entry->getId(), true), fn() => $f['entries']->create($entryData, 'foreign'), fn() => $f['configs']->save('foreign', 1, 'BY')] as $call) failsHistory($call, \OC\ForbiddenException::class);
-		sameHistory($f['db']->records, []);
+		sameHistory($f['db']->records, $records);
+		sameHistory($f['reader']->list([])['items'], []);
 	});
 	checkHistory('employee cannot turn a foreign write into an HR write', function () use ($entryData): void {
 		$f = historyFixture(); $f['session']->user = $f['users']->get('employee'); failsHistory(fn() => $f['entries']->create($entryData, 'inactive'), \OC\ForbiddenException::class); sameHistory($f['db']->entries, []);
@@ -317,7 +394,7 @@ namespace {
 	});
 	checkHistory('reader defaults to 30 days, keeps inactive/freelance choices and masks foreign actors', function () use ($entryData): void {
 		$f = historyFixture(); $f['entries']->create($entryData, 'employee'); $page = $f['reader']->list([]); sameHistory(count($page['items']), 1); sameHistory($page['retentionMonths'], 12);
-		sameHistory(array_column($page['filters']['employees'], 'id'), ['employee', 'inactive', 'freelancer']); sameHistory(array_column($page['filters']['actors'], 'id'), ['hr-a']);
+		sameHistory(array_column($page['filters']['employees'], 'id'), ['hr-a', 'employee', 'inactive', 'freelancer']); sameHistory(array_column($page['filters']['actors'], 'id'), ['hr-a']);
 		failsHistory(fn() => $f['reader']->list(['employee' => 'foreign']), \OC\ForbiddenException::class); failsHistory(fn() => $f['reader']->list(['actor' => 'admin']), InvalidArgumentException::class);
 	});
 	checkHistory('filters and pagination retain stable descending IDs without overlap', function () use ($entryData): void {

@@ -36,8 +36,7 @@
 }
 
 #ts-table,
-#hr-user-table,
-.hr-userlist {
+#hr-user-table {
 	--color-border: #3a3a3a;
 }
 
@@ -130,8 +129,8 @@
 	display: block;
 	padding: 4px 10px;
 	border: 1px solid var(--color-border, #ccc);
-	background: #ddd;
-	color: #000;
+	background: var(--color-background-dark, #f6f8fa);
+	color: var(--color-main-text, #222);
 	margin: 0;
 	width: 100%;
 	max-width: 100%;
@@ -160,8 +159,17 @@
 	overflow-x: auto;
 }
 
+.hr-userlist {
+	inline-size: 100%;
+	min-inline-size: 42rem;
+}
+
+.hr-userlist th:first-child {
+	inline-size: 25%;
+}
+
 .hr-userlist button.hr-load-user:hover {
-	background: #c2c2c2;
+	background: var(--color-background-hover, #e8ebee);
 }
 
 .hr-userlist tbody tr {
@@ -242,16 +250,6 @@
 	display: block;
 }
 
-/* HR information panel */
-.ts-infobox {
-	padding: 10px 12px;
-	border-left: 4px solid var(--color-primary, #0082c9);
-	border-radius: 6px;
-	background: color-mix(in srgb, var(--color-background-dark, #0082c9) 8%, var(--color-main-background, #fff));
-	line-height: 1.4;
-	width: 464px;
-}
-
 /* HR detail header */
 .hr-user-header-bar {
 	display: flex;
@@ -260,11 +258,13 @@
 }
 
 .hr-user-header-bar h4 {
+	min-inline-size: 0;
 	margin: 0;
 	background: var(--color-background-dark, #f6f8fa);
 	border: 1px solid var(--color-border, #d0d7de);
 	border-radius: 6px;
 	padding: 0 10px;
+	overflow-wrap: anywhere;
 }
 
 .hr-user-header-bar button {
@@ -286,6 +286,20 @@
 .ts-month-row-main {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
+	min-inline-size: 0;
+	max-inline-size: 100%;
+}
+
+.ts-month-navigation,
+.ts-entry-export {
+	display: inline-flex;
+	align-items: center;
+	min-inline-size: 0;
+	max-inline-size: 100%;
+}
+
+.ts-entry-export {
 	flex-wrap: wrap;
 }
 
@@ -325,6 +339,9 @@
 .ts-stats {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
+	min-inline-size: 0;
+	max-inline-size: 100%;
 	font-size: 0.95rem;
 }
 
@@ -333,7 +350,8 @@
 	border: 1px solid var(--color-border, #d0d7de);
 	border-radius: 6px;
 	padding: 4px 10px;
-	white-space: nowrap;
+	min-inline-size: 0;
+	overflow-wrap: anywhere;
 }
 
 .ts-month-row-main,
@@ -343,6 +361,73 @@
 	border-radius: 6px;
 	padding: 0px 5px;
 	margin-bottom: 6px;
+}
+
+#tab-mine,
+#hr-user-entries {
+	container-type: inline-size;
+}
+
+.ts-entry-table-scroll {
+	max-inline-size: 100%;
+}
+
+/* The table alone scrolls on narrow layouts. Its column labels stay above the entries. */
+@container (max-width: 62rem) {
+	.ts-entry-table-scroll {
+		max-block-size: 65dvh;
+		overflow: auto;
+	}
+
+	.ts-entry-table-scroll:focus-visible {
+		outline: 2px solid var(--color-primary-element, #0082c9);
+		outline-offset: -2px;
+	}
+
+	.ts-month-row,
+	.ts-month-row-main,
+	.hr-user-controls-row {
+		gap: 4px 8px;
+	}
+
+	.ts-stats {
+		flex-basis: 100%;
+		gap: 4px;
+	}
+
+	.ts-entry-export .ts-export-choice-ui {
+		flex-wrap: wrap;
+		max-inline-size: 100%;
+		margin-inline-start: 0;
+	}
+
+	.ts-entry-export .ts-export-choice-ui button {
+		max-inline-size: 100%;
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+}
+
+@container (max-width: 36rem) {
+	.ts-month-row-main h3,
+	.hr-user-header-bar h4 {
+		flex-basis: 100%;
+		white-space: normal;
+	}
+
+	.hr-user-header-bar {
+		flex-wrap: wrap;
+	}
+
+	.hr-user-header-bar h4 {
+		order: -1;
+	}
+
+	.ts-month-navigation .month-display {
+		min-inline-size: 0;
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
 }
 
 /* Break input format switch */
@@ -482,6 +567,14 @@
 
 .hr-employee-list-header {
 	justify-content: space-between;
+	padding: 0;
+}
+
+.hr-employee-list-title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-inline-size: 0;
 }
 
 .hr-employee-list-header h4,
@@ -612,112 +705,80 @@
 	background: var(--color-primary-hover, #006ba3);
 }
 
-/* HR overview grid and responsive layout */
+/* HR overview */
 .ts-hr-row {
 	display: grid;
-	gap: 16px;
-	align-items: start;
-	justify-content: start;
-	grid-template-columns: auto auto auto;
-	grid-template-areas:
-		"users stats infobox"
-		"notificationSettings notificationSettings notificationSettings";
-}
-
-#hr-infobox-section {
-	grid-area: infobox;
-}
-
-#hr-userlist-section {
-	grid-area: users;
-	justify-self: start;
-}
-
-#hr-stats-section {
-	grid-area: stats;
-	justify-self: start;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 8px;
+	inline-size: 100%;
 }
 
 #hr-notification-block {
-	grid-area: notificationSettings;
 	min-inline-size: 0;
-	justify-self: stretch;
 	display: grid;
-	gap: 8px;
+	gap: 4px;
 }
 
-#hr-notification-block .hr-app-request {
+#timesheet-app .hr-app-request {
 	justify-self: start;
+	margin: 0;
 }
 
-@media (max-width: 1800px) {
-	.ts-hr-row {
-		grid-template-columns: auto auto;
-		grid-template-areas:
-			"users stats"
-			"users infobox"
-			"notificationSettings notificationSettings";
-	}
-}
-
-@media (max-width: 1330px) {
-	.ts-hr-row {
-		grid-template-columns: auto auto;
-		grid-template-areas:
-			"stats infobox"
-			"users users"
-			"notificationSettings notificationSettings";
-	}
-}
-
-@media (max-width: 1050px) {
-	.ts-hr-row {
-		grid-template-columns: minmax(0, 1fr);
-		justify-content: stretch;
-		inline-size: 100%;
-		grid-template-areas:
-			"stats"
-			"users"
-			"infobox"
-			"notificationSettings";
-	}
-	#hr-userlist-section,
-	#hr-stats-section,
-	#hr-infobox-section {
-		box-sizing: border-box;
-		min-inline-size: 0;
-		max-inline-size: 100%;
-		justify-self: stretch;
-	}
-	#hr-stats-section {
-		overflow-x: auto;
-	}
-	#hr-stats-section th {
-		white-space: normal;
-	}
-}
-
-/* HR overview panels */
 #hr-userlist-section,
-#hr-stats-section,
 #hr-notification-settings-section {
 	background: var(--color-background-dark, #f6f8fa);
 	border: 1px solid var(--color-border, #d0d7de);
 	border-radius: 6px;
 }
 
+#hr-userlist-section {
+	box-sizing: border-box;
+	min-inline-size: 0;
+	padding: 12px;
+}
+
 #hr-userlist-section h4,
 #hr-stats-section h4 {
-	margin: 0 5px 8px;
 	font-weight: 700;
 }
 
-#hr-stats-section .hr-stats-table th,
-#hr-stats-section .hr-stats-table td {
-	border: 1px solid var(--color-border, #e1e4e8);
-	background: var(--color-main-background, #fff);
-	padding: 4px 8px;
-	text-align: center;
+#hr-stats-section {
+	margin-block-start: 12px;
+	border-block-start: 1px solid var(--color-border, #d0d7de);
+	padding-block-start: 8px;
+}
+
+#hr-stats-section h4 {
+	margin: 0 0 4px;
+}
+
+.hr-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+	gap: 8px 16px;
+	margin: 0;
+}
+
+#hr-stats-section .hr-stats dt,
+#hr-stats-section .hr-stats dd {
+	display: block;
+	float: none;
+	clear: none;
+	inline-size: auto;
+	margin: 0;
+	padding: 0;
+	text-align: start;
+	white-space: normal;
+}
+
+#hr-stats-section .hr-stats dt {
+	overflow-wrap: anywhere;
+}
+
+#hr-stats-section .hr-stats dd {
+	margin-block-start: 2px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
 }
 
 /* Export choices */
@@ -775,10 +836,17 @@
 }
 
 .hr-notification-topic,
-.hr-notification-value,
 .hr-notification-mail {
+	display: grid;
+	grid-template-columns: minmax(0, max-content) 28px;
+	justify-content: start;
+	align-items: center;
+	gap: 4px;
+}
+
+.hr-notification-value {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	flex-wrap: wrap;
 	gap: 4px 8px;
 }
@@ -802,36 +870,6 @@
 .hr-notification-row input[type="checkbox"] {
 	flex-shrink: 0;
 	margin: 0;
-}
-
-.hr-field-help summary {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-inline-size: 24px;
-	min-block-size: 24px;
-	cursor: pointer;
-	border-radius: var(--border-radius, 4px);
-}
-
-.hr-field-help summary::-webkit-details-marker {
-	display: none;
-}
-
-.hr-field-help summary:hover,
-.hr-field-help[open] summary {
-	background: var(--color-background-hover);
-}
-
-.hr-field-help summary:focus-visible {
-	outline: 2px solid var(--color-main-text);
-	outline-offset: 2px;
-}
-
-.hr-field-help p {
-	margin: 4px 0 0;
-	max-inline-size: 40ch;
-	color: var(--color-text-maxcontrast);
 }
 
 .hr-group-notifications {

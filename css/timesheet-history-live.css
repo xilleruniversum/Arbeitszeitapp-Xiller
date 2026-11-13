@@ -53,18 +53,35 @@
 	gap: 4px;
 	min-width: 0;
 }
-.ts-history-filters input,
+.ts-history-filters input[type="date"],
 .ts-history-filters select {
 	box-sizing: border-box;
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
 }
-.ts-history-filter-actions {
+.ts-history-editor-filters {
+	grid-column: span 2;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: flex-end;
+	align-items: end;
+	gap: 4px 12px;
+	min-width: 0;
+}
+.ts-history-editor-filters > label {
+	flex: 1 1 140px;
+}
+.ts-history-editor-filters .ts-history-employee-changes {
+	flex-direction: row;
+	align-items: center;
 	gap: 8px;
+	min-height: var(--default-clickable-area, 44px);
+	cursor: pointer;
+	overflow-wrap: anywhere;
+}
+.ts-history-employee-changes input {
+	flex: none;
+	margin: 0;
 }
 #tab-change-history button {
 	background: var(--color-background-dark);
@@ -260,6 +277,9 @@
 	.ts-history-metadata,
 	.ts-history-values {
 		grid-template-columns: minmax(0, 1fr);
+	}
+	.ts-history-editor-filters {
+		grid-column: auto;
 	}
 	.ts-history-card {
 		padding: 10px;

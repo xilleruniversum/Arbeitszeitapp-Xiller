@@ -143,7 +143,8 @@
 	// Preserve the employee view and unsaved field values while controls are highlighted.
 	function captureView() {
 		const elements = Array.from(appRoot.querySelectorAll('input, select, textarea'));
-		const scrollElements = [appRoot, document.getElementById('content'), document.scrollingElement].filter(Boolean);
+		const entryTableScroll = appRoot.querySelector('#tab-mine .ts-entry-table-scroll');
+		const scrollElements = [entryTableScroll, appRoot, document.getElementById('content'), document.scrollingElement].filter(Boolean);
 		return {
 			focus: document.activeElement,
 			windowScroll: [window.scrollX, window.scrollY],

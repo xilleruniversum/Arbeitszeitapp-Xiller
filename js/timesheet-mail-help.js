@@ -95,15 +95,112 @@
 	window.addEventListener('resize', positionEmailHelp);
 	window.addEventListener('scroll', positionEmailHelp, true);
 
-	function bindAppRequestLink() {
+	function bindHrHelp() {
+		const overview = document.getElementById('tab-hr');
+		if (!overview?.querySelector('[data-hr-help]')) {
+			return;
+		}
+
+		const findButton = node => node?.closest?.('[data-hr-help]');
+		let active;
+		let closeTimer;
+
+		function cancelClose() {
+			window.clearTimeout(closeTimer);
+		}
+
+		function hide() {
+			cancelClose();
+			if (!active) return;
+			const { button, popup } = active;
+			active = null;
+			button.setAttribute('aria-expanded', 'false');
+			if (popup.hidePopover && popup.matches(':popover-open')) popup.hidePopover();
+			popup.hidden = true;
+		}
+
+		function reposition() {
+			if (!active) return;
+			const bounds = active.button.getBoundingClientRect();
+			if (!active.button.isConnected || bounds.width === 0 || bounds.bottom < 0 || bounds.top > window.innerHeight) {
+				hide();
+				return;
+			}
+			positionPopup(active.popup, active.button);
+		}
+
+		function open(button) {
+			cancelClose();
+			if (active?.button === button) return;
+			hide();
+			const popup = document.getElementById(button.getAttribute('aria-controls'));
+			if (!popup) return;
+			active = { button, popup, pinned: false };
+			popup.hidden = false;
+			popup.showPopover?.();
+			button.setAttribute('aria-expanded', 'true');
+			reposition();
+		}
+
+		function isInside(node) {
+			return active && (active.button.contains(node) || active.popup.contains(node));
+		}
+
+		overview.addEventListener('pointerover', event => {
+			if (event.pointerType === 'touch') return;
+			const button = findButton(event.target);
+			if (button) open(button);
+			if (isInside(event.target)) cancelClose();
+		});
+		overview.addEventListener('pointerout', event => {
+			if (event.pointerType === 'touch' || !isInside(event.target) || isInside(event.relatedTarget)) return;
+			if (active.pinned || active.button.matches(':focus-visible')) return;
+			closeTimer = window.setTimeout(hide, 160);
+		});
+		overview.addEventListener('focusin', event => {
+			const button = findButton(event.target);
+			if (button?.matches(':focus-visible')) open(button);
+		});
+		overview.addEventListener('focusout', event => {
+			if (isInside(event.target) && !isInside(event.relatedTarget)) hide();
+		});
+		overview.addEventListener('click', event => {
+			const button = findButton(event.target);
+			if (!button) return;
+			if (active?.button === button && active.pinned) {
+				hide();
+				return;
+			}
+			open(button);
+			if (active) active.pinned = true;
+		});
+		document.addEventListener('pointerdown', event => {
+			if (active && !isInside(event.target) && !findButton(event.target)) hide();
+		});
+		document.addEventListener('keydown', event => {
+			if (event.key === 'Escape' && active) {
+				event.preventDefault();
+				hide();
+			}
+		});
+		window.addEventListener('resize', reposition);
+		window.addEventListener('scroll', reposition, true);
+		new MutationObserver(() => {
+			if (active && !active.button.isConnected) hide();
+		}).observe(overview, { childList: true, subtree: true });
+	}
+
+
+	function bindHelp() {
+		bindHrHelp();
 		const link = document.querySelector('.hr-app-request');
 		link?.addEventListener('click', () => show(link));
 	}
 
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', bindAppRequestLink, { once: true });
+		document.addEventListener('DOMContentLoaded', bindHelp, { once: true });
 	} else {
-		bindAppRequestLink();
+		bindHelp();
 	}
 
 	timesheet.mailHelp = { show, close, positionPopup };

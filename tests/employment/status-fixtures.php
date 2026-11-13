@@ -32,6 +32,9 @@ namespace OCP {
 	class Util {
 		public static array $scripts = [];
 		public static array $styles = [];
+		public static function getL10N(string $app, ?string $language = null): IL10N {
+			return new \EmploymentTranslationFixture();
+		}
 		public static function addTranslations(string $app): void {
 		}
 		public static function addScript(string $app, string $name): void {

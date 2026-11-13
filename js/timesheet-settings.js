@@ -45,15 +45,10 @@
 		notificationLoad = (async () => {
 			try {
 				const settings = await timesheet.api('/api/hr/notifications');
-				appState.hrWarningThresholds = settings.warningThresholds;
-				for (const input of section.querySelectorAll('[data-warning-threshold]')) {
-					setThreshold(input, settings.warningThresholds[input.dataset.warningThreshold]);
-				}
-				for (const input of section.querySelectorAll('[data-mail-enabled]')) {
-					input.checked = settings[input.dataset.mailEnabled];
-				}
+				applyHrNotificationSettings(section, settings);
 				section.disabled = false;
 				document.getElementById('hr-notification-load-error').hidden = true;
+				configModule.updateHrNotificationSaveButton?.();
 			} catch (error) {
 				document.getElementById('hr-notification-load-error').hidden = false;
 				console.warn('Could not load HR notification settings', error);
@@ -82,35 +77,85 @@
 		return settings;
 	}
 
+	let savedNotificationSettings;
+
+	function applyHrNotificationSettings(section, settings) {
+		appState.hrWarningThresholds = settings.warningThresholds;
+		for (const input of section.querySelectorAll('[data-warning-threshold]')) {
+			setThreshold(input, settings.warningThresholds[input.dataset.warningThreshold]);
+		}
+		for (const input of section.querySelectorAll('[data-mail-enabled]')) {
+			input.checked = settings[input.dataset.mailEnabled];
+		}
+		savedNotificationSettings = readNotificationSettings(section);
+	}
+
 	function initHrNotificationSettings() {
 		const section = document.getElementById('hr-notifications-section');
-		if (!section) return;
+		const saveButton = document.getElementById('hr-notification-save');
+		if (!section || !saveButton) return;
 
-		let saveTimer;
-		let saving = Promise.resolve();
+		const groupSection = document.querySelector('.hr-group-notifications');
+		const errorStatus = document.getElementById('hr-notification-save-error');
+		let saving = false;
+
+		function hasPersonalChanges() {
+			if (!savedNotificationSettings) return false;
+			const draft = readNotificationSettings(section);
+			return JSON.stringify(draft) !== JSON.stringify(savedNotificationSettings);
+		}
+
+		function updateSaveButton() {
+			saveButton.disabled = saving || !(hasPersonalChanges() || timesheet.hrNotificationRules?.hasChanges());
+		}
+		configModule.updateHrNotificationSaveButton = updateSaveButton;
 		section.addEventListener('input', () => {
-			if (section.disabled) return;
-			clearTimeout(saveTimer);
-			saveTimer = setTimeout(() => {
-				const settings = readNotificationSettings(section);
-				if (!settings) return;
-				saving = saving.then(async () => {
-					try {
-						const result = await timesheet.api('/api/hr/notifications', {
-							method: 'PUT',
-							body: JSON.stringify(settings)
-						});
-						appState.hrWarningThresholds = result.warningThresholds;
-						timesheet.notify(t(appState.appName, 'Saved'));
-						if (document.getElementById('tab-hr')?.classList.contains('active')) {
-							timesheet.hr?.loadHrUserList?.();
-						}
-					} catch (error) {
-						console.error('Failed to save HR notification settings', error);
-						timesheet.notify(t(appState.appName, 'Save failed'));
+			errorStatus.textContent = '';
+			updateSaveButton();
+		});
+		saveButton.addEventListener('click', async () => {
+			if (saveButton.disabled) return;
+			const personal = savedNotificationSettings && readNotificationSettings(section);
+			const savePersonal = savedNotificationSettings && JSON.stringify(personal) !== JSON.stringify(savedNotificationSettings);
+			const group = timesheet.hrNotificationRules;
+			if (savePersonal && !personal) {
+				section.querySelector('input:invalid')?.reportValidity();
+				return;
+			}
+			const groupError = group?.validationError();
+			if (groupError) {
+				errorStatus.textContent = groupError;
+				return;
+			}
+
+			saving = true;
+			saveButton.disabled = true;
+			section.inert = true;
+			groupSection.inert = true;
+			errorStatus.textContent = '';
+			document.getElementById('hr-notification-saved').textContent = '';
+			try {
+				if (group?.hasChanges()) await group.save();
+				if (savePersonal) {
+					const result = await timesheet.api('/api/hr/notifications', {
+						method: 'PUT',
+						body: JSON.stringify(personal)
+					});
+					applyHrNotificationSettings(section, result);
+					if (document.getElementById('tab-hr')?.classList.contains('active')) {
+						timesheet.hr?.loadHrUserList?.();
 					}
-				});
-			}, 450);
+				}
+				timesheet.showHrNotificationSaved();
+			} catch (error) {
+				console.error('Failed to save HR notification settings', error);
+				errorStatus.textContent = error.notificationMessage || t(appState.appName, 'Changes could not be saved. Please try again.');
+			} finally {
+				saving = false;
+				section.inert = false;
+				groupSection.inert = false;
+				updateSaveButton();
+			}
 		});
 		void loadHrNotificationSettings();
 	}

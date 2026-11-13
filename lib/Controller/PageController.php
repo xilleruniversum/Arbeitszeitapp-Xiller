@@ -52,7 +52,8 @@ class PageController extends Controller {
 
 		// Load modules in dependency order.
 		Util::addScript('timesheet', 'timesheet-header');
-		Util::addScript('timesheet', 'timesheet-core');
+		// Nextcloud keys its browser cache by asset URL and installed app version.
+		Util::addScript('timesheet', 'timesheet-runtime');
 		if ($isHr || $tourEnabled) {
 			Util::addScript('timesheet', 'timesheet-mail-help');
 		}
@@ -61,10 +62,10 @@ class PageController extends Controller {
 		Util::addScript('timesheet', 'timesheet-hr');
 		Util::addScript('timesheet', 'timesheet-export');
 		Util::addScript('timesheet', 'timesheet-copy');
-		Util::addScript('timesheet', 'timesheet-configuration');
+		Util::addScript('timesheet', 'timesheet-settings');
 		if ($isHr) {
-			Util::addScript('timesheet', 'timesheet-change-history');
-			Util::addScript('timesheet', 'hr-settings');
+			Util::addScript('timesheet', 'timesheet-history-live');
+			Util::addScript('timesheet', 'timesheet-rule-settings');
 		}
 		if ($updateNotesEnabled) {
 			Util::addScript('timesheet', 'timesheet-update-notes');
@@ -77,8 +78,8 @@ class PageController extends Controller {
 
 		Util::addStyle('timesheet', 'style');
 		if ($isHr) {
-			Util::addStyle('timesheet', 'timesheet-change-history');
-			Util::addStyle('timesheet', 'hr-settings');
+			Util::addStyle('timesheet', 'timesheet-history-live');
+			Util::addStyle('timesheet', 'timesheet-hr-settings');
 		}
 		if ($updateNotesEnabled) {
 			Util::addStyle('timesheet', 'timesheet-update-notes');

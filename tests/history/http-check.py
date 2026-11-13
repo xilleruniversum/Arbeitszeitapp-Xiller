@@ -64,13 +64,14 @@ verify('data-tab="change-history"' in employee.page, False, 'Employees do not re
 verify('data-tab="change-history"' in combined.page, True, 'Combined HR/admin sees its scoped tab')
 verify(hr_a.call('/apps/timesheet/api/hr/change-history', csrf=False)[0], 200, 'Read-only history supports native GET without a write token')
 verify(employee.call('/apps/timesheet/api/hr/change-history')[0], 403, 'An employee cannot call the HR history endpoint')
+verify(employee.call('/apps/timesheet/api/hr/change-history?employeeChanges=1')[0], 403, 'The employee changes filter does not give employees history access')
 if os.environ.get('HISTORY_TEST_ADMIN_PASSWORD'):
 	admin = Client('history-admin', os.environ['HISTORY_TEST_ADMIN_PASSWORD'])
 	verify('data-tab="change-history"' in admin.page, False, 'An admin without HR assignment does not receive the tab')
 	verify(admin.call('/apps/timesheet/api/hr/change-history')[0], 403, 'Admin privileges alone do not bypass history scope')
 
 for path in [
-	'/api/hr/change-history?employee=history-other', '/api/entries?user=history-other',
+	'/api/hr/change-history?employee=history-other', '/api/hr/change-history?employee=history-other&employeeChanges=1', '/api/entries?user=history-other',
 	'/api/hr/config/history-other', '/api/rules/effective/history-other',
 	'/api/entries/export-xlsx?user=history-other',
 ]:
@@ -78,7 +79,7 @@ for path in [
 verify(hr_a.call('/apps/timesheet/api/hr/config/history-other', 'PUT', {'dailyMin': 480, 'state': 'HE'})[0], 403, 'Foreign work setting writes are rejected')
 verify(employee.call('/apps/timesheet/api/hr/config/history-employee-a')[0], 200, 'Self work settings remain readable')
 verify(hr_a.call('/apps/timesheet/api/hr/config/history-employee-a', 'PUT', {'dailyMin': 480, 'state': 'BY'}, csrf=False)[0], 412, 'Work settings restore native CSRF enforcement')
-for query in ['from=2026-02-30', 'from=2026-11-04&to=2026-11-01', 'limit=51', 'beforeId=-1', 'kind=unknown', 'actor=history-hr-other', 'actorDeleted=1&actor=history-hr-a']:
+for query in ['from=2026-02-30', 'from=2026-11-04&to=2026-11-01', 'limit=51', 'beforeId=-1', 'kind=unknown', 'actor=history-hr-other', 'actorDeleted=1&actor=history-hr-a', 'employeeChanges=true']:
 	verify(hr_a.call('/apps/timesheet/api/hr/change-history?' + query)[0], 400, 'Invalid or unscoped history filter is rejected: ' + query)
 
 existing = hr_a.call('/apps/timesheet/api/entries?user=history-employee-a&from=2026-11-01&to=2026-11-01')[1]
@@ -114,7 +115,11 @@ verify(latest['changes'][0]['before'], previous['changes'][0]['after'], 'The sec
 verify(hr_a.call('/apps/timesheet/api/entries/' + str(entry_id), 'PUT', {'comment': latest['changes'][0]['after']})[0], 200, 'An identical retry still returns success')
 verify(len(hr_a.call('/apps/timesheet/api/hr/change-history?employee=history-employee-a')[1]['items']), len(history['items']), 'An identical HTTP retry creates no extra event')
 verify(employee.call('/apps/timesheet/api/entries/' + str(entry_id), 'PUT', {'comment': 'Employee self change'})[0], 200, 'Employees can still change their own entries')
-verify(len(hr_a.call('/apps/timesheet/api/hr/change-history?employee=history-employee-a')[1]['items']), len(history['items']), 'Employee HTTP self-edits stay outside HR history')
+verify(len(hr_a.call('/apps/timesheet/api/hr/change-history?employee=history-employee-a')[1]['items']), len(history['items']) + 1, 'An employee HTTP self-edit is included in history')
+status, self_edits = hr_a.call('/apps/timesheet/api/hr/change-history?employee=history-employee-a&actor=history-employee-a&employeeChanges=1&kind=comment')
+verify(status, 200, 'The new filter works with the employee, editor and comment filters')
+verify(self_edits['items'][0]['actor']['id'], 'history-employee-a', 'An employee is identified as the editor of their own entry')
+verify(self_edits['items'][0]['changes'][0]['after'], 'Employee self change', 'The filtered record returns the saved employee value')
 verify(hr_b.call('/apps/timesheet/api/entries/' + str(entry_id), 'PUT', {'comment': 'Final HR explanation'})[0], 200, 'A later HR edit is recorded normally')
 latest = hr_a.call('/apps/timesheet/api/hr/change-history?employee=history-employee-a')[1]['items'][0]
 verify(latest['changes'][0]['before'], 'Employee self change', 'A later HR event uses the intervening employee value')

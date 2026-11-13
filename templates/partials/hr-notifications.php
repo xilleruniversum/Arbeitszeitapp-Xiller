@@ -4,18 +4,9 @@ $notificationFields = [
 	['key' => 'overtimeThresholdMinutes', 'enabled' => 'overtimeEnabled', 'label' => 'Overtime', 'unit' => 'hours', 'help' => 'With a threshold of 10 hours, HR can see in the employee list who has 10 or more hours of overtime.'],
 	['key' => 'negativeOvertimeThresholdMinutes', 'enabled' => 'negativeOvertimeEnabled', 'label' => 'Negative hours', 'unit' => 'hours', 'help' => 'With a threshold of 10 hours, HR can see in the employee list who has a time deficit of 10 hours or more.'],
 ];
-$helpIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 0 1 5 .3c0 1.8-2.5 2-2.5 3.7" /><circle cx="12" cy="16.5" r=".5" /></svg>';
 ?>
 <section id="hr-notification-settings-section" aria-labelledby="hr-notifications-title">
-	<h4 id="hr-notifications-heading" aria-labelledby="hr-notifications-title">
-		<span id="hr-notifications-title"><?php p($l->t('Notifications')); ?></span>
-		<button type="button" class="ts-rules-help-toggle" id="timesheet-rules-help-toggle"
-			aria-expanded="false" aria-controls="timesheet-rules-help"
-			aria-label="<?php p($l->t('Notification settings explained')); ?>">
-			<?php print_unescaped($helpIcon); ?>
-		</button>
-	</h4>
-	<?php include __DIR__ . '/hr-mail-help.php'; ?>
+	<h4 id="hr-notifications-heading"><span id="hr-notifications-title"><?php p($l->t('Notifications')); ?></span></h4>
 
 	<fieldset id="hr-notifications-section" class="hr-personal-notifications" disabled>
 		<legend><?php p($l->t('Alerts for HR')); ?></legend>
@@ -30,10 +21,7 @@ $helpIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke=
 			<div class="hr-notification-row">
 				<div class="hr-notification-topic">
 					<label for="hr-threshold-<?php p($key); ?>"><?php p($l->t($field['label'])); ?></label>
-					<details class="hr-field-help">
-						<summary aria-label="<?php p($l->t($field['label'])); ?>"><?php print_unescaped($helpIcon); ?></summary>
-						<p><?php p($l->t($field['help'])); ?></p>
-					</details>
+					<?php $renderHelpPopup('hr-threshold-help-' . $key, $l->t($field['label']), [$l->t($field['help'])]); ?>
 				</div>
 				<div class="hr-notification-value">
 					<input id="hr-threshold-<?php p($key); ?>" data-warning-threshold="<?php p($key); ?>" required
@@ -46,12 +34,12 @@ $helpIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke=
 						<input type="checkbox" data-mail-enabled="<?php p($field['enabled']); ?>">
 						<?php p($l->t('Include in my weekly email')); ?>
 					</label>
-					<?php if ($isDays): ?>
-						<details class="hr-field-help">
-							<summary aria-label="<?php p($l->t('Weekly email to HR')); ?>"><?php print_unescaped($helpIcon); ?></summary>
-							<p><?php p($l->t('When checked, this alert is also included in the weekly summary email.')); ?></p>
-						</details>
-					<?php endif; ?>
+					<?php if ($isDays) {
+						$renderHelpPopup('hr-weekly-email-help', $l->t('Include in my weekly email'), [
+							$l->t('When checked, this alert is also included in the weekly summary email.'),
+							$l->t('The employee list shows the current alerts in the app. The weekly email to HR bundles the selected alerts that still apply on Monday.'),
+						]);
+					} ?>
 				</div>
 			</div>
 		<?php endforeach; ?>
@@ -74,4 +62,9 @@ $helpIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke=
 			<p class="hr-mail-settings-error" role="alert"><?php p($l->t('Notification settings could not be loaded. Reload the page to try again.')); ?></p>
 		<?php endif; ?>
 	</section>
+	<div class="hr-notification-actions">
+		<p id="hr-notification-save-error" class="hr-mail-settings-error" role="alert"></p>
+		<button id="hr-notification-save" type="button" class="primary" disabled><?php p(\OCP\Util::getL10N('settings', $l->getLanguageCode())->t('Save')); ?></button>
+	</div>
+	<p id="hr-notification-saved" class="hr-notification-saved" role="status" aria-atomic="true"></p>
 </section>

@@ -44,15 +44,19 @@
 		const end = `${parts.year}-${parts.month}-${parts.day}`;
 		const start = new Date(`${end}T12:00:00Z`);
 		start.setUTCDate(start.getUTCDate() - 29);
-		return { from: start.toISOString().slice(0, 10), to: end, employee: '', actor: '', kind: '' };
+		return { from: start.toISOString().slice(0, 10), to: end, employee: '', actor: '', kind: '', employeeChanges: false };
 	}
 
 	function readFilters() {
-		return Object.fromEntries(['from', 'to', 'employee', 'actor', 'kind'].map(name => [name, controls[name].value]));
+		return {
+			...Object.fromEntries(['from', 'to', 'employee', 'actor', 'kind'].map(name => [name, controls[name].value])),
+			employeeChanges: controls.employeeChanges.checked,
+		};
 	}
 
-	function writeFilters(values) {
+	function writeFilters({ employeeChanges, ...values }) {
 		for (const [name, value] of Object.entries(values)) controls[name].value = value;
+		controls.employeeChanges.checked = employeeChanges;
 	}
 
 	function showMessage(message, isError = false) {
@@ -136,13 +140,19 @@
 		return account.name && account.name !== account.id ? `${account.name} (${account.id})` : account.id;
 	}
 
+	function editorLabel(item) {
+		const label = accountLabel(item.actor);
+		return item.actor.id === item.employee.id ? label + ' · ' + controls.root.dataset.employeeEditorLabel : label;
+	}
+
 	function updateOptions(select, accounts, emptyLabel, selectedValue, actors = false) {
 		select.replaceChildren();
 		const initial = element('option', '', translate(emptyLabel));
 		initial.value = '';
 		select.append(initial);
 		for (const account of accounts) {
-			const option = element('option', '', accountLabel(account));
+			const label = accountLabel(account);
+			const option = element('option', '', !actors && account.isActive === false ? label + ' · ' + translate('Inactive') : label);
 			option.value = actors ? account.id === null ? 'deleted:' : `user:${account.id}` : account.id;
 			select.append(option);
 		}
@@ -201,7 +211,7 @@
 		row.append(element('h4', '', actionDescription(item)));
 		const metadata = element('dl', 'ts-history-metadata');
 		addDescription(metadata, 'Changed at', formatDate(item.occurredAt, true));
-		addDescription(metadata, 'Changed by', accountLabel(item.actor));
+		addDescription(metadata, 'Changed by', editorLabel(item));
 		addDescription(metadata, 'Employee', accountLabel(item.employee));
 		if (item.workDate) addDescription(metadata, 'Work date', formatDate(item.workDate));
 		row.append(metadata);
@@ -215,7 +225,7 @@
 	function renderTableItem(item) {
 		const row = element('tr', 'ts-history-table-row');
 		row.dataset.historyId = String(item.id);
-		for (const value of [formatDate(item.occurredAt, true), accountLabel(item.actor), accountLabel(item.employee),
+		for (const value of [formatDate(item.occurredAt, true), editorLabel(item), accountLabel(item.employee),
 			formatValue('workDate', item.workDate), actionDescription(item)]) row.append(element('td', '', value));
 
 		const detailsRow = element('tr', 'ts-history-table-details');
@@ -256,6 +266,15 @@
 		if (!controls || !visible) return;
 		const currentGeneration = ++generation;
 		requestController?.abort();
+		if (!controls.from.validity.valid || !controls.to.validity.valid
+			|| !filters.from || !filters.to || filters.from > filters.to) {
+			clearItems();
+			nextCursor = null;
+			controls.more.hidden = true;
+			setBusy(false);
+			showMessage(controls.root.dataset.invalidDateRangeMessage, true);
+			return;
+		}
 		requestController = new AbortController();
 		const signal = requestController.signal;
 		setBusy(true);
@@ -276,6 +295,7 @@
 			if (filters.actor === 'deleted:') parameters.set('actorDeleted', '1');
 			else if (filters.actor.startsWith('user:')) parameters.set('actor', filters.actor.slice(5));
 			if (filters.kind) parameters.set('kind', filters.kind);
+			if (filters.employeeChanges) parameters.set('employeeChanges', '1');
 			if (append && nextCursor !== null) parameters.set('beforeId', String(nextCursor));
 			const data = await timesheet.api('/api/hr/change-history?' + parameters.toString(), { signal });
 			if (currentGeneration !== generation || !visible) return;
@@ -294,7 +314,7 @@
 			nextCursor = data.nextCursor;
 			controls.more.hidden = nextCursor === null;
 			const noHistoryYet = data.filters.actors.length === 0;
-			showMessage(displayedIds.size ? '' : translate(noHistoryYet ? 'No HR changes have been recorded yet.' : 'No changes match the selected filters.'));
+			showMessage(displayedIds.size ? '' : (noHistoryYet ? controls.root.dataset.emptyHistoryMessage : translate('No changes match the selected filters.')));
 		} catch (error) {
 			if (currentGeneration !== generation || !visible || signal.aborted) return;
 			clearItems(); nextCursor = null;
@@ -314,7 +334,8 @@
 		const root = document.getElementById('tab-change-history');
 		if (!root) return;
 		controls = { root };
-		for (const name of ['from', 'to', 'employee', 'actor', 'kind', 'refresh', 'more', 'reset', 'filters', 'recording', 'message', 'list']) controls[name] = document.getElementById(`history-${name}`);
+		for (const name of ['from', 'to', 'employee', 'actor', 'kind', 'refresh', 'more', 'recording', 'message', 'list']) controls[name] = document.getElementById(`history-${name}`);
+		controls.employeeChanges = document.getElementById('history-employee-changes');
 		controls.cardView = document.getElementById('history-view-cards');
 		controls.tableView = document.getElementById('history-view-table');
 		controls.tableContainer = document.getElementById('history-table-container');
@@ -328,8 +349,12 @@
 		setViewControlsDisabled();
 		controls.cardView.addEventListener('click', () => saveView('cards'));
 		controls.tableView.addEventListener('click', () => saveView('table'));
-		controls.filters.addEventListener('submit', event => { event.preventDefault(); filters = readFilters(); load(); });
-		controls.reset.addEventListener('click', () => { filters = defaultFilters(); writeFilters(filters); load(); });
+		for (const name of ['from', 'to', 'employee', 'actor', 'kind', 'employeeChanges']) {
+			controls[name].addEventListener('change', () => {
+				filters = readFilters();
+				void load();
+			});
+		}
 		controls.refresh.addEventListener('click', () => load());
 		controls.more.addEventListener('click', () => { if (nextCursor !== null) load(true); });
 	}

@@ -160,7 +160,7 @@ $suite->test('Page startup hydrates the status and loads its module between core
 	$parameters = $state['page']->index()->getParams();
 	$suite->same($status->toPublicArray(), $parameters['employmentStatus']);
 	$suite->same(true, $parameters['employmentStatusAvailable']);
-	$suite->same(true, array_search('timesheet-core', \OCP\Util::$scripts, true) < array_search('timesheet-employment-status', \OCP\Util::$scripts, true));
+	$suite->same(true, array_search('timesheet-runtime', \OCP\Util::$scripts, true) < array_search('timesheet-employment-status', \OCP\Util::$scripts, true));
 	$suite->same(true, array_search('timesheet-employment-status', \OCP\Util::$scripts, true) < array_search('timesheet-hr', \OCP\Util::$scripts, true));
 	$suite->same([], $state['config']->writes);
 });
@@ -287,11 +287,11 @@ foreach ([null, 'alice', 'hr', 'admin', 'hr-admin'] as $actor) {
 		$isHr = in_array($actor, ['hr', 'hr-admin'], true);
 		$suite->same($isHr ? ['notifications'] : [], $state['ruleForm']->scopes);
 		$suite->same($isHr, is_array($parameters['notificationRuleSettings']));
-		$suite->same($isHr, in_array('hr-settings', \OCP\Util::$scripts, true));
-		$suite->same($isHr, in_array('hr-settings', \OCP\Util::$styles, true));
+		$suite->same($isHr, in_array('timesheet-rule-settings', \OCP\Util::$scripts, true));
+		$suite->same($isHr, in_array('timesheet-hr-settings', \OCP\Util::$styles, true));
 		if ($isHr) {
 			$suite->same('notifications', $parameters['notificationRuleSettings']['policySection']);
-			$suite->same(true, array_search('hr-settings', \OCP\Util::$scripts, true) < array_search('timesheet-main', \OCP\Util::$scripts, true));
+			$suite->same(true, array_search('timesheet-rule-settings', \OCP\Util::$scripts, true) < array_search('timesheet-main', \OCP\Util::$scripts, true));
 		}
 	});
 }

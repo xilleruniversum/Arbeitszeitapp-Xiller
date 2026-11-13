@@ -53,7 +53,7 @@ function openEntries(accountLanguage, browserLanguage = 'en-GB') {
 		},
 	});
 	context.window = context;
-	for (const filename of ['l10n/' + accountLanguage + '.js', 'js/timesheet-core.js', 'js/timesheet-entries.js']) {
+	for (const filename of ['l10n/' + accountLanguage + '.js', 'js/timesheet-runtime.js', 'js/timesheet-entries.js']) {
 		vm.runInContext(readFileSync(resolve(root, filename), 'utf8'), context, { filename });
 	}
 	context.Timesheet.api = async (path, options = {}) => {

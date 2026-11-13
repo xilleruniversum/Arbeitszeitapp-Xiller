@@ -95,6 +95,19 @@
 		}
 	}
 
+	let hrNotificationSavedTimer;
+
+	function showHrNotificationSaved() {
+		const status = document.getElementById('hr-notification-saved');
+		if (!status) return;
+
+		window.clearTimeout(hrNotificationSavedTimer);
+		status.textContent = t(appState.appName, 'Saved') + '!';
+		hrNotificationSavedTimer = window.setTimeout(() => {
+			status.textContent = '';
+		}, 2200);
+	}
+
 	function notifySessionExpired() {
 		if (appState.sessionExpiredNotified) {
 			return;
@@ -424,6 +437,7 @@
 
 	// Shared interface used by the feature scripts.
 	timesheet.notify = notify;
+	timesheet.showHrNotificationSaved = showHrNotificationSaved;
 	utils.dayLabel = dayLabel;
 	utils.formatDate = formatDate;
 	utils.toLocalIsoDate = toLocalIsoDate;

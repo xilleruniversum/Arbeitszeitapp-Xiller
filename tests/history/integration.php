@@ -185,12 +185,24 @@ $entries->update((int)$entry->getId(), ['comment' => '<script>alert("literal")</
 historyCheck(count($history->list([])['items']), 2, 'Identical repeated saves produce no event');
 historyAs('history-employee-a');
 $entries->update((int)$entry->getId(), ['comment' => 'Eigenänderung']);
-historyCheck(count(historyRows('ts_change_history')), 2, 'Employee self-edits remain excluded');
+historyCheck(count(historyRows('ts_change_history')), 3, 'An employee self-edit is recorded');
 historyAs('history-hr-a');
+$employeeChanges = $history->list(['employeeChanges' => '1', 'employee' => 'history-employee-a', 'actor' => 'history-employee-a', 'kind' => 'comment']);
+historyCheck(count($employeeChanges['items']), 1, 'The employee changes filter finds the scoped self-edit');
+historyCheck($employeeChanges['items'][0]['changes'], [['field' => 'comment', 'before' => '<script>alert("literal")</script>', 'after' => 'Eigenänderung']], 'The self-edit retains both comment values');
 $entries->update((int)$entry->getId(), ['comment' => 'Nach Eigenänderung']);
-historyCheck($history->list([])['items'][0]['changes'][0]['before'], 'Eigenänderung', 'Fresh values include an intervening unlogged self-edit');
+historyCheck($history->list([])['items'][0]['changes'][0]['before'], 'Eigenänderung', 'Fresh values include the intervening employee self-edit');
 $self = $entries->create(['workDate' => '2026-10-29', 'startMin' => null, 'endMin' => null, 'breakMinutes' => 0, 'comment' => 'Eigener HR-Eintrag']);
-historyCheck(count($history->list([])['items']), 3, 'HR self-edits remain excluded');
+historyCheck(count($history->list([])['items']), 5, 'HR history includes edits to the signed-in account and the employee self-edit');
+$selfHistory = $history->list(['employee' => 'history-hr-a', 'actor' => 'history-hr-a', 'employeeChanges' => 1]);
+historyCheck(count($selfHistory['items']), 1, 'HR can filter by its own employee and editor account');
+historyCheck($selfHistory['items'][0]['entryId'], (int)$self->getId(), 'The history item refers to the entry on the HR account');
+historyCheck($selfHistory['filters']['employees'][0]['id'], 'history-hr-a', 'The signed-in HR account is listed first');
+historyAs('history-hr-b');
+$denied = false;
+try { $history->list(['employee' => 'history-hr-a']); } catch (\OC\ForbiddenException) { $denied = true; }
+historyCheck($denied, true, 'Other HR accounts need a current assignment to see the entry');
+historyAs('history-hr-a');
 $entries->upsertCommentOnly('history-inactive', '2026-10-29', 'Urlaub');
 $entries->upsertCommentOnly('history-inactive', '2026-10-29', 'Stundenausgleich');
 historyCheck($history->list(['employee' => 'history-inactive'])['items'][0]['changes'], [['field' => 'comment', 'before' => 'Urlaub', 'after' => 'Stundenausgleich']], 'Comment-only upsert logs existing comment changes');

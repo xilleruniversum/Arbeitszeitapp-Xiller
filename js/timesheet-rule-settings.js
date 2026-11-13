@@ -1,16 +1,6 @@
 (function () {
 	'use strict';
 
-	// The explanation stays available when the group settings could not be loaded.
-	const rulesHelpToggle = document.getElementById('timesheet-rules-help-toggle');
-	const rulesHelp = document.getElementById('timesheet-rules-help');
-	if (rulesHelpToggle && rulesHelp) {
-		rulesHelpToggle.addEventListener('click', () => {
-			rulesHelp.hidden = !rulesHelp.hidden;
-			rulesHelpToggle.setAttribute('aria-expanded', String(!rulesHelp.hidden));
-		});
-	}
-
 	const settingsRoot = document.getElementById('timesheet-hr-settings');
 	if (!settingsRoot) {
 		return;
@@ -318,6 +308,12 @@
 		return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 
+	function renderNotificationHelp(id, label, ...paragraphs) {
+		return `<button type="button" class="hr-help-button" data-hr-help aria-label="${escapeHtml(t('timesheet', label))}"
+			aria-expanded="false" aria-controls="${id}" aria-describedby="${id}"></button>
+			<span id="${id}" class="hr-help-popup" popover="manual" role="tooltip" hidden>${paragraphs.map(paragraph => `<span>${escapeHtml(t('timesheet', paragraph))}</span>`).join('')}</span>`;
+	}
+
 	function renderHrGroupOptions() {
 		return ['<option value="">' + escapeHtml(t('timesheet', 'Add group...')) + '</option>']
 			.concat(allGroups.map(groupId => `<option value="${escapeHtml(groupId)}">${escapeHtml(groupId)}</option>`))
@@ -357,18 +353,22 @@
 		return `
 			<div class="ts-rule-section ts-reminder-settings">
 				<table class="ts-notification-table" role="table">
-					<caption>${escapeHtml(t('timesheet', 'Reminder for missing or incomplete time entries'))}</caption>
+					<caption><span class="hr-help-heading">
+						<span>${escapeHtml(t('timesheet', 'Reminder for missing or incomplete time entries'))}</span>
+						${renderNotificationHelp(`${identifier}-summary`, 'Reminder for missing or incomplete time entries',
+							'The reminder shows which workdays still need an entry or a correction. The group rule lets you change which HR account receives the notification email.',
+							'The new rule works as in this example. Employee A records no working time for Tuesday. On Wednesday, employee B only records that he started at 8 a.m. With a two-calendar-day waiting period, employee A receives an email notification on Thursday and employee B on Friday.')}
+					</span></caption>
 					<colgroup><col class="ts-notification-label-column" /><col class="ts-notification-value-column" /></colgroup>
 					<tbody role="rowgroup">
 						<tr role="row">
 							<th role="rowheader" scope="row"><label for="${identifier}-employees">${escapeHtml(t('timesheet', 'Send reminders to employees'))}</label></th>
-							<td role="cell"><input type="checkbox" id="${identifier}-employees" class="ts-reminder-input" data-reminder-key="notifyEmployees" aria-describedby="${identifier}-delivery-hint"${settings.notifyEmployees ? ' checked' : ''}></td>
+							<td role="cell"><input type="checkbox" id="${identifier}-employees" class="ts-reminder-input" data-reminder-key="notifyEmployees" aria-describedby="${identifier}-summary"${settings.notifyEmployees ? ' checked' : ''}></td>
 						</tr>
 						<tr role="row">
 							<th role="rowheader" scope="row"><label for="${identifier}-hr">${escapeHtml(t('timesheet', 'Send reminders to responsible HR'))}</label></th>
 							<td role="cell">
-								<input type="checkbox" id="${identifier}-hr" class="ts-reminder-input" data-reminder-key="notifyHr" aria-describedby="${identifier}-delivery-hint"${settings.notifyHr ? ' checked' : ''}>
-								<p id="${identifier}-delivery-hint" class="ts-setting-desc">${escapeHtml(t('timesheet', 'Checks run daily. Open dates are collected in one email, with at least seven days between emails of the same kind.'))}</p>
+								<input type="checkbox" id="${identifier}-hr" class="ts-reminder-input" data-reminder-key="notifyHr" aria-describedby="${identifier}-summary"${settings.notifyHr ? ' checked' : ''}>
 							</td>
 						</tr>
 						<tr role="row">
@@ -376,17 +376,15 @@
 							<td role="cell"><div class="ts-inline"><input type="number" id="${identifier}-grace-days" min="1" max="365" step="1" class="ts-reminder-input" data-reminder-key="graceDays" value="${settings.graceDays}" aria-describedby="${identifier}-grace-unit"><span id="${identifier}-grace-unit">${escapeHtml(t('timesheet', 'calendar days after the workday'))}</span></div></td>
 						</tr>
 						<tr role="row">
-							<th role="rowheader" scope="row"><label for="${identifier}-start-date">${escapeHtml(t('timesheet', 'Check entries starting on'))}</label></th>
+							<th role="rowheader" scope="row"><span class="hr-help-heading"><label for="${identifier}-start-date">${escapeHtml(t('timesheet', 'Check entries starting on'))}</label>${renderNotificationHelp(`${identifier}-start-hint`, 'Check entries starting on', 'Existing members use the chosen start date. Later members are checked from their first detection. A state is required for the holiday check.')}</span></th>
 							<td role="cell">
 								<input type="date" id="${identifier}-start-date" class="ts-reminder-input" data-reminder-key="startDate" aria-describedby="${identifier}-start-hint" value="${escapeHtml(settings.startDate)}">
-								<p id="${identifier}-start-hint" class="ts-setting-desc">${escapeHtml(t('timesheet', 'Existing members use the chosen start date. Later members are checked from their first detection. A state is required for the holiday check.'))}</p>
 							</td>
 						</tr>
 						<tr role="row">
-							<th role="rowheader" scope="row" id="${identifier}-weekdays-label">${escapeHtml(t('timesheet', 'Weekdays'))}</th>
+							<th role="rowheader" scope="row" id="${identifier}-weekdays-label"><span class="hr-help-heading"><span>${escapeHtml(t('timesheet', 'Weekdays'))}</span>${renderNotificationHelp(`${identifier}-weekdays-hint`, 'Weekdays', 'Days that require a time entry; public holidays in the employee state are excluded.')}</span></th>
 							<td role="cell">
 								<div class="ts-reminder-weekdays" role="group" aria-labelledby="${identifier}-weekdays-label" aria-describedby="${identifier}-weekdays-hint">${weekdayInputs}</div>
-								<p id="${identifier}-weekdays-hint" class="ts-setting-desc">${escapeHtml(t('timesheet', 'Days that require a time entry; public holidays in the employee state are excluded.'))}</p>
 							</td>
 						</tr>
 					</tbody>
@@ -411,7 +409,7 @@
 			</tr>`;
 		return `<div class="ts-rule-section ts-balance-settings">
 			<table class="ts-notification-table" role="table">
-				<caption>${escapeHtml(t('timesheet', 'Employee balance notifications'))}</caption>
+				<caption><span class="hr-help-heading"><span>${escapeHtml(t('timesheet', 'Employee balance notifications'))}</span>${renderNotificationHelp(`${identifier}-summary`, 'Employee balance notifications', 'Employees can also get an email about their own time balance on Mondays if the group rule enables it and their balance exceeds the threshold.')}</span></caption>
 				<colgroup><col class="ts-notification-label-column" /><col class="ts-notification-value-column" /></colgroup>
 				<tbody role="rowgroup">
 				${renderControl('overtimeEnabled', 'overtimeThresholdMinutes', 'Notify employees about overtime')}
@@ -467,19 +465,17 @@
 				<colgroup><col class="ts-notification-label-column" /><col class="ts-notification-value-column" /></colgroup>
 				<tbody role="rowgroup">
 					<tr role="row">
-						<th role="rowheader" scope="row"><label for="${identifier}">${escapeHtml(t('timesheet', 'Email recipients'))}</label></th>
+						<th role="rowheader" scope="row"><span class="hr-help-heading"><label for="${identifier}">${escapeHtml(t('timesheet', 'Email recipients'))}</label>${renderNotificationHelp(`${identifier}-hint`, 'Email recipients', 'Email selection does not change HR access.')}</span></th>
 						<td role="cell">
 							<select id="${identifier}" class="ts-mail-recipient-mode" aria-describedby="${identifier}-hint">
 								<option value="all"${selectedMode ? '' : ' selected'}>${escapeHtml(t('timesheet', 'All responsible HR accounts'))}</option>
 								<option value="selected"${selectedMode ? ' selected' : ''}>${escapeHtml(t('timesheet', 'Selected HR accounts'))}</option>
 							</select>
-							<p id="${identifier}-hint" class="ts-setting-desc">${escapeHtml(t('timesheet', 'Email selection does not change HR access.'))}</p>
 						</td>
 					</tr>
 					<tr role="row" class="ts-selected-mail-recipients"${selectedMode ? '' : ' hidden'}>
-						<th role="rowheader" scope="row"><label for="ts-person-${encodeURIComponent(rule.id)}-mail-search">${escapeHtml(t('timesheet', 'Selected HR accounts'))}</label></th>
+						<th role="rowheader" scope="row"><span class="hr-help-heading"><label for="ts-person-${encodeURIComponent(rule.id)}-mail-search">${escapeHtml(t('timesheet', 'Selected HR accounts'))}</label>${renderNotificationHelp(`${identifier}-selected-hint`, 'Selected HR accounts', 'Only selected responsible accounts receive HR summaries. Employee reminders are unchanged.')}</span></th>
 						<td role="cell">
-							<p class="ts-setting-desc">${escapeHtml(t('timesheet', 'Only selected responsible accounts receive HR summaries. Employee reminders are unchanged.'))}</p>
 							${renderPeoplePicker(rule, 'mail', false)}
 							${rule.mailRecipients.userIds.length ? '' : `<p class="ts-setting-desc">${escapeHtml(t('timesheet', 'No selected accounts means no HR summary for this rule.'))}</p>`}
 						</td>
@@ -749,6 +745,12 @@
 	// Selecting another group never writes settings or resets pending saves.
 	ruleSelector?.addEventListener('change', () => {
 		if (!selectsNotificationRule) return;
+		const error = notificationValidationError();
+		if (error) {
+			ruleSelector.value = selectedRuleId;
+			document.getElementById('hr-notification-save-error').textContent = error;
+			return;
+		}
 		selectedRuleId = accessRules.some(rule => rule.id === ruleSelector.value) ? ruleSelector.value : accessRules[0]?.id || '';
 		renderRules();
 	});
@@ -762,6 +764,10 @@
 	}
 
 	async function saveAndRenderRules(nextRules) {
+		if (selectsNotificationRule) {
+			updateNotificationSaveButton();
+			return;
+		}
 		const normalizedRules = normalizeRules(nextRules);
 		const uniqueGroupResult = removeDuplicateEmployeeGroups(normalizedRules);
 		accessRules = uniqueGroupResult.rules;
@@ -793,6 +799,76 @@
 		});
 		ruleSaveQueue = pendingSave;
 		await pendingSave;
+	}
+
+	// Keep edits in memory across group switches until the shared button saves them.
+	let savedNotificationRules;
+	const notificationInputErrors = new Map();
+
+	function updateNotificationSaveButton() {
+		const errorStatus = document.getElementById('hr-notification-save-error');
+		errorStatus.textContent = notificationValidationError() || '';
+		window.Timesheet?.config?.updateHrNotificationSaveButton?.();
+	}
+
+	function hasNotificationChanges() {
+		return notificationInputErrors.size > 0 || JSON.stringify(accessRules) !== JSON.stringify(savedNotificationRules);
+	}
+
+	function notificationValidationError() {
+		return notificationInputErrors.values().next().value;
+	}
+
+	async function saveNotificationRules() {
+		try {
+			const saved = await saveRules(accessRules);
+			savedRulesRevision = saved.rulesRevision;
+			accessRules = saved.rules;
+			renderRules();
+			savedNotificationRules = accessRules;
+		} catch (error) {
+			if (error.conflict) {
+				// Reapply only edited notification fields to the latest rule snapshot.
+				// A second save requires the user's review and still checks the new revision.
+				const previousRules = new Map(savedNotificationRules.map(rule => [rule.id, rule]));
+				const draftRules = new Map(accessRules.map(rule => [rule.id, rule]));
+				savedRulesRevision = error.conflict.rulesRevision;
+				savedNotificationRules = removeDuplicateEmployeeGroups(error.conflict.rules).rules;
+				accessRules = savedNotificationRules.map(rule => {
+					const previous = previousRules.get(rule.id);
+					const draft = draftRules.get(rule.id);
+					if (!previous || !draft) return rule;
+					const merged = { ...rule };
+					if (JSON.stringify(previous.mailRecipients) !== JSON.stringify(draft.mailRecipients)) {
+						merged.mailRecipients = draft.mailRecipients;
+					}
+					for (const field of ['missingEntryReminders', 'employeeBalanceNotifications']) {
+						merged[field] = { ...rule[field] };
+						for (const key of Object.keys(draft[field])) {
+							if (JSON.stringify(previous[field][key]) !== JSON.stringify(draft[field][key])) {
+								merged[field][key] = draft[field][key];
+							}
+						}
+					}
+					merged.missingEntryReminders.enabled = merged.missingEntryReminders.notifyEmployees || merged.missingEntryReminders.notifyHr;
+					return merged;
+				});
+				renderRules();
+			}
+			throw error;
+		}
+	}
+
+	function refreshMailRecipients(card) {
+		cancelPersonSearches();
+		const rule = accessRules.find(rule => rule.id === card.dataset.ruleId);
+		card.querySelector('.ts-mail-recipient-settings').outerHTML = renderMailRecipients(rule);
+	}
+
+	function updateNotificationInputError(field, message) {
+		if (message) notificationInputErrors.set(field, message);
+		else notificationInputErrors.delete(field);
+		updateNotificationSaveButton();
 	}
 
 	function readReminderSettings(ruleCard, initializeStartDate = false) {
@@ -867,6 +943,7 @@
 			else rule.mailRecipients = { ...rule.mailRecipients, userIds: updatedIds };
 			return rule;
 		});
+		if (selectsNotificationRule) refreshMailRecipients(card);
 		await saveAndRenderRules(accessRules);
 		if (restoreFocus && document.activeElement === document.body) {
 			const replacement = Array.from(rulesContainer.querySelectorAll('.ts-rule')).find(item => item.dataset.ruleId === ruleId);
@@ -962,6 +1039,7 @@
 		if (!managesNotifications || !modeSelect || !['all', 'selected'].includes(modeSelect.value)) return;
 		const card = modeSelect.closest('.ts-rule');
 		updateRule(card.dataset.ruleId, rule => ({ ...rule, mailRecipients: { mode: modeSelect.value, userIds: modeSelect.value === 'all' ? [] : rule.mailRecipients.userIds } }));
+		if (selectsNotificationRule) refreshMailRecipients(card);
 		await saveAndRenderRules(accessRules);
 	});
 	rulesContainer.addEventListener('click', async event => {
@@ -1068,9 +1146,11 @@
 		try {
 			const settings = readEmployeeBalanceNotifications(ruleCard);
 			updateRule(ruleId, rule => ({ ...rule, employeeBalanceNotifications: settings }));
+			if (selectsNotificationRule) updateNotificationInputError('balance');
 			await saveAndRenderRules(accessRules);
 		} catch (error) {
-			notify(error.message);
+			if (selectsNotificationRule) updateNotificationInputError('balance', error.message);
+			else notify(error.message);
 		}
 	});
 	rulesContainer.addEventListener('change', async event => {
@@ -1089,9 +1169,11 @@
 			const recipientChanged = ['notifyEmployees', 'notifyHr'].includes(reminderInput.dataset.reminderKey);
 			const settings = readReminderSettings(ruleCard, recipientChanged && !previousSettings?.enabled);
 			updateRule(ruleId, rule => ({ ...rule, missingEntryReminders: settings }));
+			if (selectsNotificationRule) updateNotificationInputError('reminder');
 			await saveAndRenderRules(accessRules);
 		} catch (error) {
-			notify(error.message);
+			if (selectsNotificationRule) updateNotificationInputError('reminder', error.message);
+			else notify(error.message);
 		}
 	});
 	specialDaysOvertime?.addEventListener('change', async event => {
@@ -1144,5 +1226,15 @@
 		}
 	}
 	renderRules();
+	if (selectsNotificationRule) {
+		savedNotificationRules = accessRules;
+		if (window.Timesheet) {
+			window.Timesheet.hrNotificationRules = {
+				hasChanges: hasNotificationChanges,
+				validationError: notificationValidationError,
+				save: saveNotificationRules,
+			};
+		}
+	}
 	loadInitialData();
 })();

@@ -14,7 +14,7 @@ const messages = [...coverage.messages, ...coverage.reusedMessages];
 test('history covers all supported account languages and unique message keys', () => {
 	assert.deepEqual(coverage.locales, languages);
 	assert.equal(new Set(messages).size, messages.length);
-	assert.equal(coverage.messages.length, 45);
+	assert.equal(coverage.messages.length, 48);
 });
 
 // Every history label, explanation and release item has matching browser and server wording.
@@ -52,6 +52,8 @@ test('both German variants use matching neutral history text', () => {
 		assert.doesNotMatch(catalogs[0][message], /\b(?:Du|du|Dich|dich|Dein|dein|Deine|deine|Sie|Ihnen|Ihr)\b/);
 	}
 	assert.equal(catalogs[0]['Change history'], 'Änderungsverlauf');
+	assert.equal(catalogs[0]['Employee changes'], 'Mitarbeiteränderungen');
+	assert.equal(catalogs[0]['Select a valid date range.'], 'Bitte einen gültigen Zeitraum auswählen.');
 	assert.equal(catalogs[0]['Changed by'], 'Bearbeiter');
 	assert.equal(catalogs[0]['Comment changed'], 'Kommentar geändert');
 	assert.equal(catalogs[0]['History view'], 'Ansicht des Änderungsverlaufs');

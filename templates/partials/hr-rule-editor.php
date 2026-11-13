@@ -57,13 +57,13 @@
 	</p>
 
 	<div class="ts-setting">
-		<input type="checkbox" class="checkbox" id="timesheet-specialdays-overtime" data-setting="countSpecialDaysAsOvertime"
+		<input type="checkbox" class="checkbox" id="timesheet-specialdays-overtime" data-setting="countSpecialDaysAsOvertime" aria-describedby="timesheet-specialdays-overtime-description"
 			<?php if ($countSpecialDaysAsOvertime) { print_unescaped('checked="checked"'); } ?>
 		/>
 		<label for="timesheet-specialdays-overtime">
 			<?php p($l->t('Count weekends and public holidays as overtime only')); ?>
 		</label>
-		<div class="ts-setting-desc">
+		<div class="ts-setting-desc" id="timesheet-specialdays-overtime-description">
 			<?php p($l->t('If enabled, weekends and public holidays will not count as regular workdays. Any hours worked on these days are treated as overtime and do not create minus hours.')); ?>
 		</div>
 	</div>

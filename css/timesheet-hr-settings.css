@@ -1,62 +1,125 @@
-/* Inline help uses neutral controls and leaves every rule visible. */
-#hr-notification-settings-section #hr-notifications-heading {
-	display: flex;
-	align-items: center;
-	gap: 6px;
+#hr-notifications-heading {
 	margin: 0 0 12px;
 }
 
-#hr-notification-settings-section .ts-rules-help-toggle {
+.hr-help-heading {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	width: 36px;
-	height: 36px;
-	min-height: 36px;
-	padding: 6px;
-	margin: 0;
-	background: var(--color-background-dark);
-	color: var(--color-main-text);
-	border: 1px solid var(--color-border);
+	gap: 4px;
+	max-inline-size: 100%;
 }
 
-#hr-notification-settings-section .ts-rules-help-toggle:hover {
+#tab-hr .hr-help-button {
+	display: inline-grid;
+	place-items: center;
+	flex: 0 0 28px;
+	inline-size: 28px;
+	block-size: 28px;
+	min-inline-size: 28px;
+	min-block-size: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: var(--border-radius, 4px);
+	background: transparent;
+	color: var(--color-main-text);
+	vertical-align: middle;
+}
+
+#tab-hr .hr-help-button::before {
+	content: '';
+	inline-size: 16px;
+	block-size: 16px;
+	background: currentColor;
+	mask: url('../img/hr-help.svg') center / contain no-repeat;
+}
+
+#tab-hr .hr-help-button:hover,
+#tab-hr .hr-help-button[aria-expanded="true"] {
 	background: var(--color-background-hover);
 }
 
-#hr-notification-settings-section .ts-rules-help-toggle:focus-visible {
+#tab-hr .hr-help-button:focus-visible {
 	outline: 2px solid var(--color-main-text);
 	outline-offset: 2px;
 }
 
-#hr-notification-settings-section .ts-rules-help {
+#tab-hr .hr-help-popup {
+	position: fixed;
+	inset: auto;
+	z-index: 1000;
 	box-sizing: border-box;
-	max-width: 75ch;
-	margin: 0 0 16px;
-	padding: 12px 16px;
-	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	background: var(--color-main-background);
+	inline-size: min(48ch, calc(100vw - 24px));
+	max-block-size: calc(100dvh - 24px);
+	overflow: auto;
+	overscroll-behavior: contain;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--color-border, #d0d7de);
+	border-radius: var(--border-radius-large, 8px);
+	background: var(--color-main-background, #fff);
+	color: var(--color-main-text, #222);
+	box-shadow: 0 4px 16px rgb(0 0 0 / .18);
+	font: inherit;
+	font-weight: 400;
 	line-height: 1.5;
+	text-align: start;
+	white-space: normal;
+	overflow-wrap: anywhere;
 }
 
-
-#hr-notification-settings-section .ts-rules-help .ts-rules-help-heading {
-	font-weight: 700;
-	margin: 12px 0 4px;
+#tab-hr .hr-help-popup[hidden] {
+	display: none;
 }
 
-#hr-notification-settings-section .ts-rules-help .ts-rules-help-heading:first-child {
-	margin-top: 0;
+#tab-hr .hr-help-popup > span {
+	display: block;
 }
 
-#hr-notification-settings-section .ts-rules-help p {
-	margin: 0 0 8px;
+#tab-hr .hr-help-popup > span + span {
+	margin-block-start: 8px;
 }
 
-#hr-notification-settings-section .ts-rules-help p:last-child {
-	margin-bottom: 0;
+.hr-notification-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px 12px;
+	margin-block-start: 16px;
+}
+
+.hr-notification-actions > p:empty {
+	display: none;
+}
+
+#hr-notification-save {
+	margin: 0;
+	margin-inline-start: auto;
+}
+
+#tab-hr .hr-notification-saved {
+	position: fixed;
+	z-index: 1000;
+	left: 50%;
+	bottom: max(16px, env(safe-area-inset-bottom));
+	transform: translateX(-50%);
+	box-sizing: border-box;
+	max-inline-size: calc(100vw - 24px);
+	margin: 0;
+	padding: 8px 16px;
+	border-radius: var(--border-radius-large, 8px);
+	background: var(--color-main-background, #fff);
+	color: var(--color-main-text, #222);
+	box-shadow: 0 4px 16px rgb(0 0 0 / .22);
+	font-weight: 600;
+	text-align: center;
+	overflow-wrap: anywhere;
+	pointer-events: none;
+}
+
+#tab-hr .hr-notification-saved:empty {
+	opacity: 0;
 }
 
 /* Rule list and cards */
@@ -321,11 +384,20 @@
 }
 
 #timesheet-hr-settings .ts-setting {
-	display: flex;
-	align-items: flex-start;
-	gap: 10px;
+	display: grid;
+	gap: 6px;
 	padding: 10px 12px;
 	border: 1px solid var(--color-border);
+}
+
+#timesheet-hr-settings .ts-setting > label {
+	justify-self: start;
+	margin: 0;
+}
+
+#timesheet-hr-settings .ts-setting > .ts-setting-desc {
+	max-width: 75ch;
+	margin: 0;
 }
 
 #timesheet-hr-settings .ts-setting-desc {

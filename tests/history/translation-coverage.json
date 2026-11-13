@@ -5,6 +5,9 @@
     "Changed through",
     "Changed by",
     "All editors",
+    "Employee changes",
+    "Show only changes employees made to their own time records.",
+    "Changed by the employee",
     "Change type",
     "All changes",
     "Time entry created",
@@ -12,12 +15,12 @@
     "Time entry deleted",
     "Work settings updated",
     "Comment changed",
-    "Apply filters",
+    "Select a valid date range.",
     "Refresh",
     "Load more",
     "Loading changes…",
     "No changes match the selected filters.",
-    "No HR changes have been recorded yet.",
+    "No changes have been recorded yet.",
     "The change history could not be loaded. Please try again.",
     "Changes could not be saved. Please try again.",
     "Recording started on {date}. Earlier changes are not available.",
@@ -48,7 +51,6 @@
   ],
   "reusedMessages": [
     "All employees",
-    "Clear filters",
     "Federal state"
   ],
   "locales": {

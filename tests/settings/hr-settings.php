@@ -381,8 +381,8 @@ namespace {
 					$expectSame($scope, $form->getParams()['settingsScope']);
 					$expectSame(hash('sha256', $state['config']->values['hr_access_rules']), $form->getParams()['rulesRevision']);
 					$expectSame('rule-a', $form->getParams()['hrAccessRules'][0]['id']);
-					$expectSame([['timesheet', 'hr-settings']], \OCP\Util::$scripts);
-					$expectSame([['timesheet', 'hr-settings']], \OCP\Util::$styles);
+					$expectSame([['timesheet', 'timesheet-rule-settings']], \OCP\Util::$scripts);
+					$expectSame([['timesheet', 'timesheet-hr-settings']], \OCP\Util::$styles);
 					$expectSame($scope === 'policy' ? 'timeRules' : null, $form->getParams()['policySection']);
 				} else {
 					$expectSame([], $form->getParams());

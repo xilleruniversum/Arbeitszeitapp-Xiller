@@ -25,6 +25,9 @@ namespace OCP {
 	class Util {
 		public static array $scripts = [];
 		public static array $styles = [];
+		public static function getL10N(string $app, ?string $language = null): IL10N {
+			return new \TourTranslationFixture($language ?? 'de');
+		}
 		public static function addTranslations(string $app): void {
 		}
 		public static function addScript(string $app, string $name): void {
@@ -301,7 +304,7 @@ namespace {
 			$expectSame(true, in_array('timesheet-main', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
 			$expectedStyles = ['style'];
-			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-change-history', 'hr-settings']);
+			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-live', 'timesheet-hr-settings']);
 			$expectedStyles[] = 'timesheet-update-notes';
 			if ($isHr) $expectedStyles[] = 'timesheet-help-panels';
 			$expectSame($expectedStyles, \OCP\Util::$styles);

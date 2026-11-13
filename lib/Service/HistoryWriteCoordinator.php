@@ -13,7 +13,7 @@ use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\Lock\ILockingProvider;
 
-/** Serializes each employee's writes and commits data, balance flags and HR history together. */
+/** Serializes each employee's writes and commits data, balance flags and history together. */
 class HistoryWriteCoordinator {
 	public function __construct(
 		private IDBConnection $database,
@@ -51,7 +51,9 @@ class HistoryWriteCoordinator {
 				$transactionStarted = true;
 				$outcome = $write();
 				$changes = HistoryChangeSet::between($outcome['before'], $outcome['after']);
-				if ($changes !== [] && $actor->getUID() !== $employeeId && $this->hrService->isHr($actor->getUID())) {
+				$isOwnTimeEntry = $actor->getUID() === $employeeId
+					&& in_array($outcome['kind'], ['created', 'updated', 'deleted'], true);
+				if ($changes !== [] && ($isOwnTimeEntry || $this->hrService->isHr($actor->getUID()))) {
 					$this->history->append([
 						'occurredAt' => $this->timeFactory->getTime(),
 						'actor' => ['id' => $actor->getUID(), 'name' => $actor->getDisplayName()],
