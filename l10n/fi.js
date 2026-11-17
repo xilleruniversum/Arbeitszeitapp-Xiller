@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Käytä",
   "This text applies to your weekly email and your current account language.": "Tätä tekstiä käytetään viikoittaisessa sähköpostissasi tilisi nykyisellä kielellä.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Lisää {entries} kerran kohtaan, jossa nimet ja niihin liittyvät arvot näytetään. {threshold} lisää nykyisen raja-arvon.",
-  "The following days have missing or incomplete time entries.": "Seuraavien päivien työaikamerkinnät puuttuvat tai ovat puutteellisia."
+  "The following days have missing or incomplete time entries.": "Seuraavien päivien työaikamerkinnät puuttuvat tai ovat puutteellisia.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Henkilöstöhallinto voi mukauttaa muistutussähköposteja ja viikkoyhteenvedon yksittäisiä osioita.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Kommenttivalikosta voi valita vuosiloman, sairausloman tai tapaamisen tai kirjoittaa oman kommentin. Kolme valmista syytä estävät muistutukset, kun sekä alkamis- että päättymisaika puuttuvat.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Henkilöstöhallinnon yleiskuva näyttää myös passiiviset työntekijät. Sen leveyttä voi säätää, ja siinä on tilastopainike.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Henkilöstöhallinto voi hakea muutoshistoriasta työntekijöitä ja muokkaajia. Myös passiivisia työntekijöitä voi valita, ja muokkaajasuodatin näyttää henkilöstöhallinnon tilit.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Opastus kuvaa kommenttivalikon ja merkintöjä koskevat varoitukset eri vaiheissa.",
+  "HR statistics correctly count hours worked in the current month.": "Henkilöstöhallinnon tilastot laskevat kuluvan kuukauden työtunnit oikein."
 },
   "nplurals=2; plural=(n != 1);"
 );

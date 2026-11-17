@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "اعمال",
   "This text applies to your weekly email and your current account language.": "این متن برای ایمیل هفتگی شما به زبان فعلی حسابتان به کار می‌رود.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "{entries} را یک بار در جای نمایش نام‌ها و مقادیر مربوط قرار دهید. {threshold} آستانهٔ فعلی را درج می‌کند.",
-  "The following days have missing or incomplete time entries.": "ثبت ساعت کار برای روزهای زیر انجام نشده یا ناقص است."
+  "The following days have missing or incomplete time entries.": "ثبت ساعت کار برای روزهای زیر انجام نشده یا ناقص است.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "منابع انسانی می‌تواند ایمیل‌های یادآوری و هر بخش از خلاصهٔ هفتگی را جداگانه تنظیم کند.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "در منوی توضیحات می‌توان مرخصی، مرخصی استعلاجی یا قرار ملاقات را انتخاب کرد یا توضیح دلخواه نوشت. اگر هم زمان شروع و هم زمان پایان ثبت نشده باشند، سه دلیل از پیش تعیین‌شده مانع ارسال یادآوری می‌شوند.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "نمای کلی منابع انسانی کارکنان غیرفعال را هم نشان می‌دهد، عرض آن قابل تنظیم است و دکمهٔ آمار دارد.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "منابع انسانی می‌تواند در تاریخچهٔ تغییرات کارکنان و ویرایش‌کنندگان را جستجو کند. انتخاب کارکنان غیرفعال ممکن است و فیلتر ویرایش‌کنندگان حساب‌های منابع انسانی را نشان می‌دهد.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "راهنمای گام‌به‌گام منوی توضیحات و هشدارهای مربوط به ثبت‌ها را در مراحل جداگانه توضیح می‌دهد.",
+  "HR statistics correctly count hours worked in the current month.": "آمار منابع انسانی ساعات کار ماه جاری را به‌درستی محاسبه می‌کند."
 },
   "nplurals=2; plural=(n > 1);"
 );

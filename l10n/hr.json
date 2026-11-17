@@ -313,7 +313,13 @@
     "Apply": "Primijeni",
     "This text applies to your weekly email and your current account language.": "Ovaj tekst vrijedi za vašu tjednu poruku e-pošte na trenutačnom jeziku računa.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Umetnite {entries} jednom na mjesto gdje trebaju biti prikazani imena i pripadajuće vrijednosti. {threshold} umeće trenutačni prag.",
-    "The following days have missing or incomplete time entries.": "Za sljedeće dane nedostaju unosi radnog vremena ili su nepotpuni."
+    "The following days have missing or incomplete time entries.": "Za sljedeće dane nedostaju unosi radnog vremena ili su nepotpuni.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Kadrovska služba može prilagoditi poruke e-pošte s podsjetnicima i pojedine odjeljke tjednog sažetka.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Izbornik komentara nudi godišnji odmor, bolovanje, termin i vlastiti komentar. Tri unaprijed definirana razloga sprječavaju slanje podsjetnika kada nedostaju i vrijeme početka i vrijeme završetka.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Pregled kadrovske službe uključuje neaktivne zaposlenike, omogućuje prilagodbu širine i nudi gumb za statistiku.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Kadrovska služba može pretraživati zaposlenike i autore u povijesti promjena. Moguće je odabrati neaktivne zaposlenike, a filtar autora prikazuje račune kadrovske službe.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Vođeni obilazak u zasebnim koracima objašnjava izbornik komentara i upozorenja za unose radnog vremena.",
+    "HR statistics correctly count hours worked in the current month.": "Statistika kadrovske službe točno prikazuje sate odrađene u tekućem mjesecu."
   },
   "pluralForm": "nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
 }

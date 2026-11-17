@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Εφαρμογή",
   "This text applies to your weekly email and your current account language.": "Το κείμενο ισχύει για το εβδομαδιαίο email σας στην τρέχουσα γλώσσα του λογαριασμού σας.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Βάλτε το {entries} μία φορά εκεί όπου πρέπει να εμφανιστούν τα ονόματα και οι αντίστοιχες τιμές. Το {threshold} εισάγει το τρέχον όριο.",
-  "The following days have missing or incomplete time entries.": "Για τις ακόλουθες ημέρες λείπουν καταχωρίσεις χρόνου ή οι καταχωρίσεις είναι ελλιπείς."
+  "The following days have missing or incomplete time entries.": "Για τις ακόλουθες ημέρες λείπουν καταχωρίσεις χρόνου ή οι καταχωρίσεις είναι ελλιπείς.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Το τμήμα ανθρώπινου δυναμικού μπορεί να προσαρμόζει τα email υπενθύμισης και κάθε ενότητα της εβδομαδιαίας σύνοψης.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Στο μενού σχολίων μπορείτε να επιλέξετε ετήσια άδεια, αναρρωτική άδεια ή ραντεβού ή να γράψετε δικό σας σχόλιο. Οι τρεις προκαθορισμένοι λόγοι αποτρέπουν την υπενθύμιση όταν λείπουν τόσο η ώρα έναρξης όσο και η ώρα λήξης.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Η επισκόπηση του τμήματος προσωπικού περιλαμβάνει και ανενεργούς εργαζομένους, έχει ρυθμιζόμενο πλάτος και διαθέτει κουμπί στατιστικών.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Το τμήμα ανθρώπινου δυναμικού μπορεί να αναζητά εργαζομένους και συντάκτες στο ιστορικό αλλαγών. Μπορούν να επιλεγούν ανενεργοί εργαζόμενοι και το φίλτρο συντακτών εμφανίζει λογαριασμούς του τμήματος.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Ο οδηγός εξηγεί το μενού σχολίων και τις ειδοποιήσεις για τις καταχωρίσεις σε ξεχωριστά βήματα.",
+  "HR statistics correctly count hours worked in the current month.": "Τα στατιστικά του τμήματος ανθρώπινου δυναμικού υπολογίζουν σωστά τις ώρες εργασίας του τρέχοντος μήνα."
 },
   "nplurals=2; plural=(n != 1);"
 );

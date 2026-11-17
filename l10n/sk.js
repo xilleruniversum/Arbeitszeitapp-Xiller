@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Použiť",
   "This text applies to your weekly email and your current account language.": "Tento text platí pre váš týždenný e-mail v aktuálnom jazyku účtu.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Vložte {entries} raz na miesto, kde sa majú zobraziť mená a príslušné hodnoty. {threshold} vloží aktuálnu prahovú hodnotu.",
-  "The following days have missing or incomplete time entries.": "Záznamy pracovného času za nasledujúce dni chýbajú alebo sú neúplné."
+  "The following days have missing or incomplete time entries.": "Záznamy pracovného času za nasledujúce dni chýbajú alebo sú neúplné.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Personálne oddelenie môže upraviť text e-mailových pripomienok a jednotlivých častí týždenného súhrnu.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Ponuka komentárov obsahuje dovolenku, práceneschopnosť, dohodnutý termín a vlastný komentár. Tri predvolené dôvody zabránia odoslaniu pripomienky, keď chýba čas začiatku aj konca práce.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Prehľad pre personalistov zahŕňa neaktívnych zamestnancov, má nastaviteľnú šírku a tlačidlo na zobrazenie štatistík.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Personálne oddelenie môže v histórii zmien vyhľadávať zamestnancov a autorov úprav. Vybrať možno aj neaktívnych zamestnancov a filter autorov zobrazuje účty personálneho oddelenia.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Sprievodca vysvetľuje ponuku komentárov a upozornenia k záznamom v samostatných krokoch.",
+  "HR statistics correctly count hours worked in the current month.": "Štatistiky personálneho oddelenia správne vyčíslia hodiny odpracované v aktuálnom mesiaci."
 },
   "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);"
 );

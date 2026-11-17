@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Cuir i bhfeidhm",
   "This text applies to your weekly email and your current account language.": "Baineann an téacs seo le do ríomhphost seachtainiúil i dteanga reatha do chuntais.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Cuir {entries} isteach uair amháin san áit a mbeidh na hainmneacha agus na luachanna a ghabhann leo le feiceáil. Cuireann {threshold} an tairseach reatha isteach.",
-  "The following days have missing or incomplete time entries.": "Tá iontrálacha ama oibre in easnamh nó neamhiomlán do na laethanta seo a leanas."
+  "The following days have missing or incomplete time entries.": "Tá iontrálacha ama oibre in easnamh nó neamhiomlán do na laethanta seo a leanas.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Is féidir le AD na ríomhphoist mheabhrúcháin agus codanna ar leith den achoimre sheachtainiúil a shaincheapadh.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Tá saoire, saoire bhreoiteachta, coinní agus tráchtanna saincheaptha ar fáil sa roghchlár tráchta. Cuireann na trí chúis réamhshocraithe cosc ar mheabhrúcháin nuair atá an t-am tosaigh agus deiridh araon in easnamh.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Áirítear fostaithe neamhghníomhacha i bhforléargas na n-acmhainní daonna, agus tá leithead inchoigeartaithe agus cnaipe staitisticí ann.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Is féidir le AD fostaithe agus eagarthóirí a chuardach i stair na n-athruithe. Is féidir fostaithe neamhghníomhacha a roghnú, agus liostaíonn scagaire na n-eagarthóirí cuntais AD.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Mínítear an roghchlár tráchta agus na foláirimh iontrála i gcéimeanna ar leith den turas treoraithe.",
+  "HR statistics correctly count hours worked in the current month.": "Áiríonn staitisticí AD i gceart na huaireanta a oibríodh sa mhí reatha."
 },
   "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
 );

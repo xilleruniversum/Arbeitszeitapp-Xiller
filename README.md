@@ -44,7 +44,7 @@ Feiertage werden für deutsche Bundesländer unterstützt. E-Mail-Hinweise gehen
 
 Für Version 1.4.3 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompatibilität vorgesehen:
 
-- Nextcloud 30–33
+- Nextcloud 30–34
 - PHP 8.2–8.5
 
 Das sind die deklarierten Versionsgrenzen. Sie sind kein Nachweis, dass jede Kombination praktisch getestet wurde. Timesheet läuft innerhalb einer eingerichteten Nextcloud-Installation.
@@ -105,7 +105,7 @@ Public holidays are supported for German federal states. Email notifications cur
 
 The [app metadata](appinfo/info.xml) declares the following compatibility for version 1.4.3:
 
-- Nextcloud 30–33
+- Nextcloud 30–34
 - PHP 8.2–8.5
 
 These are declared version limits, not evidence that every combination has been tested. Timesheet runs inside a configured Nextcloud installation.

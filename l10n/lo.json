@@ -313,7 +313,13 @@
     "Apply": "ນຳໃຊ້",
     "This text applies to your weekly email and your current account language.": "ຂໍ້ຄວາມນີ້ໃຊ້ກັບອີເມວປະຈຳອາທິດໃນພາສາບັນຊີປັດຈຸບັນຂອງທ່ານ.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "ໃສ່ {entries} ເທື່ອດຽວໃນບ່ອນທີ່ຈະສະແດງຊື່ ແລະ ຄ່າຂອງແຕ່ລະຄົນ. {threshold} ຈະໃສ່ຄ່າເກນປັດຈຸບັນ.",
-    "The following days have missing or incomplete time entries.": "ບັນທຶກເວລາເຮັດວຽກຂອງມື້ຕໍ່ໄປນີ້ຂາດຫາຍ ຫຼື ບໍ່ຄົບຖ້ວນ."
+    "The following days have missing or incomplete time entries.": "ບັນທຶກເວລາເຮັດວຽກຂອງມື້ຕໍ່ໄປນີ້ຂາດຫາຍ ຫຼື ບໍ່ຄົບຖ້ວນ.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "ຝ່າຍບຸກຄົນສາມາດປັບແຕ່ງອີເມວເຕືອນ ແລະ ແຕ່ລະສ່ວນຂອງບົດສະຫຼຸບປະຈຳອາທິດໄດ້.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "ເມນູຄຳເຫັນມີຕົວເລືອກລາພັກ, ລາປ່ວຍ, ນັດໝາຍ ແລະ ຂຽນຄຳເຫັນເອງ. ສາມເຫດຜົນທີ່ກຳນົດໄວ້ຈະລະງັບການເຕືອນເມື່ອບໍ່ມີທັງເວລາເລີ່ມ ແລະ ເວລາສິ້ນສຸດ.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "ພາບລວມຝ່າຍບຸກຄົນສະແດງພະນັກງານທີ່ບໍ່ໄດ້ເຮັດວຽກນຳ, ປັບຄວາມກວ້າງໄດ້ ແລະ ມີປຸ່ມເບິ່ງສະຖິຕິ.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "ຝ່າຍບຸກຄົນສາມາດຄົ້ນຫາພະນັກງານ ແລະ ຜູ້ປ່ຽນແປງໃນປະຫວັດການປ່ຽນແປງ. ສາມາດເລືອກພະນັກງານທີ່ບໍ່ໄດ້ເຮັດວຽກໄດ້ ແລະ ຕົວກອງຜູ້ປ່ຽນແປງສະແດງບັນຊີຂອງຝ່າຍບຸກຄົນ.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "ການແນະນຳການໃຊ້ງານອະທິບາຍເມນູຄຳເຫັນ ແລະ ຄຳເຕືອນຂອງບັນທຶກເວລາເຮັດວຽກໃນຄົນລະຂັ້ນຕອນ.",
+    "HR statistics correctly count hours worked in the current month.": "ສະຖິຕິຂອງຝ່າຍບຸກຄົນຄິດໄລ່ຊົ່ວໂມງທີ່ເຮັດວຽກໃນເດືອນປັດຈຸບັນໄດ້ຖືກຕ້ອງ."
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

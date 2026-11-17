@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Aplica",
   "This text applies to your weekly email and your current account language.": "Aquest text s’aplica al vostre correu setmanal en la llengua actual del vostre compte.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Poseu {entries} una vegada on han d’aparèixer els noms i els valors corresponents. {threshold} insereix el llindar actual.",
-  "The following days have missing or incomplete time entries.": "Hi ha registres horaris pendents o incomplets per als dies següents."
+  "The following days have missing or incomplete time entries.": "Hi ha registres horaris pendents o incomplets per als dies següents.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Recursos humans pot personalitzar els correus de recordatori i les seccions del resum setmanal per separat.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "El menú de comentaris permet triar vacances, baixa mèdica o cita, o escriure un comentari propi. Els tres motius predefinits eviten els recordatoris quan falten tant l’hora d’inici com la de finalització.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "El resum de recursos humans inclou personal inactiu, té una amplada ajustable i ofereix un botó d’estadístiques.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Recursos humans pot cercar persones i editors a l’historial de canvis. Es pot seleccionar personal inactiu i el filtre d’editors mostra els comptes de recursos humans.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "La visita guiada explica el menú de comentaris i els avisos dels registres en passos separats.",
+  "HR statistics correctly count hours worked in the current month.": "Les estadístiques de recursos humans compten correctament les hores treballades durant el mes actual."
 },
   "nplurals=2; plural=(n != 1);"
 );

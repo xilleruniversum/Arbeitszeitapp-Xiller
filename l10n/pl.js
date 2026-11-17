@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Zastosuj",
   "This text applies to your weekly email and your current account language.": "Ta treść dotyczy Twojego cotygodniowego e-maila w bieżącym języku konta.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Wstaw {entries} raz w miejscu, w którym mają się pojawić nazwiska i odpowiadające im wartości. {threshold} wstawia bieżący próg.",
-  "The following days have missing or incomplete time entries.": "Wpisy czasu pracy z następujących dni są niekompletne lub ich brakuje."
+  "The following days have missing or incomplete time entries.": "Wpisy czasu pracy z następujących dni są niekompletne lub ich brakuje.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Kadry mogą dostosować wiadomości e-mail z przypomnieniami oraz poszczególne sekcje podsumowania tygodniowego.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Menu komentarzy zawiera opcje urlopu, choroby, umówionego spotkania i własnego komentarza. Trzy gotowe powody zapobiegają wysyłaniu przypomnień, gdy brakuje zarówno godziny rozpoczęcia, jak i zakończenia pracy.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Przegląd kadr uwzględnia nieaktywnych pracowników, ma regulowaną szerokość i udostępnia przycisk statystyk.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Kadry mogą wyszukiwać pracowników i autorów w historii zmian. Można również wybrać nieaktywnych pracowników, a filtr autorów wyświetla konta kadrowe.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Przewodnik omawia menu komentarzy i ostrzeżenia przy wpisach czasu pracy w osobnych krokach.",
+  "HR statistics correctly count hours worked in the current month.": "Statystyki kadr prawidłowo zliczają godziny przepracowane w bieżącym miesiącu."
 },
   "nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);"
 );

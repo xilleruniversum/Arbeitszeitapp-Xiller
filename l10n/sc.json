@@ -313,7 +313,13 @@
     "Apply": "Aplicare",
     "This text applies to your weekly email and your current account language.": "Custu testu si aplicat a su messàgiu setimanale tuo in sa limba atuale de su contu tuo.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Inserta {entries} una borta in ue depent cumparrer sos nùmenes e sos valores issoro. {threshold} inserit su lìmite atuale.",
-    "The following days have missing or incomplete time entries.": "Pro sos dies chi sighint, sas registratziones de sas oras mancant o sunt incompletas."
+    "The following days have missing or incomplete time entries.": "Pro sos dies chi sighint, sas registratziones de sas oras mancant o sunt incompletas.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Is Resursas Umanas podent personalizare is messàgios de ammentu e is setziones de su resumu setimanale.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Su menù de is cummentos permitit de seberare ferias, lissèntzia pro maladia, apuntamentu o unu cummentu personalizadu. Is tres resones predefinidas impidint is ammentos cando mancant s’ora de intrada e s’ora de essida.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Su resumu de su personale includet is dipendentes inativos, tenet una largària regulàbile e unu butone pro is istatìsticas.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Is Resursas Umanas podent chircare dipendentes e autores de sas modìficas in s’istòria de sas modìficas. Si podent seberare is dipendentes inativos e su filtru pro autore mustrat is contos de is Resursas Umanas.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Sa vìsita ghidada isplicat in passos separados su menù de is cummentos e is avisos de sas registratziones.",
+    "HR statistics correctly count hours worked in the current month.": "Is istatìsticas de is Resursas Umanas càrculant in manera curreta is oras traballadas in su mese atuale."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

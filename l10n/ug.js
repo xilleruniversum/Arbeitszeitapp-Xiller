@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "قوللىنىش",
   "This text applies to your weekly email and your current account language.": "بۇ تېكىست ھېساباتىڭىزنىڭ نۆۋەتتىكى تىلىدا ئەۋەتىلىدىغان ھەپتىلىك ئېلخەتكە قوللىنىلىدۇ.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "ئىسىملار ۋە ئۇلارغا ماس قىممەتلەر كۆرۈنىدىغان ئورۇنغا {entries} نى بىر قېتىم قويۇڭ. {threshold} نۆۋەتتىكى چەك قىممىتىنى قىستۇرىدۇ.",
-  "The following days have missing or incomplete time entries.": "تۆۋەندىكى كۈنلەرنىڭ خىزمەت ۋاقتى خاتىرىسى يوق ياكى تولۇق ئەمەس."
+  "The following days have missing or incomplete time entries.": "تۆۋەندىكى كۈنلەرنىڭ خىزمەت ۋاقتى خاتىرىسى يوق ياكى تولۇق ئەمەس.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "خادىملار بۆلۈمى ئەسكەرتىش ئېلخەتلىرىنى ۋە ھەپتىلىك خۇلاسىنىڭ ئايرىم بۆلەكلىرىنى خاسلاشتۇرالايدۇ.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "ئىزاھات تىزىملىكىدە دەم ئېلىش، كېسەللىك رۇخسىتى، ئالدىن بېكىتىلگەن ئۇچرىشىش ۋە خاس ئىزاھاتلار بار. باشلىنىش ۋە ئاخىرلىشىش ۋاقتىنىڭ ھەر ئىككىسى كەم بولسا، ئالدىن بېكىتىلگەن ئۈچ سەۋەب ئەسكەرتىش ئەۋەتىلىشىنىڭ ئالدىنى ئالىدۇ.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "خادىملار باشقۇرۇش ئومۇمىي كۆرۈنۈشىدە ئاكتىپ بولمىغان خىزمەتچىلەرمۇ كۆرسىتىلىدۇ، كەڭلىكىنى تەڭشەشكە بولىدۇ ۋە ئىستاتىستىكا كۇنۇپكىسى بار.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "خادىملار بۆلۈمى ئۆزگەرتىش تارىخىدىن خىزمەتچىلەرنى ۋە ئۆزگەرتكەن كىشىلەرنى ئىزدىيەلەيدۇ. ئاكتىپ بولمىغان خىزمەتچىلەرنىمۇ تاللىغىلى بولىدۇ، تەھرىرلىگۈچى سۈزگۈچىدە خادىملار بۆلۈمى ھېساباتلىرى كۆرسىتىلىدۇ.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "يېتەكچى ساياھەت ئىزاھات تىزىملىكى بىلەن ۋاقىت خاتىرىسىگە ئائىت ئاگاھلاندۇرۇشلارنى ئايرىم باسقۇچلاردا چۈشەندۈرىدۇ.",
+  "HR statistics correctly count hours worked in the current month.": "خادىملار بۆلۈمىنىڭ ئىستاتىستىكىسى بۇ ئاي ئىچىدە ئىشلەنگەن سائەتلەرنى توغرا ھېسابلايدۇ."
 },
   "nplurals=2; plural=(n != 1);"
 );

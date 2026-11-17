@@ -313,7 +313,13 @@
     "Apply": "적용",
     "This text applies to your weekly email and your current account language.": "이 본문은 현재 계정 언어로 받는 주간 이메일에 적용됩니다.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "이름과 해당 수치를 표시할 위치에 {entries}를 한 번 넣으세요. {threshold}에는 현재 기준값이 들어갑니다.",
-    "The following days have missing or incomplete time entries.": "다음 날짜의 근무 시간 기록이 없거나 불완전합니다."
+    "The following days have missing or incomplete time entries.": "다음 날짜의 근무 시간 기록이 없거나 불완전합니다.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "인사 담당자는 리마인더 이메일 문구와 주간 요약의 각 항목을 맞춤 설정할 수 있습니다.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "댓글 메뉴에서 휴가, 병가, 예약 일정, 직접 작성한 댓글을 선택할 수 있습니다. 시작 시간과 종료 시간이 모두 비어 있을 때 미리 설정된 세 가지 사유 중 하나를 선택하면 리마인더가 발송되지 않습니다.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "인사 담당자 개요에는 비재직 직원도 표시됩니다. 너비를 조절할 수 있으며 통계를 여는 버튼이 있습니다.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "인사 담당자는 변경 이력에서 직원과 변경자를 검색할 수 있습니다. 비재직 직원도 선택할 수 있으며 변경자 필터에는 인사 담당자 계정이 표시됩니다.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "가이드 투어에서는 댓글 메뉴와 근무 시간 기록의 경고를 별도 단계에서 설명합니다.",
+    "HR statistics correctly count hours worked in the current month.": "인사 통계에서 이번 달에 실제로 근무한 시간이 정확히 집계됩니다."
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

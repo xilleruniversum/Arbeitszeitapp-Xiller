@@ -313,7 +313,13 @@
     "Apply": "Хэрэгжүүлэх",
     "This text applies to your weekly email and your current account language.": "Энэ текстийг таны бүртгэлийн одоогийн хэлээр илгээх долоо хоног тутмын имэйлд ашиглана.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Нэрс болон харгалзах утгуудыг харуулах газарт {entries}-ийг нэг удаа оруулна уу. {threshold} нь одоогийн босго утгыг оруулна.",
-    "The following days have missing or incomplete time entries.": "Дараах өдрүүдийн ажлын цагийн бүртгэл байхгүй эсвэл дутуу байна."
+    "The following days have missing or incomplete time entries.": "Дараах өдрүүдийн ажлын цагийн бүртгэл байхгүй эсвэл дутуу байна.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Хүний нөөцийн ажилтнууд сануулах имэйл болон долоо хоногийн тоймын хэсэг бүрийн бичвэрийг өөрчилж болно.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Тайлбарын цэснээс амралт, өвчтэй, товлосон уулзалт эсвэл өөрийн тайлбарыг сонгож болно. Эхлэх, дуусах цагийн аль аль нь байхгүй үед урьдчилан тохируулсан гурван шалтгааны аль нэгийг сонговол сануулга илгээхгүй.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Хүний нөөцийн тоймд идэвхгүй ажилтнууд багтана. Тоймын өргөнийг тохируулж, статистикийг товчоор нээж болно.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Хүний нөөцийн ажилтнууд өөрчлөлтийн түүхээс ажилтан болон өөрчлөлт хийсэн хүнийг хайж болно. Идэвхгүй ажилтнуудыг сонгож болох бөгөөд өөрчлөгчийн шүүлтүүрт хүний нөөцийн бүртгэлүүд харагдана.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Хөтөч аялал нь тайлбарын цэс болон цагийн бүртгэлийн анхааруулгыг тус тусад нь тайлбарлана.",
+    "HR statistics correctly count hours worked in the current month.": "Хүний нөөцийн статистикт энэ сард ажилласан цагийг зөв тооцно."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "套用",
   "This text applies to your weekly email and your current account language.": "此文字適用於以目前帳戶語言發送的每週電郵。",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "在要顯示姓名及其對應數值的位置加入一次 {entries}。{threshold} 會插入目前的門檻。",
-  "The following days have missing or incomplete time entries.": "以下日期的工時記錄遺漏或不完整。"
+  "The following days have missing or incomplete time entries.": "以下日期的工時記錄遺漏或不完整。",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "人事部可以自訂提醒電郵，以及每週摘要中的個別部分。",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "備註選單提供休假、病假、預約及自訂備註選項。開始和結束時間均未填寫時，選擇三個預設原因之一便不會發出提醒。",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "人事概覽會顯示非在職員工，可調整闊度，並提供統計按鈕。",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "人事部可在變更記錄中搜尋員工及編輯者。可以選擇非在職員工，編輯者篩選器會列出人事帳戶。",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "導覽會分開介紹備註選單和工時記錄警告。",
+  "HR statistics correctly count hours worked in the current month.": "人事統計會正確計算本月的工作時數。"
 },
   "nplurals=1; plural=0;"
 );

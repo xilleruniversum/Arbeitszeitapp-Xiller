@@ -313,7 +313,13 @@
     "Apply": "החלה",
     "This text applies to your weekly email and your current account language.": "הטקסט חל על הודעת הדוא״ל השבועית בשפה המוגדרת כעת בחשבון שלכם.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "יש להוסיף את {entries} פעם אחת במקום שבו יופיעו השמות והערכים שלהם. {threshold} מוסיף את ערך הסף הנוכחי.",
-    "The following days have missing or incomplete time entries.": "בימים הבאים דיווחי השעות חסרים או חלקיים."
+    "The following days have missing or incomplete time entries.": "בימים הבאים דיווחי השעות חסרים או חלקיים.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "צוות משאבי האנוש יכול להתאים אישית את הודעות התזכורת בדוא״ל ואת הסעיפים הנפרדים בסיכום השבועי.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "תפריט ההערות מציע חופשה, מחלה, פגישה והערה מותאמת אישית. שלוש הסיבות המוגדרות מראש מונעות שליחת תזכורת כאשר חסרות גם שעת ההתחלה וגם שעת הסיום.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "סקירת משאבי אנוש כוללת עובדים לא פעילים, מאפשרת להתאים את הרוחב ומציעה כפתור להצגת נתונים סטטיסטיים.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "צוות משאבי האנוש יכול לחפש עובדים ועורכים בהיסטוריית השינויים. אפשר לבחור גם עובדים לא פעילים, ומסנן העורכים מציג חשבונות של צוות משאבי האנוש.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "הסיור המודרך מסביר את תפריט ההערות ואת האזהרות על רישומי שעות בשלבים נפרדים.",
+    "HR statistics correctly count hours worked in the current month.": "הנתונים הסטטיסטיים של משאבי האנוש מציגים במדויק את שעות העבודה בחודש הנוכחי."
   },
   "pluralForm": "nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;"
 }

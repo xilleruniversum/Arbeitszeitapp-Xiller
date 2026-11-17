@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Terapkan",
   "This text applies to your weekly email and your current account language.": "Teks ini berlaku untuk email mingguan dalam bahasa akun Anda saat ini.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Tempatkan {entries} satu kali di tempat nama dan nilainya akan ditampilkan. {threshold} menyisipkan ambang batas saat ini.",
-  "The following days have missing or incomplete time entries.": "Catatan waktu kerja untuk hari-hari berikut tidak ada atau belum lengkap."
+  "The following days have missing or incomplete time entries.": "Catatan waktu kerja untuk hari-hari berikut tidak ada atau belum lengkap.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "HR dapat menyesuaikan email pengingat dan setiap bagian ringkasan mingguan.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Menu komentar menyediakan pilihan cuti, sakit, janji temu, dan komentar khusus. Ketiga alasan bawaan mencegah pengingat jika waktu mulai dan waktu selesai sama-sama belum diisi.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Ringkasan HR menampilkan karyawan tidak aktif, memiliki lebar yang dapat diatur, dan menyediakan tombol statistik.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "HR dapat mencari karyawan dan orang yang membuat perubahan di riwayat perubahan. Karyawan tidak aktif dapat dipilih, dan filter pengubah menampilkan akun HR.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Tur panduan menjelaskan menu komentar dan peringatan entri waktu dalam langkah terpisah.",
+  "HR statistics correctly count hours worked in the current month.": "Statistik HR menghitung jam kerja pada bulan berjalan dengan benar."
 },
   "nplurals=1; plural=0;"
 );

@@ -313,7 +313,13 @@
     "Apply": "Applica",
     "This text applies to your weekly email and your current account language.": "Questo testo si applica alla tua e-mail settimanale nella lingua attuale del tuo account.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Inserisci {entries} una volta nel punto in cui devono comparire i nomi e i relativi valori. {threshold} inserisce la soglia attuale.",
-    "The following days have missing or incomplete time entries.": "Per i giorni seguenti le registrazioni delle ore sono mancanti o incomplete."
+    "The following days have missing or incomplete time entries.": "Per i giorni seguenti le registrazioni delle ore sono mancanti o incomplete.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Le risorse umane possono personalizzare le email di promemoria e le singole sezioni del riepilogo settimanale.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Il menu dei commenti offre le opzioni ferie, malattia, appuntamento e commento personalizzato. I tre motivi predefiniti evitano l’invio di promemoria quando mancano sia l’ora di inizio sia quella di fine.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "La panoramica HR include i collaboratori inattivi, ha una larghezza regolabile e offre un pulsante per le statistiche.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Le risorse umane possono cercare collaboratori e autori nella cronologia delle modifiche. Si possono selezionare anche i collaboratori inattivi e il filtro degli autori elenca gli account HR.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Il tour guidato illustra in passaggi distinti il menu dei commenti e gli avvisi relativi alle registrazioni orarie.",
+    "HR statistics correctly count hours worked in the current month.": "Le statistiche HR conteggiano correttamente le ore lavorate nel mese corrente."
   },
   "pluralForm": "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }

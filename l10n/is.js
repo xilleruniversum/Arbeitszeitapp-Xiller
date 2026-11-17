@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Virkja",
   "This text applies to your weekly email and your current account language.": "Textinn gildir fyrir vikulega tölvupóstinn á tungumálinu sem er nú valið á reikningnum þínum.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Settu {entries} einu sinni þar sem nöfn og tilheyrandi gildi eiga að birtast. {threshold} setur inn núverandi viðmiðunarmörk.",
-  "The following days have missing or incomplete time entries.": "Tímaskráningar fyrir eftirfarandi daga vantar eða eru ófullgerðar."
+  "The following days have missing or incomplete time entries.": "Tímaskráningar fyrir eftirfarandi daga vantar eða eru ófullgerðar.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Mannauðsdeildin getur sérsniðið áminningar í tölvupósti og einstaka hluta vikuyfirlitsins.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Athugasemdavalmyndin býður upp á orlof, veikindi, tímapöntun og sérsniðnar athugasemdir. Forstilltu ástæðurnar þrjár koma í veg fyrir áminningar ef bæði upphafs- og lokatíma vantar.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Mannauðsyfirlitið sýnir óvirka starfsmenn, hægt er að stilla breiddina og þar er hnappur fyrir tölfræði.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Mannauðsdeildin getur leitað að starfsmönnum og ritstjórum í breytingasögunni. Hægt er að velja óvirka starfsmenn og sía ritstjóra sýnir reikninga mannauðsdeildarinnar.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Leiðsögnin útskýrir athugasemdavalmyndina og viðvaranir um tímaskráningar í aðskildum skrefum.",
+  "HR statistics correctly count hours worked in the current month.": "Tölfræði mannauðsdeildarinnar telur rétt saman unninn vinnutíma í yfirstandandi mánuði."
 },
   "nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);"
 );

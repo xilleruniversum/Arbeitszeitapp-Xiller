@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "適用",
   "This text applies to your weekly email and your current account language.": "この本文は、現在のアカウント言語で送られる週次メールに適用されます。",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "名前と対応する数値を表示する位置に {entries} を1回入力します。{threshold} には現在の基準値が入ります。",
-  "The following days have missing or incomplete time entries.": "次の日付の勤怠記録が未入力または入力途中です。"
+  "The following days have missing or incomplete time entries.": "次の日付の勤怠記録が未入力または入力途中です。",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "人事担当者は、リマインダーメールと週次サマリーの各項目の文面を編集できます。",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "コメントメニューでは、休暇、病欠、予約・用事、自由入力のコメントを選べます。開始時刻と終了時刻がどちらも未入力の場合、あらかじめ用意された3つの理由を選ぶとリマインダーが送信されません。",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "人事担当者向けの概要には非在職の従業員も表示されます。表示幅を調整でき、統計を表示するボタンもあります。",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "人事担当者は変更履歴で従業員と変更者を検索できます。非在職の従業員も選択でき、変更者のフィルターには人事担当者のアカウントが表示されます。",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "ガイドツアーでは、コメントメニューと勤怠記録の警告を別々のステップで説明します。",
+  "HR statistics correctly count hours worked in the current month.": "人事向けの統計では、今月の実労働時間が正しく集計されます。"
 },
   "nplurals=1; plural=0;"
 );

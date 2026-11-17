@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Применить",
   "This text applies to your weekly email and your current account language.": "Этот текст используется в вашем еженедельном письме на текущем языке учётной записи.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Вставьте {entries} один раз там, где должны отображаться имена и соответствующие значения. {threshold} подставляет текущий порог.",
-  "The following days have missing or incomplete time entries.": "За следующие дни записи рабочего времени отсутствуют или заполнены не полностью."
+  "The following days have missing or incomplete time entries.": "За следующие дни записи рабочего времени отсутствуют или заполнены не полностью.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Кадровая служба может настраивать тексты писем-напоминаний и отдельных разделов еженедельной сводки.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "В меню комментариев можно выбрать отпуск, больничный или назначенную встречу, а также написать свой комментарий. Три готовые причины отключают напоминание, если отсутствуют и время начала, и время окончания работы.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "В обзоре отдела кадров отображаются неактивные сотрудники, можно менять ширину и открывать статистику кнопкой.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Кадровая служба может искать сотрудников и авторов правок в истории изменений. Можно выбрать неактивного сотрудника, а фильтр по автору показывает кадровые учётные записи.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "В обучающем туре меню комментариев и предупреждения о записях объясняются на отдельных шагах.",
+  "HR statistics correctly count hours worked in the current month.": "В статистике отдела кадров теперь правильно подсчитываются отработанные часы за текущий месяц."
 },
   "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
 );

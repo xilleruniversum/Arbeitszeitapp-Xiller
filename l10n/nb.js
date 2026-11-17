@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Bruk",
   "This text applies to your weekly email and your current account language.": "Teksten gjelder for den ukentlige e-posten din på språket som er valgt for kontoen din.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Sett inn {entries} én gang der navnene og de tilhørende verdiene skal vises. {threshold} setter inn gjeldende terskelverdi.",
-  "The following days have missing or incomplete time entries.": "Tidsregistreringene for følgende dager mangler eller er ufullstendige."
+  "The following days have missing or incomplete time entries.": "Tidsregistreringene for følgende dager mangler eller er ufullstendige.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "HR kan tilpasse påminnelseseposter og de enkelte delene av ukesoppsummeringen.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Kommentarmenyen har valg for ferie, sykdom, avtale og egen kommentar. De tre forhåndsdefinerte grunnene hindrer påminnelser hvis både start- og sluttid mangler.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "HR-oversikten omfatter også inaktive medarbeidere, har justerbar bredde og en knapp for statistikk.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "HR kan søke etter medarbeidere og redigerere i endringshistorikken. Inaktive medarbeidere kan velges, og redigererfilteret viser HR-kontoer.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Den veiledede omvisningen forklarer kommentarmenyen og advarsler for tidsregistreringer i egne trinn.",
+  "HR statistics correctly count hours worked in the current month.": "HR-statistikken summerer arbeidstimene for inneværende måned korrekt."
 },
   "nplurals=2; plural=(n != 1);"
 );

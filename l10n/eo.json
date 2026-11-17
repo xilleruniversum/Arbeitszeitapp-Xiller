@@ -313,7 +313,13 @@
     "Apply": "Apliki",
     "This text applies to your weekly email and your current account language.": "Ĉi tiu teksto validas por via semajna retmesaĝo en la nuna lingvo de via konto.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Metu {entries} unufoje tien, kie aperu la nomoj kaj la respondaj valoroj. {threshold} enmetas la nunan sojlon.",
-    "The following days have missing or incomplete time entries.": "Por la jenaj tagoj mankas laborhorregistroj aŭ la registroj estas nekompletaj."
+    "The following days have missing or incomplete time entries.": "Por la jenaj tagoj mankas laborhorregistroj aŭ la registroj estas nekompletaj.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "La personara fako povas adapti la memorigajn retmesaĝojn kaj unuopajn sekciojn de la semajna resumo.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "La komenta menuo ofertas ferion, malsanforpermeson, rendevuon kaj propran komenton. La tri antaŭdifinitaj kialoj malebligas memorigilojn kiam mankas kaj la komenca kaj la fina horo.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "La superrigardo pri dungitaro inkluzivas neaktivajn dungitojn, havas ĝustigeblan larĝon kaj ofertas butonon por statistikoj.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "La personara fako povas serĉi dungitojn kaj redaktintojn en la ŝanĝhistorio. Eblas elekti neaktivajn dungitojn, kaj la filtrilo de redaktintoj listigas kontojn de la personara fako.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "La gvidilo klarigas la komentan menuon kaj la avertojn pri registroj en apartaj paŝoj.",
+    "HR statistics correctly count hours worked in the current month.": "La statistikoj de la personara fako ĝuste kalkulas la laborhorojn de la nuna monato."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

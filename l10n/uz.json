@@ -313,7 +313,13 @@
     "Apply": "Qo‘llash",
     "This text applies to your weekly email and your current account language.": "Bu matn hisobingizning joriy tilidagi haftalik xatingizga tatbiq etiladi.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Ismlar va ularga mos qiymatlar ko‘rinishi kerak bo‘lgan joyga {entries} ni bir marta qo‘ying. {threshold} joriy chegara qiymatini joylashtiradi.",
-    "The following days have missing or incomplete time entries.": "Quyidagi kunlar uchun ish vaqti yozuvlari yo‘q yoki to‘liq emas."
+    "The following days have missing or incomplete time entries.": "Quyidagi kunlar uchun ish vaqti yozuvlari yo‘q yoki to‘liq emas.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Kadrlar bo‘limi eslatma xatlari va haftalik xulosaning alohida bo‘limlarini moslashtira oladi.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Izoh menyusida ta’til, kasallik ta’tili, belgilangan uchrashuv va shaxsiy izoh variantlari bor. Ishning boshlanish va tugash vaqtlari kiritilmagan bo‘lsa, oldindan belgilangan uchta sabab eslatma yuborilishini to‘xtatadi.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Kadrlar bo‘limi umumiy ko‘rinishida nofaol xodimlar ham ko‘rinadi, kenglikni sozlash mumkin va statistika tugmasi mavjud.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Kadrlar bo‘limi o‘zgarishlar tarixidan xodimlar va o‘zgartirish kiritganlarni qidira oladi. Nofaol xodimlarni tanlash mumkin, o‘zgartirish kiritganlar filtri esa kadrlar bo‘limi hisoblarini ko‘rsatadi.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Bosqichma-bosqich qo‘llanma izoh menyusi va yozuvlar bo‘yicha ogohlantirishlarni alohida bosqichlarda tushuntiradi.",
+    "HR statistics correctly count hours worked in the current month.": "Kadrlar bo‘limi statistikasi joriy oyda ishlangan soatlarni to‘g‘ri hisoblaydi."
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

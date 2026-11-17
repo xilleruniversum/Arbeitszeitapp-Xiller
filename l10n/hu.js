@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Alkalmaz",
   "This text applies to your weekly email and your current account language.": "Ez a szöveg a fiókja aktuális nyelvén küldött heti e-mailre vonatkozik.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Helyezze el az {entries} helyőrzőt egyszer, ahol a neveknek és a hozzájuk tartozó értékeknek meg kell jelenniük. A {threshold} az aktuális küszöbértéket illeszti be.",
-  "The following days have missing or incomplete time entries.": "Az alábbi napok munkaidő-bejegyzései hiányoznak vagy hiányosak."
+  "The following days have missing or incomplete time entries.": "Az alábbi napok munkaidő-bejegyzései hiányoznak vagy hiányosak.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "A HR testre szabhatja az emlékeztető e-maileket és a heti összefoglaló egyes részeit.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "A megjegyzésmenüben szabadság, betegség, időpont és egyéni megjegyzés választható. A három előre megadott ok esetén nem érkezik emlékeztető, ha a kezdési és a befejezési idő is hiányzik.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "A HR-áttekintés az inaktív munkatársakat is tartalmazza, a szélessége állítható, és külön gombbal nyitható meg a statisztika.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "A HR a változástörténetben munkatársakra és módosítókra kereshet. Az inaktív munkatársak is kiválaszthatók, a módosítók szűrője pedig a HR-fiókokat sorolja fel.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "A vezetett bemutató külön lépésben ismerteti a megjegyzésmenüt és a munkaidő-bejegyzések figyelmeztetéseit.",
+  "HR statistics correctly count hours worked in the current month.": "A HR-statisztika helyesen összesíti az adott hónapban ledolgozott órákat."
 },
   "nplurals=2; plural=(n != 1);"
 );

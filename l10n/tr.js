@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Uygula",
   "This text applies to your weekly email and your current account language.": "Bu metin, geçerli hesap dilinizdeki haftalık e-postanız için geçerlidir.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Adların ve karşılık gelen değerlerin görüneceği yere {entries} ifadesini bir kez ekleyin. {threshold} geçerli eşiği ekler.",
-  "The following days have missing or incomplete time entries.": "Aşağıdaki günlerin çalışma süresi kayıtları yok veya eksik."
+  "The following days have missing or incomplete time entries.": "Aşağıdaki günlerin çalışma süresi kayıtları yok veya eksik.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "İK, hatırlatma e-postalarını ve haftalık özetin ayrı bölümlerini özelleştirebilir.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Yorum menüsünde yıllık izin, hastalık izni, randevu ve özel yorum seçenekleri bulunur. Başlangıç ve bitiş saatlerinin ikisi de eksikse, hazır üç neden hatırlatma gönderilmesini önler.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "İK genel bakışı pasif çalışanları da gösterir, genişliği ayarlanabilir ve bir istatistik düğmesi sunar.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "İK, değişiklik geçmişinde çalışanları ve değişikliği yapan kişileri arayabilir. Pasif çalışanlar seçilebilir ve düzenleyen kişi filtresi İK hesaplarını listeler.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Rehberli tur, yorum menüsünü ve kayıt uyarılarını ayrı adımlarda açıklar.",
+  "HR statistics correctly count hours worked in the current month.": "İK istatistikleri, bu ay çalışılan saatleri doğru hesaplar."
 },
   "nplurals=2; plural=(n > 1);"
 );

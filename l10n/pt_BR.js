@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Aplicar",
   "This text applies to your weekly email and your current account language.": "Este texto se aplica ao seu e-mail semanal no idioma atual da sua conta.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Insira {entries} uma vez onde devem aparecer os nomes e seus valores. {threshold} insere o limite atual.",
-  "The following days have missing or incomplete time entries.": "Os registros de horas dos dias a seguir estão ausentes ou incompletos."
+  "The following days have missing or incomplete time entries.": "Os registros de horas dos dias a seguir estão ausentes ou incompletos.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "O RH pode personalizar os e-mails de lembrete e cada seção do resumo semanal.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "O menu de comentários oferece as opções de férias, licença médica, compromisso e comentário personalizado. Os três motivos predefinidos evitam lembretes quando faltam os horários de início e de término.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "O resumo de RH inclui funcionários inativos, tem largura ajustável e oferece um botão de estatísticas.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "O RH pode buscar funcionários e editores no Histórico de alterações. É possível selecionar funcionários inativos, e o filtro de editores lista as contas de RH.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "O tour guiado explica o menu de comentários e os avisos sobre registros de horário em etapas separadas.",
+  "HR statistics correctly count hours worked in the current month.": "As estatísticas de RH calculam corretamente as horas trabalhadas no mês atual."
 },
   "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 );

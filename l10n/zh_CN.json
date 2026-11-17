@@ -313,7 +313,13 @@
     "Apply": "应用",
     "This text applies to your weekly email and your current account language.": "此文本适用于使用当前帐户语言的每周邮件。",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "在要显示姓名及其对应数值的位置放入一次 {entries}。{threshold} 会插入当前阈值。",
-    "The following days have missing or incomplete time entries.": "以下日期的工时记录缺失或不完整。"
+    "The following days have missing or incomplete time entries.": "以下日期的工时记录缺失或不完整。",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "人事部门可以自定义提醒邮件以及每周汇总中的各个部分。",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "备注菜单提供休假、病假、预约和自定义备注选项。开始和结束时间都未填写时，选择三种预设原因之一可避免收到提醒。",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "人事概览包含非在职员工，支持调整宽度，并提供统计按钮。",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "人事部门可在更改历史中搜索员工和编辑者。可以选择非在职员工，编辑者筛选器会列出人事账号。",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "引导教程分步骤说明备注菜单和工时记录警告。",
+    "HR statistics correctly count hours worked in the current month.": "人事统计会正确汇总本月已工作的时数。"
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

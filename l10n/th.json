@@ -313,7 +313,13 @@
     "Apply": "นำไปใช้",
     "This text applies to your weekly email and your current account language.": "ข้อความนี้ใช้กับอีเมลรายสัปดาห์ของคุณในภาษาที่ตั้งไว้ในบัญชีปัจจุบัน",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "ใส่ {entries} หนึ่งครั้งในตำแหน่งที่ต้องการแสดงรายชื่อและค่าของแต่ละคน {threshold} จะแทรกค่าเกณฑ์ปัจจุบัน",
-    "The following days have missing or incomplete time entries.": "รายการบันทึกเวลาทำงานของวันต่อไปนี้ขาดหายหรือไม่ครบถ้วน"
+    "The following days have missing or incomplete time entries.": "รายการบันทึกเวลาทำงานของวันต่อไปนี้ขาดหายหรือไม่ครบถ้วน",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "ฝ่ายบุคคลปรับแต่งอีเมลเตือนและแต่ละส่วนของสรุปรายสัปดาห์ได้",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "เมนูความคิดเห็นมีตัวเลือกพิเศษสำหรับลาพักร้อน ลาป่วย นัดหมาย และเขียนความคิดเห็นเอง เหตุผลที่กำหนดไว้สามข้อช่วยระงับการแจ้งเตือนเมื่อไม่มีทั้งเวลาเริ่มงานและเวลาเลิกงาน",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "ภาพรวมฝ่ายบุคคลแสดงพนักงานที่ไม่มีสถานะทำงานด้วย ปรับความกว้างได้ และมีปุ่มดูสถิติ",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "ฝ่ายบุคคลค้นหาพนักงานและผู้แก้ไขในประวัติการเปลี่ยนแปลงได้ เลือกพนักงานที่ไม่มีสถานะทำงานได้ และตัวกรองผู้แก้ไขจะแสดงบัญชีฝ่ายบุคคล",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "คู่มือแบบทีละขั้นอธิบายเมนูความคิดเห็นและคำเตือนของรายการลงเวลาแยกกัน",
+    "HR statistics correctly count hours worked in the current month.": "สถิติของฝ่ายบุคคลนับชั่วโมงทำงานในเดือนปัจจุบันได้ถูกต้อง"
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

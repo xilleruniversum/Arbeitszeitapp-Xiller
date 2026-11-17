@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Toepassen",
   "This text applies to your weekly email and your current account language.": "Deze tekst geldt voor je wekelijkse e-mail in de huidige taal van je account.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Plaats {entries} één keer waar de namen en bijbehorende waarden moeten verschijnen. {threshold} voegt de huidige grenswaarde in.",
-  "The following days have missing or incomplete time entries.": "Voor de volgende dagen ontbreken urenregistraties of zijn ze onvolledig."
+  "The following days have missing or incomplete time entries.": "Voor de volgende dagen ontbreken urenregistraties of zijn ze onvolledig.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "HR kan herinneringsmails en afzonderlijke onderdelen van het weekoverzicht aanpassen.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Het opmerkingenmenu biedt de opties vakantie, ziekte, afspraak en eigen opmerking. De drie vooraf ingestelde redenen voorkomen een herinnering wanneer zowel de begin- als de eindtijd ontbreekt.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Het HR-overzicht bevat ook inactieve medewerkers, heeft een instelbare breedte en biedt een knop voor statistieken.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "HR kan in de wijzigingsgeschiedenis zoeken naar medewerkers en bewerkers. Ook inactieve medewerkers kunnen worden geselecteerd, en het bewerkersfilter toont de HR-accounts.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "De rondleiding legt het opmerkingenmenu en de waarschuwingen bij tijdregistraties in aparte stappen uit.",
+  "HR statistics correctly count hours worked in the current month.": "De HR-statistieken tellen de gewerkte uren in de huidige maand correct op."
 },
   "nplurals=2; plural=(n != 1);"
 );

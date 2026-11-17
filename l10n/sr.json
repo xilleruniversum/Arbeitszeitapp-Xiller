@@ -313,7 +313,13 @@
     "Apply": "Примени",
     "This text applies to your weekly email and your current account language.": "Овај текст важи за вашу недељну поруку на тренутном језику налога.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Уметните {entries} једном на место где треба да се прикажу имена и њихове вредности. {threshold} умеће тренутни праг.",
-    "The following days have missing or incomplete time entries.": "За следеће дане уноси радног времена недостају или су непотпуни."
+    "The following days have missing or incomplete time entries.": "За следеће дане уноси радног времена недостају или су непотпуни.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "Кадровска служба може да прилагоди имејлове са подсетницима и појединачне одељке недељног прегледа.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Мени за коментаре нуди одмор, боловање, заказани термин и сопствени коментар. Три унапред дефинисана разлога спречавају слање подсетника када недостају и време почетка и време завршетка рада.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Преглед кадровске службе обухвата неактивне запослене, има подесиву ширину и дугме за статистику.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Кадровска служба може да претражи запослене и ауторе измена у историји измена. Могу се изабрати неактивни запослени, а филтер аутора приказује налоге кадровске службе.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Вођени обилазак објашњава мени за коментаре и упозорења за уносе у посебним корацима.",
+    "HR statistics correctly count hours worked in the current month.": "Статистика кадровске службе тачно сабира сате одрађене у текућем месецу."
   },
   "pluralForm": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 }

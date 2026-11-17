@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Примени",
   "This text applies to your weekly email and your current account language.": "Овој текст важи за вашата неделна е-пошта на тековниот јазик на сметката.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Ставете {entries} еднаш на местото каде што треба да се прикажат имињата и нивните вредности. {threshold} го вметнува тековниот праг.",
-  "The following days have missing or incomplete time entries.": "За следните денови недостигаат записи за работното време или записите се нецелосни."
+  "The following days have missing or incomplete time entries.": "За следните денови недостигаат записи за работното време или записите се нецелосни.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Одделот за човечки ресурси може да ги приспособува е-пораките со потсетници и поединечните делови од неделниот преглед.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Менито за коментари нуди одмор, боледување, закажан термин и сопствен коментар. Трите однапред зададени причини спречуваат испраќање потсетник кога недостигаат и времето на почеток и времето на крај.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Прегледот за човечки ресурси ги вклучува и неактивните вработени. Ширината може да се приспособи, а статистиката се отвора со копче.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Одделот за човечки ресурси може да пребарува вработени и автори во историјата на промени. Може да се изберат и неактивни вработени, а филтерот за автори ги прикажува сметките на одделот.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Водената обиколка ги објаснува менито за коментари и предупредувањата за внесовите на работното време во одделни чекори.",
+  "HR statistics correctly count hours worked in the current month.": "Статистиката за човечки ресурси правилно ги собира одработените часови во тековниот месец."
 },
   "nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;"
 );

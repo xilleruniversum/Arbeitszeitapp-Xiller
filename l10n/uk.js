@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Застосувати",
   "This text applies to your weekly email and your current account language.": "Цей текст буде використано у вашому щотижневому листі поточною мовою облікового запису.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Вставте {entries} один раз там, де мають відображатися імена та відповідні значення. {threshold} підставляє поточний поріг.",
-  "The following days have missing or incomplete time entries.": "За наступні дні записи робочого часу відсутні або заповнені не повністю."
+  "The following days have missing or incomplete time entries.": "За наступні дні записи робочого часу відсутні або заповнені не повністю.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Відділ кадрів може налаштовувати листи-нагадування й окремі розділи щотижневого зведення.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "У меню коментарів можна вибрати відпустку, лікарняний чи заплановану зустріч або написати власний коментар. Три готові причини запобігають надсиланню нагадувань, якщо не вказано ні час початку, ні час завершення роботи.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "В огляді відділу кадрів відображаються неактивні працівники, можна змінювати ширину й відкривати статистику кнопкою.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Відділ кадрів може шукати працівників і авторів правок в історії змін. Можна вибирати неактивних працівників, а фільтр за автором показує облікові записи відділу кадрів.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Покроковий тур пояснює меню коментарів і попередження щодо записів на окремих кроках.",
+  "HR statistics correctly count hours worked in the current month.": "Статистика відділу кадрів правильно підсумовує години, відпрацьовані в поточному місяці."
 },
   "nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);"
 );

@@ -313,7 +313,13 @@
     "Apply": "Прилагане",
     "This text applies to your weekly email and your current account language.": "Този текст се отнася за седмичния ви имейл на текущия език на акаунта ви.",
     "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Поставете {entries} веднъж там, където трябва да се покажат имената и съответните им стойности. {threshold} вмъква текущия праг.",
-    "The following days have missing or incomplete time entries.": "За следните дни записите на работното време липсват или са непълни."
+    "The following days have missing or incomplete time entries.": "За следните дни записите на работното време липсват или са непълни.",
+    "HR can customise reminder emails and individual sections of the weekly summary.": "ЧР може да персонализира напомнящите имейли и отделни раздели от седмичното обобщение.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Менюто за коментари предлага отпуск, болничен, уговорен час и собствен коментар. Трите предварително зададени причини предотвратяват напомнянията, когато липсват и началният, и крайният час.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Прегледът за ЧР включва неактивни служители, има регулируема ширина и бутон за статистика.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "ЧР може да търси служители и редактори в историята на промените. Могат да се избират неактивни служители, а филтърът за редактори показва акаунтите на ЧР.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.": "Обиколката обяснява менюто за коментари и предупрежденията за записи в отделни стъпки.",
+    "HR statistics correctly count hours worked in the current month.": "Статистиката за ЧР отчита правилно отработените часове през текущия месец."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

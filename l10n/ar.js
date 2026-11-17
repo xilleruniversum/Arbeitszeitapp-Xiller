@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "تطبيق",
   "This text applies to your weekly email and your current account language.": "ينطبق هذا النص على بريدك الإلكتروني الأسبوعي ولغة حسابك الحالية.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "ضع {entries} مرة واحدة في موضع الأسماء والقيم الخاصة بها. يُدرج {threshold} الحد الحالي.",
-  "The following days have missing or incomplete time entries.": "إدخالات وقت العمل للأيام التالية مفقودة أو غير مكتملة."
+  "The following days have missing or incomplete time entries.": "إدخالات وقت العمل للأيام التالية مفقودة أو غير مكتملة.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "يمكن لفريق الموارد البشرية تخصيص رسائل التذكير وكل قسم من أقسام الملخص الأسبوعي.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "تتيح قائمة التعليقات اختيار الإجازة أو المرض أو موعد، أو كتابة تعليق مخصص. تمنع الأسباب الثلاثة المحددة مسبقًا إرسال تذكير عند غياب وقت البدء ووقت الانتهاء معًا.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "تضم نظرة الموارد البشرية العامة الموظفين غير النشطين أيضًا، ويمكن تعديل عرضها، وفيها زر للإحصاءات.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "يمكن لفريق الموارد البشرية البحث في سجل التغييرات عن الموظفين والحسابات التي أجرت التعديلات. يمكن اختيار الموظفين غير النشطين، ويعرض مرشح محرري السجل حسابات الموارد البشرية.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "تشرح الجولة الإرشادية قائمة التعليقات والتحذيرات المتعلقة بالإدخالات في خطوات منفصلة.",
+  "HR statistics correctly count hours worked in the current month.": "تحسب إحصاءات الموارد البشرية ساعات العمل في الشهر الحالي بشكل صحيح."
 },
   "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;"
 );

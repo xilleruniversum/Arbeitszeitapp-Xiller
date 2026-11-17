@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Aplicar",
   "This text applies to your weekly email and your current account language.": "Aqueste tèxte s’aplica a vòstre corrièl setmanièr dins la lenga actuala de vòstre compte.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Plaçatz {entries} un còp ont devon aparéisser los noms e lors valors. {threshold} inserís lo lindal actual.",
-  "The following days have missing or incomplete time entries.": "Pels jorns seguents, los enregistraments d’oras mancan o son incomplets."
+  "The following days have missing or incomplete time entries.": "Pels jorns seguents, los enregistraments d’oras mancan o son incomplets.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Lo servici RH pòt personalizar los corrièls de rapèl e las seccions del resumit setmanièr.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Lo menú dels comentaris prepausa las vacanças, la malautiá, un rendètz-vos o un comentari personalizat. Los tres motius predefinits empachan los rapèls quand mancan l’ora de començament e la de fin.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "La vista d’ensemble RH inclutz tanben los collaborators inactius. La largor es ajustabla e un boton permet de dobrir las estatisticas.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Lo servici RH pòt cercar de collaborators e d’autors dins l’istoric de las modificacions. Se pòdon seleccionar los collaborators inactius, e lo filtre dels autors aficha los comptes RH.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "La visita guidada explica lo menú dels comentaris e los avertiments dels enregistraments d’oras en etapas separadas.",
+  "HR statistics correctly count hours worked in the current month.": "Las estatisticas RH comptan corrèctament las oras trabalhadas del mes en cors."
 },
   "nplurals=2; plural=(n > 1);"
 );

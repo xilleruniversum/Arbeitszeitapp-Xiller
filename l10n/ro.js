@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Aplică",
   "This text applies to your weekly email and your current account language.": "Acest text se aplică e-mailului dumneavoastră săptămânal în limba actuală a contului.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Introduceți {entries} o dată, acolo unde trebuie să apară numele și valorile lor. {threshold} inserează pragul actual.",
-  "The following days have missing or incomplete time entries.": "Pentru zilele următoare, înregistrările timpului de lucru lipsesc sau sunt incomplete."
+  "The following days have missing or incomplete time entries.": "Pentru zilele următoare, înregistrările timpului de lucru lipsesc sau sunt incomplete.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Departamentul de resurse umane poate personaliza e-mailurile de reamintire și secțiunile individuale ale rezumatului săptămânal.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Meniul de comentarii oferă opțiuni pentru concediu de odihnă, concediu medical, programare și comentariu personalizat. Cele trei motive predefinite împiedică trimiterea reamintirilor când lipsesc atât ora de începere, cât și cea de încheiere.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Prezentarea resurselor umane include angajații inactivi, are lățime reglabilă și oferă un buton pentru statistici.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Departamentul de resurse umane poate căuta angajați și autori ai modificărilor în istoricul modificărilor. Angajații inactivi pot fi selectați, iar filtrul după autor afișează conturile departamentului de resurse umane.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Turul ghidat explică în pași separați meniul de comentarii și avertismentele privind înregistrările.",
+  "HR statistics correctly count hours worked in the current month.": "Statisticile de resurse umane calculează corect orele lucrate în luna curentă."
 },
   "nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));"
 );

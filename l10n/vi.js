@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Áp dụng",
   "This text applies to your weekly email and your current account language.": "Nội dung này áp dụng cho email hằng tuần của bạn bằng ngôn ngữ hiện tại của tài khoản.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Đặt {entries} một lần vào vị trí hiển thị tên và các giá trị tương ứng. {threshold} chèn ngưỡng hiện tại.",
-  "The following days have missing or incomplete time entries.": "Các mục chấm công của những ngày sau bị thiếu hoặc chưa đầy đủ."
+  "The following days have missing or incomplete time entries.": "Các mục chấm công của những ngày sau bị thiếu hoặc chưa đầy đủ.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Bộ phận nhân sự có thể tuỳ chỉnh email nhắc nhở và từng mục trong bản tổng hợp hằng tuần.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Menu ghi chú có các lựa chọn nghỉ phép, nghỉ ốm, lịch hẹn hoặc ghi chú tự nhập. Ba lý do có sẵn sẽ ngăn gửi nhắc nhở khi thiếu cả giờ bắt đầu lẫn giờ kết thúc.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Tổng quan nhân sự hiển thị cả nhân viên đã ngừng làm việc, cho phép điều chỉnh chiều rộng và có nút xem thống kê.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Bộ phận nhân sự có thể tìm nhân viên và người chỉnh sửa trong lịch sử thay đổi. Có thể chọn nhân viên đã ngừng làm việc, còn bộ lọc người chỉnh sửa liệt kê các tài khoản nhân sự.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Hướng dẫn sử dụng giải thích riêng từng bước về menu ghi chú và cảnh báo bản ghi.",
+  "HR statistics correctly count hours worked in the current month.": "Thống kê nhân sự tính đúng số giờ đã làm trong tháng hiện tại."
 },
   "nplurals=1; plural=0;"
 );

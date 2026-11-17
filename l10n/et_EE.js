@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Rakenda",
   "This text applies to your weekly email and your current account language.": "See tekst kehtib sinu iganädalase e-kirja kohta konto praeguses keeles.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Lisa {entries} üks kord sinna, kus peaksid ilmuma nimed ja neile vastavad väärtused. {threshold} lisab praeguse piirväärtuse.",
-  "The following days have missing or incomplete time entries.": "Järgmiste päevade tööajakanded on puudu või puudulikud."
+  "The following days have missing or incomplete time entries.": "Järgmiste päevade tööajakanded on puudu või puudulikud.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Personaliosakond saab kohandada meeldetuletuste e-kirju ja nädalakokkuvõtte üksikuid jaotisi.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Kommentaarimenüüst saab valida puhkuse, haiguslehe või kokkulepitud kohtumise ning kirjutada oma kommentaari. Kolm eelmääratud põhjust väldivad meeldetuletusi, kui puuduvad nii algus- kui ka lõpuaeg.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Personaliosakonna ülevaade sisaldab ka mitteaktiivseid töötajaid, selle laiust saab muuta ja seal on statistika nupp.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Personaliosakond saab muudatuste ajaloost otsida töötajaid ja muutjaid. Valida saab ka mitteaktiivseid töötajaid ning muutjate filter näitab personaliosakonna kontosid.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Tutvustus selgitab kommentaarimenüüd ja kannete hoiatusi eraldi sammudes.",
+  "HR statistics correctly count hours worked in the current month.": "Personaliosakonna statistika arvestab käesoleval kuul töötatud tunde õigesti."
 },
   "nplurals=2; plural=(n != 1);"
 );

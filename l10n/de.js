@@ -410,7 +410,13 @@ OC.L10N.register(
   "Apply": "Übernehmen",
   "This text applies to your weekly email and your current account language.": "Der Text gilt für Deine wöchentliche E-Mail in der aktuellen Kontosprache.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Setze {entries} einmal an die Stelle für Namen und Werte. {threshold} fügt den Grenzwert ein.",
-  "The following days have missing or incomplete time entries.": "Für folgende Tage fehlen Zeiteinträge oder sie sind unvollständig."
+  "The following days have missing or incomplete time entries.": "Für folgende Tage fehlen Zeiteinträge oder sie sind unvollständig.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "HR kann Erinnerungsmails und einzelne Abschnitte der wöchentlichen Übersichtsmail anpassen.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "Im Kommentarmenü stehen Urlaub, Krank, Termin und eigene Kommentare zur Auswahl. Die drei vorgegebenen Gründe verhindern eine Erinnerung, wenn Start- und Endzeit fehlen.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Die HR-Übersicht zeigt auch inaktive Mitarbeitende und bietet eine einstellbare Breite sowie den Button „Statistiken“.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Im Änderungsverlauf kann HR nach Mitarbeitenden und Bearbeitern suchen. Inaktive Mitarbeitende sind auswählbar. Der Filter „Bearbeiter“ zeigt HR-Konten an.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Die Einführung erklärt das Kommentarmenü und Warnhinweise zu Zeiteinträgen in getrennten Schritten.",
+  "HR statistics correctly count hours worked in the current month.": "Die HR-Statistik zeigt die geleisteten Arbeitsstunden für den laufenden Monat korrekt an."
 },
 "nplurals=2; plural=(n != 1);"
 );

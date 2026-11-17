@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Aplicar",
   "This text applies to your weekly email and your current account language.": "Esti testu aplícase al to corréu semanal y a la llingua actual de la to cuenta.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Pon {entries} una vez onde tengan qu’apaecer los nomes y los sos valores. {threshold} inxerta la llende actual.",
-  "The following days have missing or incomplete time entries.": "Nos díes siguientes falten rexistros d’hores o los rexistros tán incompletos."
+  "The following days have missing or incomplete time entries.": "Nos díes siguientes falten rexistros d’hores o los rexistros tán incompletos.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Recursos Humanos pue personalizar los correos de recordatoriu y cada sección del resume semanal.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "El menú de comentarios dexa escoyer vacaciones, baxa por enfermedá o cita, o escribir un comentariu propiu. Los tres motivos predefiníos eviten los recordatorios cuando falten les hores d’entamu y de fin.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "El resume de RR. HH. inclúi al personal inactivu, tien un anchor axustable y ufierta un botón d’estadístiques.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Recursos Humanos pue buscar personal y editores nel historial de cambios. Pue escoyese personal inactivu y el filtru d’editores amuesa les cuentes de RR. HH.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "La visita guiada esplica’l menú de comentarios y los avisos de los rexistros en pasos distintos.",
+  "HR statistics correctly count hours worked in the current month.": "Les estadístiques de RR. HH. calculen correctamente les hores trabayaes nel mes actual."
 },
   "nplurals=2; plural=(n != 1);"
 );

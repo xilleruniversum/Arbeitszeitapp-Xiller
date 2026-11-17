@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Прымяніць",
   "This text applies to your weekly email and your current account language.": "Гэты тэкст ужываецца для вашага штотыднёвага ліста на бягучай мове ўліковага запісу.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Устаўце {entries} адзін раз там, дзе павінны з’явіцца імёны і адпаведныя значэнні. {threshold} падстаўляе бягучы парог.",
-  "The following days have missing or incomplete time entries.": "За наступныя дні запісы працоўнага часу адсутнічаюць або няпоўныя."
+  "The following days have missing or incomplete time entries.": "За наступныя дні запісы працоўнага часу адсутнічаюць або няпоўныя.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "Аддзел кадраў можа змяняць тэксты лістоў з напамінамі і асобных раздзелаў штотыднёвай зводкі.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "У меню каментарыяў можна выбраць адпачынак, бальнічны або сустрэчу, а таксама напісаць уласны каментарый. Тры гатовыя прычыны прадухіляюць напаміны, калі няма ні часу пачатку, ні часу заканчэння.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "Агляд кадравай службы ўключае неактыўных супрацоўнікаў, мае рэгуляваную шырыню і кнопку статыстыкі.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "Аддзел кадраў можа шукаць супрацоўнікаў і рэдактараў у гісторыі змен. Можна выбраць неактыўных супрацоўнікаў, а фільтр рэдактараў паказвае ўліковыя запісы аддзела кадраў.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "У аглядзе меню каментарыяў і папярэджанні пра запісы тлумачацца на асобных кроках.",
+  "HR statistics correctly count hours worked in the current month.": "Статыстыка аддзела кадраў правільна падлічвае адпрацаваныя гадзіны за бягучы месяц."
 },
   "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
 );

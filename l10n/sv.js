@@ -314,7 +314,13 @@ OC.L10N.register(
   "Apply": "Tillämpa",
   "This text applies to your weekly email and your current account language.": "Texten gäller det veckovisa e-postmeddelandet på det språk som är valt för ditt konto.",
   "Use {entries} once for the names and their figures. {threshold} inserts the current threshold.": "Ange {entries} en gång där namnen och deras värden ska visas. {threshold} infogar det aktuella gränsvärdet.",
-  "The following days have missing or incomplete time entries.": "För följande dagar saknas tidsregistreringar eller är de ofullständiga."
+  "The following days have missing or incomplete time entries.": "För följande dagar saknas tidsregistreringar eller är de ofullständiga.",
+  "HR can customise reminder emails and individual sections of the weekly summary.": "HR kan anpassa påminnelsemejlen och enskilda avsnitt i veckosammanfattningen.",
+  "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.": "I kommentarsmenyn går det att välja semester, sjukfrånvaro eller bokat möte, eller skriva en egen kommentar. De tre förvalda orsakerna förhindrar påminnelser när både start- och sluttid saknas.",
+  "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.": "HR-översikten visar även inaktiva medarbetare, har justerbar bredd och en knapp för statistik.",
+  "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.": "HR kan söka efter medarbetare och redigerare i ändringshistoriken. Inaktiva medarbetare går att välja, och redigerarfiltret visar HR-konton.",
+  "The guided tour explains the comment menu and entry warnings in separate steps.": "Den guidade visningen förklarar kommentarsmenyn och varningar för registreringar i separata steg.",
+  "HR statistics correctly count hours worked in the current month.": "HR-statistiken räknar nu arbetade timmar för den aktuella månaden korrekt."
 },
   "nplurals=2; plural=(n != 1);"
 );

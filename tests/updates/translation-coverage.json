@@ -24,7 +24,13 @@
     "Access checks for employee entries and work settings follow HR responsibility.",
     "HR list warnings and Monday emails now use shared thresholds.",
     "The HR recipient search suggests matching accounts while typing.",
-    "Timesheets are easier to read on small screens."
+    "Timesheets are easier to read on small screens.",
+    "HR can customise reminder emails and individual sections of the weekly summary.",
+    "The comment menu offers vacation, sickness, appointments and custom comments. The three preset reasons prevent reminders when both times are missing.",
+    "The HR overview includes inactive employees, has an adjustable width and offers a statistics button.",
+    "HR can search for employees and editors in the change history. Inactive employees can be selected, and the editor filter lists HR accounts.",
+    "The guided tour explains the comment menu and entry warnings in separate steps.",
+    "HR statistics correctly count hours worked in the current month."
   ],
   "locales": {
     "ar": "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;",
