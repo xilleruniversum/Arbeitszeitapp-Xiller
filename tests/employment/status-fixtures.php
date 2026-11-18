@@ -172,7 +172,7 @@ namespace OCA\Timesheet\Service {
 	}
 	class AbsenceCommentCatalog {
 		public function getTerms(string $language): array {
-			return ['vacation' => 'Urlaub', 'timeOffInLieu' => 'Stundenausgleich'];
+			return ['vacation' => 'Urlaub', 'sick' => 'Krank', 'appointment' => 'Termin'];
 		}
 	}
 }
@@ -195,6 +195,9 @@ namespace OCA\Timesheet\Db {
 		public bool $rejectHistoryReads = false;
 		public function getBreakInputPreference(string $userId): array {
 			return ['breakInputMode' => 'minutes', 'revision' => hash('sha256', '')];
+		}
+		public function getHrOverviewWidthPreference(string $userId): array {
+			return ['width' => null, 'revision' => hash('sha256', '')];
 		}
 		public function getHistoryViewPreference(string $userId): array {
 			$this->historyReads[] = $userId;

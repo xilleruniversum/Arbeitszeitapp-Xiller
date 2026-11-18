@@ -1,0 +1,228 @@
+/* Hover help in the time entry tables and HR settings. */
+#timesheet-app .hr-help-button {
+	display: inline-grid;
+	place-items: center;
+	flex: 0 0 28px;
+	inline-size: 28px;
+	block-size: 28px;
+	min-inline-size: 28px;
+	min-block-size: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: var(--border-radius, 4px);
+	background: transparent;
+	color: var(--color-main-text);
+	vertical-align: middle;
+}
+
+#timesheet-app .hr-help-button[hidden] {
+	display: none;
+}
+
+#timesheet-app .hr-help-button::before {
+	content: '';
+	inline-size: 16px;
+	block-size: 16px;
+	background: currentColor;
+	mask: url('../img/hr-help.svg') center / contain no-repeat;
+}
+
+#timesheet-app .hr-help-button:hover,
+#timesheet-app .hr-help-button[aria-expanded="true"] {
+	background: var(--color-background-hover);
+}
+
+#timesheet-app .hr-help-button:focus-visible {
+	outline: 2px solid var(--color-main-text);
+	outline-offset: 2px;
+}
+
+#timesheet-app .hr-help-popup {
+	position: fixed;
+	inset: auto;
+	z-index: 1000;
+	box-sizing: border-box;
+	inline-size: min(48ch, calc(100vw - 24px));
+	max-block-size: calc(100dvh - 24px);
+	overflow: auto;
+	overscroll-behavior: contain;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--color-border, #d0d7de);
+	border-radius: var(--border-radius-large, 8px);
+	background: var(--color-main-background, #fff);
+	color: var(--color-main-text, #222);
+	box-shadow: 0 4px 16px rgb(0 0 0 / .18);
+	font: inherit;
+	font-weight: 400;
+	line-height: 1.5;
+	text-align: start;
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+#timesheet-app .hr-help-popup[hidden] {
+	display: none;
+}
+
+#timesheet-app .hr-help-popup > span {
+	display: block;
+}
+
+#timesheet-app .hr-help-popup > span + span {
+	margin-block-start: 8px;
+}
+
+/* The help button sits beside the label without sizing the table column. */
+#timesheet-app .ts-comment-label {
+	position: relative;
+	inset-inline-start: -12px;
+}
+
+#timesheet-app .ts-comment-label > .hr-help-button {
+	position: absolute;
+	inset-inline-start: calc(100% + 3px);
+	inset-block-start: 50%;
+	transform: translateY(-50%);
+	inline-size: 22px;
+	block-size: 22px;
+	min-inline-size: 22px;
+	min-block-size: 22px;
+}
+
+#timesheet-app .ts-comment-label > .hr-help-button::before {
+	inline-size: 14px;
+	block-size: 14px;
+}
+
+@container (max-width: 62rem) {
+	/* Keep the icon within the heading when the column fits only the label and cell padding. */
+	#timesheet-app .ts-comment-label {
+		inset-inline-start: -6px;
+	}
+
+	#timesheet-app .ts-comment-label > .hr-help-button {
+		inset-inline-start: 100%;
+		inline-size: 12px;
+		min-inline-size: 12px;
+	}
+
+	#timesheet-app .ts-comment-label > .hr-help-button::before {
+		inline-size: 11px;
+		block-size: 11px;
+	}
+}
+
+/* App help and the tour share the same panel layout. */
+.ts-tour-invitation,
+.ts-tour-dialog,
+.ts-tour-email-help {
+	position: fixed;
+	box-sizing: border-box;
+	width: min(380px, calc(100vw - 24px));
+	max-height: calc(100dvh - 24px);
+	overflow: auto;
+	padding: 20px;
+	border-radius: var(--border-radius-large, 12px);
+	background: var(--color-main-background, #fff);
+	color: var(--color-main-text, #222);
+	box-shadow: 0 10px 36px rgba(0, 0, 0, .3);
+	font-size: var(--default-font-size, 15px);
+	line-height: 1.5;
+	text-align: start;
+	overflow-wrap: anywhere;
+}
+
+.ts-tour-invitation,
+.ts-tour-email-help {
+	z-index: 2147483000;
+}
+
+.ts-tour-invitation h2,
+.ts-tour-dialog h2,
+.ts-tour-email-help h2 {
+	margin: 0 0 10px;
+	font-size: 1.15em;
+	font-weight: 600;
+	line-height: 1.35;
+	color: inherit;
+}
+
+.ts-tour-invitation h2,
+.ts-tour-email-help h2 {
+	padding-inline-end: 24px;
+}
+
+.ts-tour-invitation p,
+.ts-tour-dialog p,
+.ts-tour-email-help p {
+	margin: 0 0 16px;
+	color: inherit;
+}
+
+/* Keep the close control independent of Nextcloud's empty-button styles. */
+#ts-tour-invitation .ts-tour-close,
+#ts-email-help .ts-tour-close {
+	position: absolute;
+	inset-block-start: 8px;
+	inset-inline-end: 8px;
+	box-sizing: border-box;
+	width: 44px;
+	height: 44px;
+	min-width: 44px;
+	min-height: 44px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+}
+
+#ts-tour-invitation .ts-tour-close:hover,
+#ts-tour-invitation .ts-tour-close:focus,
+#ts-tour-invitation .ts-tour-close:active,
+#ts-email-help .ts-tour-close:hover,
+#ts-email-help .ts-tour-close:focus,
+#ts-email-help .ts-tour-close:active {
+	background: transparent;
+	color: inherit;
+}
+
+.ts-tour-close::before,
+.ts-tour-close::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 18px;
+	height: 2px;
+	background: currentColor;
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ts-tour-close::after {
+	transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Email status remains part of the nonmodal help panel. */
+#ts-email-help .ts-email-help-status {
+	margin-block-end: 12px;
+	margin-inline-end: 44px;
+	font-weight: 600;
+}
+
+.ts-tour-actions button:focus-visible,
+.ts-tour-close:focus-visible,
+#ts-tour-launcher:focus-visible {
+	outline: 2px solid var(--color-primary-element, #0082c9);
+	outline-offset: 3px;
+}
+
+@media (max-width: 512px) {
+	.ts-tour-invitation,
+	.ts-tour-dialog,
+	.ts-tour-email-help {
+		padding: 16px;
+	}
+}

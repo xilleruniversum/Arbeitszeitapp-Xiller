@@ -104,7 +104,7 @@ class MissingEntryDetector {
 
 		$commentType = $entry['commentType'] ?? null;
 		if ($commentType === null) {
-			// Only untouched legacy comments can still be recognized by their text.
+			// Match free-text comments against the localized absence terms.
 			return $this->absenceComments->isExemptComment($entry['comment']) ? null : 'missing';
 		}
 		return is_string($commentType) && EntryCommentType::tryFrom($commentType)?->isAbsence() ? null : 'missing';

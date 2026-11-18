@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const coreSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-runtime.js'), 'utf8');
-const mainSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-main.js'), 'utf8');
+const mainSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-main-v2.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
 const initialRevision = '0'.repeat(64);
 
@@ -138,7 +138,7 @@ async function openTimesheet({ savedMode, viewer = 'alice', readyState = 'comple
 		if (respond) await respond(request, requests.length);
 		return preferenceServer.save(request);
 	};
-	vm.runInContext(mainSource, context, { filename: 'timesheet-main.js' });
+	vm.runInContext(mainSource, context, { filename: 'timesheet-main-v2.js' });
 	await flush();
 
 	return {

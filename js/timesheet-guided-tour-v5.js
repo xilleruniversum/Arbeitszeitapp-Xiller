@@ -211,7 +211,6 @@
 			},
 			{
 				id: 'comments', title: 'Comments and absences',
-				text: 'Use the Comment column to record your own notes about the workday. If both start and end times are missing, only the preset reasons in the Comment column prevent a notification. Otherwise, entries with no time or only one time are marked as incomplete.',
 				localizedText: appRoot.dataset.tourCommentsDescription,
 				selectors: ['#ts-body tr:first-child .ts-comment-cell', '#ts-table thead .ts-comment-heading'],
 				horizontalPadding: 0,
@@ -610,7 +609,7 @@
 		const preparation = ++currentPreparation;
 		updateButtons();
 		dialogTitle.textContent = translate(step.title);
-		dialogDescription.textContent = step.localizedText ?? translate(step.text, step.textParameters);
+		dialogDescription.textContent = step.localizedText ?? translate(step.text ?? '');
 		progressLabel.textContent = translate('Step {current} of {total}', { current: stepIndex + 1, total: steps.length });
 		dialog.querySelector('.ts-tour-content').scrollTop = 0;
 		overlay.dataset.step = step.id;

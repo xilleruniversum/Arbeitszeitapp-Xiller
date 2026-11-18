@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const mailHelpSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-mail-help.js'), 'utf8');
+const mailHelpSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-mail-help-v2.js'), 'utf8');
 const headerSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-tour-launcher.js'), 'utf8');
-const tourSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-guided-tour-v2.js'), 'utf8');
+const tourSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-guided-tour-v5.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
 
 // Exercise the real tour with a small DOM and read-only application fixtures.
@@ -193,7 +193,6 @@ function createFixture({ hr = false, hrDom = false, enabled = true, employeeComp
 	const row = element('tr', '', '', body);
 	for (const className of ['startTime', 'breakMinutes', 'endTime', 'ts-duration', 'ts-diff', 'ts-status']) element(className.includes('Time') || className === 'breakMinutes' ? 'input' : 'td', '', className, row);
 	const commentCell = element('td', '', 'ts-comment-cell', row);
-	element('select', '', 'commentSelect', commentCell);
 	element('textarea', '', 'commentInput', commentCell);
 	element('td', '', 'ts-warn', row);
 	element('div', 'ts-break-toggle', '', mine);
@@ -261,9 +260,9 @@ function createFixture({ hr = false, hrDom = false, enabled = true, employeeComp
 		},
 		export: { handleExportClick(view) { copyCounts.exportChoices++; const id = `export-${view}-xlsx-choice-ui`; let choices = document.getElementById(id); if (!choices) choices = element('span', id, '', mine); choices.classList.toggle('is-visible'); } },
 	};
-	vm.runInContext(mailHelpSource, context, { filename: 'timesheet-mail-help.js' });
+	vm.runInContext(mailHelpSource, context, { filename: 'timesheet-mail-help-v2.js' });
 	vm.runInContext(headerSource, context, { filename: 'timesheet-tour-launcher.js' });
-	vm.runInContext(tourSource, context, { filename: 'timesheet-guided-tour-v2.js' });
+	vm.runInContext(tourSource, context, { filename: 'timesheet-guided-tour-v5.js' });
 	context.Timesheet.tour.init();
 	return {
 		context, document, app, requests, messages, copyCounts, element, dispatch, event: makeEvent, tour: context.Timesheet.tour,
@@ -861,17 +860,17 @@ test('the final launcher step closes the profile and ending restores unsaved fie
 	}
 });
 
-test('comment guidance explains the different reminder behavior of presets and custom comments', async () => {
-	const english = 'Use the Comment column to record your own notes about the workday. If both start and end times are missing, only the preset reasons in the Comment column prevent a notification. Otherwise, entries with no time or only one time are marked as incomplete.';
-	for (const localized of [null, 'Lokalisierter Hinweis zur Kommentarspalte.']) {
-		const fixture = createFixture();
-		if (localized !== null) fixture.app.dataset.tourCommentsDescription = localized;
-		await fixture.tour.start();
-		await advanceToStep(fixture, 'comments');
-		assert.equal(fixture.document.getElementById('ts-tour-description').textContent, localized ?? english);
-		assert.equal(fixture.requests.length, 0);
-		await fixture.tour.end();
-	}
+test('comment guidance uses the account language even when the browser catalog lacks the new text', async () => {
+	const description = 'Die Kommentarspalte kann genutzt werden, um eigene Informationen zum Tagesablauf festzuhalten. Fehlen Start- und Endzeit, verhindern nur die folgenden Gründe eine Benachrichtigung: Urlaub, Krank oder Termin. Einträge mit keiner oder nur einer Zeitangabe werden andernfalls als unvollständig gekennzeichnet.';
+	const fixture = createFixture({
+		translate: message => message === 'Comments and absences' ? 'Kommentare und Abwesenheiten' : message,
+	});
+	fixture.app.dataset.tourCommentsDescription = description;
+	await fixture.tour.start();
+	await advanceToStep(fixture, 'comments');
+	assert.equal(fixture.document.getElementById('ts-tour-description').textContent, description);
+	assert.equal(fixture.requests.length, 0);
+	await fixture.tour.end();
 });
 
 test('header placement and invitation follow the app account state without duplicate launchers', async () => {

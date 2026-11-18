@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const statusSource = readFileSync(resolve(root, 'js/timesheet-employment-status.js'), 'utf8');
-const hrSource = readFileSync(resolve(root, 'js/timesheet-hr-dashboard-v2.js'), 'utf8');
+const hrSource = readFileSync(resolve(root, 'js/timesheet-hr-dashboard-v5.js'), 'utf8');
 const copy = value => JSON.parse(JSON.stringify(value));
 const flush = () => new Promise(setImmediate);
 

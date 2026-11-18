@@ -289,30 +289,78 @@
 		document.getElementById('hr-employee-list-retry')?.addEventListener('click', loadHrUserList);
 	}
 
-	function initializeOverviewWidth() {
+	function initializeViewWidth() {
 		const app = document.getElementById('timesheet-app');
-		const layout = document.getElementById('hr-overview-panels')?.parentElement;
-		const control = document.getElementById('hr-overview-width-control');
-		const slider = document.getElementById('hr-overview-width');
-		const output = document.getElementById('hr-overview-width-value');
-		const helpBox = document.getElementById('hr-overview-help-box');
-		const helpButton = layout?.querySelector('[aria-controls="hr-overview-help"]');
-		if (!app || !layout || !control || !slider || !output || !helpBox || !helpButton) return;
+		const control = document.getElementById('timesheet-view-width-control');
+		const slider = document.getElementById('timesheet-view-width');
+		const output = document.getElementById('timesheet-view-width-value');
+		if (!app || !control || !slider || !output) return;
 
 		const minimum = Number(slider.min);
 		const maximum = Number(slider.max);
 		const minimumPanelWidth = 320;
-		const minimumSpaceForHelp = 288;
 		let availableWidth = 0;
 		const storageKey = appState.currentUserId && `timesheet:hr-overview-width:${encodeURIComponent(appState.currentUserId)}`;
-		let preferredWidth = maximum;
+		const pendingKey = storageKey && `${storageKey}:pending`;
+		const validWidth = width => Number.isInteger(width) && width >= minimum && width <= maximum;
+		let legacyWidth = null;
+		let pending = null;
 		if (storageKey) {
+			try { legacyWidth = Number(window.localStorage.getItem(storageKey)); } catch {}
+			try { pending = JSON.parse(window.sessionStorage.getItem(pendingKey)); } catch {}
+		}
+		const storedWidth = Number(slider.dataset.accountWidth);
+		let savedWidth = validWidth(storedWidth) ? storedWidth : null;
+		let revision = slider.dataset.widthRevision;
+		const resumePending = revision && pending?.revision === revision && validWidth(pending.width);
+		const importLegacy = savedWidth === null && validWidth(legacyWidth);
+		let preferredWidth = resumePending ? pending.width : savedWidth ?? (importLegacy ? legacyWidth : Number(slider.defaultValue));
+		let saveQueue = Promise.resolve();
+		let saveNumber = 0;
+
+		function rememberPending(width) {
+			if (!pendingKey) return;
 			try {
-				const savedWidth = Number(window.localStorage.getItem(storageKey));
-				if (Number.isInteger(savedWidth) && savedWidth >= minimum && savedWidth <= maximum) {
-					preferredWidth = savedWidth;
+				if (width === null) window.sessionStorage.removeItem(pendingKey);
+				else window.sessionStorage.setItem(pendingKey, JSON.stringify({ width, revision }));
+			} catch {} // The account save also works without browser storage.
+		}
+
+		function saveWidth(width, automatic = false) {
+			const requestNumber = ++saveNumber;
+			rememberPending(width);
+			saveQueue = saveQueue.then(async () => {
+				if (requestNumber !== saveNumber) return;
+				try {
+					if (!revision) throw new Error('The width preference is unavailable.');
+					if (width !== savedWidth) {
+						const preference = await timesheet.api('/api/preferences/hr-overview-width', {
+							method: 'PUT',
+							body: JSON.stringify({ width, revision }),
+							keepalive: true,
+						});
+						savedWidth = preference.width;
+						revision = preference.revision;
+					}
+					if (requestNumber === saveNumber) rememberPending(null);
+					else rememberPending(preferredWidth);
+				} catch (error) {
+					let conflict;
+					try { conflict = JSON.parse(error.message); } catch {}
+					if (conflict?.code === 'preference_conflict') {
+						savedWidth = conflict.width;
+						revision = conflict.revision;
+					}
+					if (requestNumber !== saveNumber) return;
+					rememberPending(null);
+					if (savedWidth !== null) {
+						preferredWidth = savedWidth;
+						slider.value = String(Math.max(Number(slider.min), preferredWidth));
+						applyWidth();
+					}
+					if (!automatic) timesheet.notify(translate('Changes could not be saved. Please try again.'));
 				}
-			} catch {} // The slider still works with browser storage disabled.
+			});
 		}
 
 		function showWidthValue() {
@@ -323,13 +371,7 @@
 
 		function applyWidth() {
 			const percent = slider.valueAsNumber;
-			app.style.setProperty('--hr-overview-width', `${percent}%`);
-			const spareWidth = availableWidth * (100 - percent) / 100;
-			const showHelpBox = percent <= 60 && spareWidth >= minimumSpaceForHelp;
-			const helpHadFocus = document.activeElement === helpButton;
-			helpButton.hidden = showHelpBox;
-			helpBox.hidden = !showHelpBox;
-			if (showHelpBox && helpHadFocus) slider.focus();
+			app.style.setProperty('--timesheet-view-width', `${percent}%`);
 			showWidthValue();
 			positionListPopups();
 		}
@@ -339,8 +381,7 @@
 		slider.addEventListener('change', () => {
 			preferredWidth = slider.valueAsNumber;
 			applyWidth();
-			if (!storageKey) return;
-			try { window.localStorage.setItem(storageKey, String(preferredWidth)); } catch {}
+			saveWidth(preferredWidth);
 		});
 
 		new ResizeObserver(([entry]) => {
@@ -353,15 +394,19 @@
 			slider.value = String(Math.max(fittingMinimum, preferredWidth));
 			control.hidden = fittingMinimum === maximum;
 			applyWidth();
-		}).observe(layout);
+		}).observe(app);
+
+		if (revision && (resumePending || importLegacy)) saveWidth(preferredWidth, !resumePending);
+		else if (pending !== null) rememberPending(null);
 	}
 
 	// Initialize HR module
 	function initializeHrHandlers() {
-		if (initialized || !document.getElementById('hr-userlist')) return;
+		if (initialized) return;
 		initialized = true;
+		initializeViewWidth();
+		if (!document.getElementById('hr-userlist')) return;
 		initializeFilters();
-		initializeOverviewWidth();
 		timesheet.employmentStatus?.onChange(() => { if (listLoaded) loadHrUserList(); });
 		// Load HR user entries on button click
 		document.addEventListener('click', async event => {
@@ -380,7 +425,6 @@
 			const hrDailyMinInput = hrConfigRow?.querySelector('.config-daily-min');
 			const hrStateInput = hrConfigRow?.querySelector('.config-state');
 			if (tabHrSection) {
-				tabHrSection.classList.toggle('is-employee-detail', true);
 				tabHrSection.querySelectorAll('.ts-hr-section').forEach(section => section.style.display = 'none');
 			}
 			appState.hrCurrentMonth = new Date();
@@ -429,7 +473,6 @@
 			if (!tabHrSection) {
 				return;
 			}
-			tabHrSection.classList.toggle('is-employee-detail', false);
 			tabHrSection.querySelectorAll('.ts-hr-section').forEach(section => {
 				if (section.id === 'hr-user-entries') {
 					section.style.display = 'none';

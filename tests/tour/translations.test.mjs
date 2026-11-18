@@ -9,7 +9,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const coverage = JSON.parse(readFileSync(resolve(root, 'tests/tour/translation-coverage.json'), 'utf8'));
 const absenceTerms = JSON.parse(readFileSync(resolve(root, 'lib/Service/absence-comment-terms.json'), 'utf8'));
 const federalStateExplanation = 'The public holidays shown in the Status column depend on the selected federal state.';
-const commentsExplanation = 'Use the Comment column to record your own notes about the workday. If both start and end times are missing, only the preset reasons in the Comment column prevent a notification. Otherwise, entries with no time or only one time are marked as incomplete.';
+const commentsExplanation = 'Use the Comment column to record information about your workday. If both start and end times are missing, only the following reasons prevent a notification: {vacation}, {sick} or {appointment}. Otherwise, entries with no time or only one time are marked as incomplete.';
+const commentHelp = 'Only the following reasons prevent a reminder for a completely missing time entry: "%1$s", "%2$s", "%3$s".';
+const commentColumnHelp = 'Completely missing time entries in the timesheet trigger an email notification to your own account and, if configured, to HR as well. Only the following reasons in the Comment column prevent a reminder: "%1$s", "%2$s", "%3$s".';
+const commentHelpBoxReminder = 'If both start and end times are missing, only the reasons listed in the Comment column’s help box prevent a reminder. Custom comments do not prevent reminders. Entries with only one time remain incomplete.';
 const generalHelpExplanation = 'Questions, help and privacy information about Nextcloud in general.';
 const restartExplanation = 'Questions and suggestions for HR. The guide can be restarted using the tour icon.';
 const warningsExplanation = 'Breaks that exceed or fall below the limits and missing timesheets trigger warnings and should be corrected promptly.';
@@ -27,7 +30,7 @@ const contactDraftMessages = [
 	'Best regards,',
 	'Your name',
 ];
-const placeholders = text => [...text.matchAll(/\{\w+\}/g)].map(match => match[0]).sort();
+const placeholders = text => [...text.matchAll(/\{\w+\}|%\d+\$s/g)].map(match => match[0]).sort();
 
 // Every supported account language must contain the complete tour in both runtimes.
 for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
@@ -43,7 +46,7 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 		});
 		assert.ok(browser, 'Browser catalog registers its translations');
 		assert.equal(server.pluralForm, pluralForm);
-		for (const message of [...coverage.messages, ...contactDraftMessages]) {
+		for (const message of [...coverage.messages, commentHelp, commentColumnHelp, commentHelpBoxReminder, ...contactDraftMessages]) {
 			const translated = server.translations[message];
 			assert.equal(typeof translated, 'string', `Missing ${locale} translation: ${message}`);
 			assert.ok(translated.trim(), `Empty ${locale} translation: ${message}`);
@@ -53,7 +56,7 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 		assert.ok(absenceTerms[locale], 'The displayed absence terms are available for this account language');
 		if (!locale.startsWith('en')) {
 			assert.notEqual(server.translations['A short tour explains the main features.'], 'A short tour explains the main features.', 'An English copy is not a translated tour');
-			for (const message of [federalStateExplanation, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages]) {
+			for (const message of [federalStateExplanation, commentsExplanation, commentHelp, commentColumnHelp, commentHelpBoxReminder, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages]) {
 				assert.notEqual(server.translations[message], message, 'New explanations are translated into the account language');
 			}
 		}
@@ -63,17 +66,17 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 test('shared absence labels cover all account languages and preserve the German and English terms', () => {
 	assert.deepEqual(Object.keys(absenceTerms).sort(), ['en', ...Object.keys(coverage.locales)].sort());
 	for (const [locale, terms] of Object.entries(absenceTerms)) {
-		assert.deepEqual(Object.keys(terms).sort(), ['timeOffInLieu', 'vacation']);
+		assert.deepEqual(Object.keys(terms).sort(), ['appointment', 'sick', 'vacation']);
 		for (const term of Object.values(terms)) {
 			assert.equal(typeof term, 'string');
 			assert.ok(term.trim(), `Empty absence term for ${locale}`);
 			assert.equal(term.trim(), term);
 			assert.doesNotMatch(term, /[{}%]/u, 'Labels contain no unresolved placeholders');
 		}
-		assert.notEqual(terms.vacation, terms.timeOffInLieu, `Distinct absence reasons for ${locale}`);
+		assert.equal(new Set(Object.values(terms)).size, 3, `Distinct absence reasons for ${locale}`);
 	}
-	for (const locale of ['de', 'de_DE']) assert.deepEqual(absenceTerms[locale], { vacation: 'Urlaub', timeOffInLieu: 'Stundenausgleich' });
-	for (const locale of ['en', 'en_GB']) assert.deepEqual(absenceTerms[locale], { vacation: 'Vacation', timeOffInLieu: 'Time off in lieu' });
+	for (const locale of ['de', 'de_DE']) assert.deepEqual(absenceTerms[locale], { vacation: 'Urlaub', sick: 'Krank', appointment: 'Termin' });
+	for (const locale of ['en', 'en_GB']) assert.deepEqual(absenceTerms[locale], { vacation: 'Vacation', sick: 'Sick leave', appointment: 'Appointment' });
 });
 
 test('the two German tour variants use the same neutral explanations', () => {
@@ -99,7 +102,10 @@ test('German employee guidance uses the shortened copy without approval promises
 		assert.equal(translations['Explore Timesheet?'], 'Arbeitszeitnachweis kennenlernen?');
 		assert.equal(translations['Federal state'], 'Bundesland');
 		assert.equal(translations[federalStateExplanation], 'Die Feiertage in der Spalte „Status“ richten sich nach dem gewählten Bundesland.');
-		assert.equal(translations[commentsExplanation], 'Die Kommentarspalte kann genutzt werden, um eigene Informationen zum Tagesablauf festzuhalten. Fehlen Start- und Endzeit, verhindern nur die in der Kommentarspalte vorgegebenen Gründe eine Benachrichtigung. Einträge mit keiner oder nur einer Zeitangabe werden andernfalls als unvollständig gekennzeichnet.');
+		assert.equal(translations[commentsExplanation], 'Die Kommentarspalte kann genutzt werden, um eigene Informationen zum Tagesablauf festzuhalten. Fehlen Start- und Endzeit, verhindern nur die folgenden Gründe eine Benachrichtigung: {vacation}, {sick} oder {appointment}. Einträge mit keiner oder nur einer Zeitangabe werden andernfalls als unvollständig gekennzeichnet.');
+		assert.equal(translations[commentHelp], 'Nur die folgenden Gründe verhindern die Erinnerung eines vollständig fehlenden Arbeitszeiteintrages: "%1$s", "%2$s", "%3$s".');
+		assert.equal(translations[commentColumnHelp], 'Vollständig fehlende Zeiteinträge im Arbeitszeitnachweis bewirken eine E-Mail Benachrichtigung an das persönliche Konto und, falls eingestellt, auch an HR. Nur die folgenden Gründe in der Kommentarspalte verhindern eine Erinnerung: "%1$s", "%2$s", "%3$s".');
+		assert.equal(translations[commentHelpBoxReminder], 'Fehlen Start- und Endzeit, verhindern nur die vorgegebenen Gründe in der Infobox der Kommentarspalte eine Erinnerung. Eigene Kommentare verhindern keine Erinnerung. Einträge mit nur einer Zeitangabe bleiben unvollständig.');
 		assert.doesNotMatch(translations[commentsExplanation], /Freigabe|Genehmigung|Warnung|Strg\+C|Command\+C/u);
 		assert.equal(translations['Time entry warnings'], 'Warnungen');
 		assert.equal(translations['Freelancer mode'], 'Freelancer-Modus');

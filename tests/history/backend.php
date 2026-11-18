@@ -221,7 +221,7 @@ namespace {
 	checkHistory('creation records complete input snapshot, exact actor and historical pause value', function () use ($entryData): void {
 		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $record = $f['db']->records[0];
 		sameHistory($record['actor'], ['id' => 'hr-a', 'name' => 'Name hr-a']); sameHistory($record['employee']['id'], 'employee'); sameHistory($record['kind'], 'created');
-		sameHistory($record['entryId'], $entry->getId()); sameHistory(count($record['changes']), 6); sameHistory($record['changes'][1]['after'], 0); sameHistory($record['changes'][3]['after'], -10); sameHistory($f['locks']->held, []);
+		sameHistory($record['entryId'], $entry->getId()); sameHistory(array_column($record['changes'], 'field'), array_keys($entryData)); sameHistory($record['changes'][1]['after'], 0); sameHistory($record['changes'][3]['after'], -10); sameHistory($f['locks']->held, []);
 	});
 	checkHistory('second HR editor records only changed fields and sees freshly stored values', function () use ($entryData): void {
 		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $f['session']->user = $f['users']->get('hr-b'); $f['entries']->update($entry->getId(), ['comment' => 'Changed']);
@@ -323,7 +323,7 @@ namespace {
 		$cleared = $f['entries']->update($entry->getId(), ['comment' => '', 'commentType' => 'custom']);
 		sameHistory([$cleared->getComment(), $cleared->getCommentType()], ['', 'custom']);
 	});
-	checkHistory('untouched legacy keeps the nullable kind while new or changed untyped remarks are custom', function () use ($entryData): void {
+	checkHistory('new and changed untyped remarks use the free-text rule, while unchanged types are preserved', function () use ($entryData): void {
 		$f = historyFixture();
 		$oldComment = "\u{00A0}Stundenausgleich\u{3000}";
 		$legacy = $f['mapper']->upsertCommentOnly('employee', '2026-11-01', $oldComment);
@@ -334,9 +334,21 @@ namespace {
 		$trimmedText = $f['entries']->upsertCommentOnly('employee', '2026-11-01', 'Stundenausgleich');
 		sameHistory($trimmedText->getCommentType(), null);
 		$changed = $f['entries']->update($legacy->getId(), ['comment' => 'Urlaub']);
-		sameHistory($changed->getCommentType(), 'custom');
+		sameHistory($changed->getCommentType(), null);
 		$entry = $f['entries']->create([...$entryData, 'comment' => 'Urlaub'], 'employee');
-		sameHistory($entry->getCommentType(), 'custom');
+		sameHistory($entry->getCommentType(), null);
+		$commentOnly = $f['entries']->upsertCommentOnly('employee', '2026-11-03', 'Stundenausgleich');
+		sameHistory($commentOnly->getCommentType(), null);
+
+		$typed = $f['entries']->upsertCommentOnly('employee', '2026-11-04', 'Krank', 'sick');
+		$sameTyped = $f['entries']->update($typed->getId(), ['comment' => "  Krank\t"]);
+		sameHistory($sameTyped->getCommentType(), 'sick');
+		$changedTyped = $f['entries']->upsertCommentOnly('employee', '2026-11-04', 'Urlaub');
+		sameHistory([$changedTyped->getComment(), $changedTyped->getCommentType()], ['Urlaub', null]);
+
+		$custom = $f['entries']->upsertCommentOnly('employee', '2026-11-05', 'Urlaub', 'custom');
+		$editedTime = $f['entries']->update($custom->getId(), ['startMin' => 480]);
+		sameHistory($editedTime->getCommentType(), 'custom');
 		$before = serialize([$f['db']->entries, $f['db']->records, $f['db']->dirty]);
 		foreach (['unknown', [], false] as $badType) {
 			failsHistory(fn() => $f['entries']->update($entry->getId(), ['commentType' => $badType]), DomainException::class);
@@ -412,7 +424,7 @@ namespace {
 		sameHistory(array_column($f['db']->records[1]['changes'], 'field'), ['startMin', 'endMin', 'breakMinutes', 'comment']); sameHistory($f['db']->records[1]['changes'][0]['before'], 0);
 	});
 	checkHistory('deletion keeps a full input snapshot and no live entry', function () use ($entryData): void {
-		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $f['entries']->delete($entry->getId()); sameHistory($f['db']->records[1]['kind'], 'deleted'); sameHistory(count($f['db']->records[1]['changes']), 6); sameHistory($f['db']->entries, []);
+		$f = historyFixture(); $entry = $f['entries']->create($entryData, 'employee'); $f['entries']->delete($entry->getId()); sameHistory($f['db']->records[1]['kind'], 'deleted'); sameHistory(array_column($f['db']->records[1]['changes'], 'field'), array_keys($entryData)); sameHistory($f['db']->entries, []);
 	});
 	checkHistory('settings include actual old/new target and federal state; no-op is not written', function (): void {
 		$f = historyFixture(); $f['db']->settings['employee'] = ['dailyMin' => 480, 'state' => 'BY']; $f['configs']->save('employee', 0, 'HE'); $f['configs']->save('employee', 0, 'HE');

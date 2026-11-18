@@ -1,6 +1,27 @@
 {
 	"releases": [
 		{
+			"version": "1.4.4",
+			"sections": [
+				{
+					"title": "Improvements",
+					"items": [
+						"The width slider keeps the same setting for the timesheet, HR overview and change history after signing in again.",
+						"Details buttons take up less space in the change history table.",
+						"Help for the HR overview is available beside the employee list at any width.",
+						"Comments can be entered as free text again. The comment help explains which absence reasons prevent reminders when both times are missing.",
+						"Reminders for missing or incomplete time entries use an updated default message for employees."
+					]
+				},
+				{
+					"title": "Bug fixes",
+					"items": [
+						"Fixed a PostgreSQL error in the HR employee list when monthly balances are recalculated after a change to target hours."
+					]
+				}
+			]
+		},
+		{
 			"version": "1.4.3",
 			"sections": [
 				{

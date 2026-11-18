@@ -13,7 +13,7 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 	<fieldset id="hr-notifications-section" class="hr-personal-notifications" disabled>
 		<legend><?php p($l->t('Alerts for HR')); ?></legend>
 		<div class="hr-notifications-grid">
-			<p class="hr-notification-intro"><?php p($l->t('Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and the weekly email to HR.')); ?></p>
+			<p class="hr-notification-intro"><?php p($l->t('Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.')); ?></p>
 			<div class="hr-notification-row hr-notification-header" aria-hidden="true">
 				<span><?php p($l->t('Alert')); ?></span>
 				<span><?php p($l->t('Alert threshold')); ?></span>

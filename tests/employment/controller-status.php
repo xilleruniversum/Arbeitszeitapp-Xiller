@@ -63,6 +63,10 @@ foreach ([null, 'alice', 'hr', 'admin', 'hr-admin'] as $actor) {
 				ob_end_clean();
 			}
 		})($parameters);
+		$suite->same($actor === 'alice', str_contains($html, 'data-tour-comments-description="'));
+		if ($actor === 'alice') {
+			$suite->same(true, str_contains($html, 'only the following reasons prevent a notification: Urlaub, Krank or Termin.'));
+		}
 		$suite->same($actor === 'alice', str_contains($html, 'id="freelancer-mode-switch"'));
 		$suite->same($actor === 'alice', str_contains($html, 'id="freelancer-mode-feedback"'));
 		$suite->same(in_array($actor, ['hr', 'hr-admin'], true), str_contains($html, 'id="hr-employee-freelancer"'));
@@ -161,7 +165,7 @@ $suite->test('Page startup hydrates the status and loads its module between core
 	$suite->same($status->toPublicArray(), $parameters['employmentStatus']);
 	$suite->same(true, $parameters['employmentStatusAvailable']);
 	$suite->same(true, array_search('timesheet-runtime', \OCP\Util::$scripts, true) < array_search('timesheet-employment-status', \OCP\Util::$scripts, true));
-	$suite->same(true, array_search('timesheet-employment-status', \OCP\Util::$scripts, true) < array_search('timesheet-hr-dashboard-v2', \OCP\Util::$scripts, true));
+	$suite->same(true, array_search('timesheet-employment-status', \OCP\Util::$scripts, true) < array_search('timesheet-hr-dashboard-v5', \OCP\Util::$scripts, true));
 	$suite->same([], $state['config']->writes);
 });
 $suite->test('Status load failure disables its page controls without blocking the timesheet', static function () use ($suite, $fixture): void {
@@ -292,7 +296,7 @@ foreach ([null, 'alice', 'hr', 'admin', 'hr-admin'] as $actor) {
 		$suite->same($isHr, in_array('timesheet-hr-settings-v7', \OCP\Util::$styles, true));
 		if ($isHr) {
 			$suite->same('notifications', $parameters['notificationRuleSettings']['policySection']);
-			$suite->same(true, array_search('timesheet-rule-settings-v3', \OCP\Util::$scripts, true) < array_search('timesheet-main', \OCP\Util::$scripts, true));
+			$suite->same(true, array_search('timesheet-rule-settings-v3', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
 		}
 	});
 }

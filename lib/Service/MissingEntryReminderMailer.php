@@ -20,8 +20,8 @@ class MissingEntryReminderMailer {
 	}
 
 	public static function originalBody(IL10N $translator, bool $isHrSummary): string {
-		[$greeting, $introduction, $linkLabel, $footer] = self::originalParts($translator, $isHrSummary, '{recipient}');
-		return implode("\n\n", [$greeting, $introduction, '{entries}', $linkLabel . ': {appUrl}', $footer]);
+		[$greeting, $introduction, $linkLabel, $closingParagraphs] = self::originalParts($translator, $isHrSummary, '{recipient}');
+		return implode("\n\n", [$greeting, $introduction, '{entries}', $linkLabel . ': {appUrl}', ...$closingParagraphs]);
 	}
 
 	/**
@@ -75,13 +75,19 @@ class MissingEntryReminderMailer {
 	}
 
 	private static function originalParts(IL10N $translator, bool $isHrSummary, string $recipient): array {
+		$closingParagraphs = $isHrSummary
+			? [$translator->t('This is an automatic reminder based on the group rules in Nextcloud.')]
+			: [
+				$translator->t('Please update your missing time entries promptly.'),
+				$translator->t('This notification was created automatically by HR.'),
+			];
 		return [
 			$translator->t('Hello %1$s,', [$recipient]),
 			$translator->t($isHrSummary
 				? 'The following employees have missing or incomplete time entries, or need their reminder settings checked.'
 				: 'The following days have missing or incomplete time entries.'),
 			$translator->t('Open Timesheet'),
-			$translator->t('This is an automatic reminder based on the group rules in Nextcloud.'),
+			$closingParagraphs,
 		];
 	}
 
@@ -102,13 +108,14 @@ class MissingEntryReminderMailer {
 			[$plainLines, $htmlFindings] = $this->renderFindings($translator, $isHrSummary, $findings);
 			$escapedUrl = $this->escape($appUrl);
 			if ($body === '') {
-				[$greeting, $introduction, $linkLabel, $footer] = self::originalParts($translator, $isHrSummary, $recipient);
-				$plainSections[] = implode("\n", [$greeting, '', $introduction, '', ...$plainLines, $linkLabel . ': ' . $appUrl, '', $footer]);
+				[$greeting, $introduction, $linkLabel, $closingParagraphs] = self::originalParts($translator, $isHrSummary, $recipient);
+				$plainSections[] = implode("\n", [$greeting, '', $introduction, '', ...$plainLines, $linkLabel . ': ' . $appUrl, '', implode("\n\n", $closingParagraphs)]);
 				$htmlSections[] = '<p>' . $this->escape($greeting) . '</p>'
 					. '<p>' . $this->escape($introduction) . '</p>'
 					. $htmlFindings
 					. '<p><a href="' . $escapedUrl . '">' . $this->escape($linkLabel) . '</a></p>'
-					. '<hr><p>' . $this->escape($footer) . '</p>';
+					. ($isHrSummary ? '<hr>' : '')
+					. implode('', array_map(fn (string $paragraph): string => '<p>' . $this->escape($paragraph) . '</p>', $closingParagraphs));
 				continue;
 			}
 

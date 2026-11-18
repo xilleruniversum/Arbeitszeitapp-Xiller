@@ -64,7 +64,7 @@ class MonthlyBalanceService {
 		$balance->setDeltaMinutes($deltaMinutes);
 		$balance->setClosingBalanceMinutes($openingBalanceMinutes + $deltaMinutes);
 		$balance->setIsClosed(false);
-		$balance->setNeedsRecalculation(false);
+		$balance->setNeedsRecalculation(0);
 		$balance->setCalculatedAt($calculatedAt);
 		$balance->setUpdatedAt($calculatedAt);
 

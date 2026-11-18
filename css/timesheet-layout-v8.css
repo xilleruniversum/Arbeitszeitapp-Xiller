@@ -4,6 +4,10 @@
 	overflow-x: auto;
 }
 
+#timesheet-app {
+	scrollbar-gutter: stable;
+}
+
 /* Match the notification trigger to the other header controls. */
 #header .notifications-button > .header-menu__trigger:hover,
 #header .notifications-button > .header-menu__trigger:focus-visible {
@@ -223,21 +227,6 @@
 }
 
 /* Table comments and numeric inputs */
-#ts-table .ts-comment-cell,
-#hr-user-table .ts-comment-cell {
-	min-inline-size: 11rem;
-}
-
-#timesheet-app .commentSelect {
-	display: block;
-	box-sizing: border-box;
-	inline-size: 100%;
-	max-inline-size: 100%;
-	min-inline-size: 0;
-	min-block-size: 28px;
-	margin: 2px 0;
-}
-
 #ts-table textarea.commentInput,
 #hr-user-table textarea.commentInput {
 	display: block;
@@ -250,10 +239,6 @@
 	min-height: 0;
 	height: 1.3em;
 	resize: none;
-}
-
-#timesheet-app .commentInput[hidden] {
-	display: none;
 }
 
 #ts-table input[type="number"],
@@ -297,15 +282,18 @@
 }
 
 /* App toolbar */
+#timesheet-app > .ts-app-toolbar,
+#timesheet-app > .ts-tabview {
+	box-sizing: border-box;
+	inline-size: var(--timesheet-view-width, 100%);
+	max-inline-size: 100%;
+}
+
 .ts-app-toolbar {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px 12px;
-}
-
-#timesheet-app:has(> #tab-hr.active:not(.is-employee-detail)) > .ts-app-toolbar {
-	margin-block-end: 8px;
 }
 
 .ts-tabs {
@@ -811,21 +799,19 @@
 	overflow-wrap: anywhere;
 }
 
-.hr-overview-width-control,
-.hr-employee-help-box[hidden] {
+.ts-view-width-control {
 	display: none;
 }
 
-#timesheet-app:has(> #tab-hr.active:not(.is-employee-detail)) .hr-overview-width-control:not([hidden]) {
+.ts-view-width-control:not([hidden]) {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 0 12px;
 	box-sizing: border-box;
 	min-inline-size: 0;
-	max-inline-size: var(--hr-overview-width, 100%);
+	max-inline-size: 100%;
 	margin-inline-start: auto;
-	margin-inline-end: calc(100% - var(--hr-overview-width, 100%));
 	padding: 2px 8px;
 	border: 1px solid var(--color-border, #d0d7de);
 	border-radius: 6px;
@@ -833,12 +819,12 @@
 	color: var(--color-main-text, #222);
 }
 
-.hr-overview-width-control > label {
+.ts-view-width-control > label {
 	font-weight: 600;
 	overflow-wrap: anywhere;
 }
 
-.hr-overview-width-field {
+.ts-view-width-field {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -846,8 +832,8 @@
 	max-inline-size: 100%;
 }
 
-#hr-overview-width {
-	--hr-width-track: color-mix(in srgb, currentColor 50%, var(--color-main-background, #fff));
+#timesheet-view-width {
+	--timesheet-width-track: color-mix(in srgb, currentColor 50%, var(--color-main-background, #fff));
 	appearance: none;
 	inline-size: 11rem;
 	min-inline-size: 0;
@@ -858,19 +844,19 @@
 	color: inherit;
 }
 
-#hr-overview-width::-webkit-slider-runnable-track {
+#timesheet-view-width::-webkit-slider-runnable-track {
 	block-size: 6px;
-	background: var(--hr-width-track);
+	background: var(--timesheet-width-track);
 	border-radius: 3px;
 }
 
-#hr-overview-width::-moz-range-track {
+#timesheet-view-width::-moz-range-track {
 	block-size: 6px;
-	background: var(--hr-width-track);
+	background: var(--timesheet-width-track);
 	border-radius: 3px;
 }
 
-#hr-overview-width::-webkit-slider-thumb {
+#timesheet-view-width::-webkit-slider-thumb {
 	appearance: none;
 	inline-size: 16px;
 	block-size: 16px;
@@ -880,7 +866,7 @@
 	border-radius: 50%;
 }
 
-#hr-overview-width::-moz-range-thumb {
+#timesheet-view-width::-moz-range-thumb {
 	inline-size: 16px;
 	block-size: 16px;
 	background: currentColor;
@@ -889,53 +875,26 @@
 }
 
 @media (forced-colors: active) {
-	#hr-overview-width {
+	#timesheet-view-width {
 		appearance: auto;
 	}
 }
 
-#hr-overview-width:focus-visible {
+#timesheet-view-width:focus-visible {
 	outline: 2px solid var(--color-main-text);
 	outline-offset: 2px;
 }
 
-#hr-overview-width-value {
+#timesheet-view-width-value {
 	min-inline-size: 4ch;
 	font-variant-numeric: tabular-nums;
 	text-align: end;
-}
-
-.hr-overview-layout {
-	display: grid;
-	grid-template-columns: minmax(0, var(--hr-overview-width, 100%)) minmax(0, 1fr);
-	align-items: start;
 }
 
 .ts-hr-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	gap: 8px;
-}
-
-.hr-employee-help-box {
-	box-sizing: border-box;
-	max-inline-size: 48ch;
-	margin-inline-start: 8px;
-	padding: 12px;
-	border: 1px solid var(--color-border, #d0d7de);
-	border-radius: 6px;
-	background: var(--color-main-background, #fff);
-	color: var(--color-main-text, #222);
-	line-height: 1.5;
-	overflow-wrap: anywhere;
-}
-
-.hr-employee-help-box p {
-	margin: 0;
-}
-
-.hr-employee-help-box p + p {
-	margin-block-start: 8px;
 }
 
 #hr-notification-block {

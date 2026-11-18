@@ -53,6 +53,33 @@ class PreferencesController extends Controller {
 		}
 	}
 
+	/** Store the signed-in account's HR overview width. */
+	#[NoAdminRequired]
+	public function setHrOverviewWidth(mixed $width = null, mixed $revision = null): DataResponse {
+		$userId = $this->userSession->getUser()?->getUID();
+		if ($userId === null || $userId === '') {
+			return new DataResponse(['message' => 'Not logged in'], Http::STATUS_FORBIDDEN);
+		}
+		if (!is_int($width) || !is_string($revision)) {
+			return new DataResponse(['message' => 'Invalid HR overview width preference'], Http::STATUS_BAD_REQUEST);
+		}
+
+		try {
+			try {
+				return new DataResponse($this->preferencesStore->setHrOverviewWidth($userId, $width, $revision));
+			} catch (PreConditionNotMetException | LockedException) {
+				return new DataResponse([
+					'code' => 'preference_conflict',
+					...$this->preferencesStore->getHrOverviewWidthPreference($userId),
+				], Http::STATUS_CONFLICT);
+			}
+		} catch (\InvalidArgumentException) {
+			return new DataResponse(['message' => 'Invalid HR overview width preference'], Http::STATUS_BAD_REQUEST);
+		} catch (\Throwable) {
+			return new DataResponse(['message' => 'Saving display preferences failed'], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	/** Save the signed-in account's view without accepting an employee identifier. */
 	#[NoAdminRequired]
 	public function setHistoryView(mixed $historyView = null, mixed $revision = null): DataResponse {

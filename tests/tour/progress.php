@@ -334,15 +334,15 @@ namespace {
 			$expectSame(false, $parameters['tourEnabled']);
 			$expectSame(false, $parameters['tourStateAvailable']);
 			$expectSame(false, in_array('timesheet-tour-launcher', \OCP\Util::$scripts, true));
-			$expectSame(false, in_array('timesheet-guided-tour-v2', \OCP\Util::$scripts, true));
-			$expectSame(true, in_array('timesheet-main', \OCP\Util::$scripts, true));
+			$expectSame(false, in_array('timesheet-guided-tour-v5', \OCP\Util::$scripts, true));
+			$expectSame(true, in_array('timesheet-main-v2', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
-			$expectedStyles = ['timesheet-layout-v4'];
-			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history', 'timesheet-hr-settings-v7']);
+			$expectedStyles = ['timesheet-layout-v8'];
+			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v4', 'timesheet-hr-settings-v7']);
 			$expectedStyles[] = 'timesheet-release-notes';
-			if ($isHr) $expectedStyles[] = 'timesheet-help-panels';
+			$expectedStyles[] = 'timesheet-help-panels-v3';
 			$expectSame($expectedStyles, \OCP\Util::$styles);
-			$expectSame($isHr, in_array('timesheet-mail-help', \OCP\Util::$scripts, true));
+			$expectSame(true, in_array('timesheet-mail-help-v2', \OCP\Util::$scripts, true));
 			$expectSame($isHr, in_array('timesheet-history', \OCP\Util::$scripts, true));
 			$expectSame(true, $parameters['updateNotesEnabled']);
 			$expectSame([], array_values(array_filter($config->reads, static fn(string $key): bool => str_starts_with($key, 'tour_'))));
@@ -521,11 +521,11 @@ namespace {
 		$expectSame(true, $parameters['tourStateAvailable']);
 		$expectSame(false, $parameters['isHR']);
 		$expectSame(['version' => 1, 'employeeCompleted' => true], $parameters['tourProgress']);
-		$expectSame(true, in_array('timesheet-mail-help', \OCP\Util::$scripts, true));
-		$expectSame(true, array_search('timesheet-mail-help', \OCP\Util::$scripts, true) < array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true));
-		$expectSame(true, array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true) < array_search('timesheet-guided-tour-v2', \OCP\Util::$scripts, true));
-		$expectSame(true, array_search('timesheet-guided-tour-v2', \OCP\Util::$scripts, true) < array_search('timesheet-main', \OCP\Util::$scripts, true));
-		$expectSame(['timesheet-layout-v4', 'timesheet-release-notes', 'timesheet-help-panels', 'timesheet-tour'], \OCP\Util::$styles);
+		$expectSame(true, in_array('timesheet-mail-help-v2', \OCP\Util::$scripts, true));
+		$expectSame(true, array_search('timesheet-mail-help-v2', \OCP\Util::$scripts, true) < array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true));
+		$expectSame(true, array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true) < array_search('timesheet-guided-tour-v5', \OCP\Util::$scripts, true));
+		$expectSame(true, array_search('timesheet-guided-tour-v5', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
+		$expectSame(['timesheet-layout-v8', 'timesheet-release-notes', 'timesheet-help-panels-v3', 'timesheet-tour'], \OCP\Util::$styles);
 		$expectSame([], $logger->warnings);
 	});
 	$test('A tour-state read failure leaves the main timesheet renderable', static function () use ($fixture, $expectSame): void {
@@ -542,9 +542,9 @@ namespace {
 	});
 	$test('The account language still selects absence terms for HR pages without a tour', static function () use ($fixture, $expectSame): void {
 		foreach ([
-			'en' => ['vacation' => 'Vacation', 'timeOffInLieu' => 'Time off in lieu'],
-			'en_GB' => ['vacation' => 'Vacation', 'timeOffInLieu' => 'Time off in lieu'],
-			'de_DE' => ['vacation' => 'Urlaub', 'timeOffInLieu' => 'Stundenausgleich'],
+			'en' => ['vacation' => 'Vacation', 'sick' => 'Sick leave', 'appointment' => 'Appointment'],
+			'en_GB' => ['vacation' => 'Vacation', 'sick' => 'Sick leave', 'appointment' => 'Appointment'],
+			'de_DE' => ['vacation' => 'Urlaub', 'sick' => 'Krank', 'appointment' => 'Termin'],
 		] as $language => $expectedTerms) {
 			[, $store, $config, $locks, $session, $hrService, $groupManager] = $fixture('alice', true);
 			$page = new PageController('timesheet', new TourRequestFixture(), $hrService, new UserPreferencesStore($config, $locks), $session, $store, new TourLoggerFixture(), $groupManager, new AbsenceCommentCatalog(), new TourTranslationFixture($language), new EmploymentStatusStore($config, $locks, new TourTimeFixture(), $groupManager), new \OCA\Timesheet\Settings\RuleSettingsForm(), new TourMailLanguageFixture($language));

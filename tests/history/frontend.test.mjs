@@ -814,7 +814,7 @@ function openEntries() {
 		fetch: async () => ({ ok: true, json: async () => ({}) }),
 	});
 	context.window = context;
-	for (const name of ['timesheet-runtime.js', 'timesheet-entries.js']) vm.runInContext(readFileSync(resolve(root, 'js', name), 'utf8'), context);
+	for (const name of ['timesheet-runtime.js', 'timesheet-entries-v2.js']) vm.runInContext(readFileSync(resolve(root, 'js', name), 'utf8'), context);
 	context.Timesheet.api = async (path, options = {}) => { requests.push({ path, options }); return options.method ? { id: 101 } : { overtimeMinutes: 0 }; };
 	return { context, entries: context.Timesheet.entries, row, fields, requests, messages };
 }

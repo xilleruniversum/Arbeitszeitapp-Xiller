@@ -13,6 +13,7 @@ class UserPreferencesStore {
 	private const APP_ID = 'timesheet';
 	private const BREAK_INPUT_MODE_KEY = 'break_input_mode';
 	private const BREAK_INPUT_MODES = ['minutes', 'hours'];
+	private const HR_OVERVIEW_WIDTH_KEY = 'hr_overview_width';
 	private const HISTORY_VIEW_KEY = 'change_history_view';
 	private const HISTORY_VIEWS = ['cards', 'table'];
 
@@ -82,6 +83,42 @@ class UserPreferencesStore {
 		} finally {
 			$this->lockingProvider->releaseLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
 		}
+	}
+
+	/** @return array{width: ?int, revision: string} */
+	public function getHrOverviewWidthPreference(string $userId): array {
+		return $this->decodeHrOverviewWidthPreference($this->readRawPreference($userId, self::HR_OVERVIEW_WIDTH_KEY));
+	}
+
+	/** @return array{width: ?int, revision: string} */
+	public function setHrOverviewWidth(string $userId, int $width, string $expectedRevision): array {
+		if ($width < 30 || $width > 100 || preg_match('/\A[0-9a-f]{64}\z/i', $expectedRevision) !== 1) {
+			throw new \InvalidArgumentException('Invalid HR overview width preference.');
+		}
+
+		$lockKey = hash('sha256', 'timesheet:hr-overview-width:' . $userId);
+		$this->lockingProvider->acquireLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
+		try {
+			$rawValue = $this->readRawPreference($userId, self::HR_OVERVIEW_WIDTH_KEY);
+			if (!hash_equals(hash('sha256', $rawValue), strtolower($expectedRevision))) {
+				throw new PreConditionNotMetException();
+			}
+			$newValue = json_encode(['width' => $width, 'nonce' => bin2hex(random_bytes(16))], JSON_THROW_ON_ERROR);
+			$this->userConfig->setUserValue($userId, self::APP_ID, self::HR_OVERVIEW_WIDTH_KEY, $newValue, $rawValue);
+			return $this->decodeHrOverviewWidthPreference($newValue);
+		} finally {
+			$this->lockingProvider->releaseLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
+		}
+	}
+
+	/** @return array{width: ?int, revision: string} */
+	private function decodeHrOverviewWidthPreference(string $rawValue): array {
+		$storedValue = json_decode($rawValue, true);
+		$width = is_array($storedValue) ? ($storedValue['width'] ?? null) : null;
+		return [
+			'width' => is_int($width) && $width >= 30 && $width <= 100 ? $width : null,
+			'revision' => hash('sha256', $rawValue),
+		];
 	}
 
 	private function readRawPreference(string $userId, string $key = self::BREAK_INPUT_MODE_KEY): string {

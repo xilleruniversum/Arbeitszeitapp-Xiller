@@ -9,6 +9,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const coverage = JSON.parse(readFileSync(resolve(root, 'tests/settings/assignment-translation-coverage.json'), 'utf8'));
 const accountLanguages = JSON.parse(readFileSync(resolve(root, 'tests/employment/translation-coverage.json'), 'utf8')).locales;
 const messages = new Set(coverage.messages);
+const hrThresholdIntro = 'Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.';
 const notificationMessages = [
 	'Alert',
 	'Alert threshold',
@@ -17,7 +18,7 @@ const notificationMessages = [
 	'Checks run daily. Open dates are collected in one email, with at least seven days between emails of the same kind.',
 	'Days since the last complete entry',
 	'Days that require a time entry; public holidays in the employee state are excluded.',
-	'Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and the weekly email to HR.',
+	hrThresholdIntro,
 	'Employee list and weekly email to HR',
 	'Employees can also get an email about their own time balance on Mondays if the group rule enables it and their balance exceeds the threshold.',
 	'Enter whole days or hours and minutes in the format HH:MM.',
@@ -60,6 +61,8 @@ const notificationMessages = [
 	'calendar days after the workday',
 	'hours',
 ];
+const employeeReminderInstruction = 'Please update your missing time entries promptly.';
+const employeeReminderFooter = 'This notification was created automatically by HR.';
 const automaticMailMessages = [
 	'%1$s (%2$s days without a complete entry)',
 	'%1$s (%2$s deficit)',
@@ -80,6 +83,8 @@ const automaticMailMessages = [
 	'The following employees have missing or incomplete time entries, or need their reminder settings checked.',
 	'This email was automatically generated based on the notification settings you selected in Nextcloud. Do not reply to this email.',
 	'This is an automatic reminder based on the group rules in Nextcloud.',
+	employeeReminderInstruction,
+	employeeReminderFooter,
 	'This message was generated automatically.',
 	'Timesheet Notifications',
 	'Timesheet: missing time entries',
@@ -150,6 +155,7 @@ test('both German variants use concise, neutral assignment and delivery wording'
 	assert.equal(german[0]['No selected accounts means no HR summary for this rule.'], 'Ohne ausgewählte Konten wird für diese Regel keine HR-Übersicht versendet.');
 	assert.equal(german[0]['HR assignments or email recipients are invalid.'], 'HR-Zuordnungen oder E-Mail-Empfänger sind ungültig.');
 	assert.equal(german[0]['Email selection does not change HR access.'], 'Hier steht, wer die HR-Mails für diese Gruppe erhält. Die HR-Zuständigkeit wird in der Administration festgelegt.');
+	for (const catalog of german) assert.equal(catalog[hrThresholdIntro], 'Jedes HR-Konto legt hier seine persönlichen Grenzwerte für Hinweise zu den betreuten Mitarbeitenden fest. Pro Hinweis gilt derselbe Grenzwert in der Mitarbeitendenliste sowie in der wöchentlichen E-Mail an das eigene HR-Konto.');
 	assert.equal(german[0]['Send reminders to employees'], 'Erinnerungen an Mitarbeitende senden');
 	assert.equal(german[0]['Send reminders to responsible HR'], 'Erinnerungen an zuständiges HR senden');
 	assert.equal(german[0]['Employee balance notifications'], 'Benachrichtigungen zum Stundenstand');
@@ -186,6 +192,13 @@ test('employee balance emails retain placeholders and matching German variants',
 		assert.deepEqual([...german[message].matchAll(/%\d+\$[sd]/g)].map(match => match[0]), [...message.matchAll(/%\d+\$[sd]/g)].map(match => match[0]));
 	}
 	assert.equal(german[mailMessages[3]], 'Bei Fragen zum Stundenstand oder zu den erfassten Zeiten hilft die zuständige Personalabteilung.');
+});
+
+test('employee reminder email uses the selected German form of address', () => {
+	const catalog = locale => JSON.parse(readFileSync(resolve(root, 'l10n', locale + '.json'), 'utf8')).translations;
+	assert.equal(catalog('de')[employeeReminderInstruction], 'Passe deine Fehlzeiten bitte umgehend an.');
+	assert.equal(catalog('de_DE')[employeeReminderInstruction], 'Passen Sie Ihre Fehlzeiten bitte umgehend an.');
+	for (const locale of ['de', 'de_DE']) assert.equal(catalog(locale)[employeeReminderFooter], 'Diese Benachrichtigung wurde automatisch durch HR erstellt.');
 });
 
 test('weekly HR email addresses each German account with its selected form of address', () => {

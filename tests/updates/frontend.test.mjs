@@ -7,7 +7,7 @@ import vm from 'node:vm';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const source = readFileSync(resolve(root, 'js/timesheet-update-notes.js'), 'utf8');
-const mainSource = readFileSync(resolve(root, 'js/timesheet-main.js'), 'utf8');
+const mainSource = readFileSync(resolve(root, 'js/timesheet-main-v2.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
 const copy = value => JSON.parse(JSON.stringify(value));
 const notes = {

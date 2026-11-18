@@ -267,7 +267,7 @@ $makeService()->prepareRuleChanges($rules, $rules);
 verifyReminder($store->rememberEnrollment('reminder-late', 'reminder-rule-a', false, '2026-11-01'), $enrollment, 'Re-enabling preserves first detection');
 verifyReminder($store->isDeliveryDue('reminder-employee-a', 'employee', $clock->now()), false, 'Re-enabling preserves cooldown');
 
-$entryMapper->upsertCommentOnly('reminder-employee-a', '2026-10-19', 'Stundenausgleich');
+$entryMapper->upsertCommentOnly('reminder-employee-a', '2026-10-19', 'Termin');
 $clock->current = $clock->current->modify('+7 days');
 $capturingMailer->employees = [];
 $makeService()->sendReminders();

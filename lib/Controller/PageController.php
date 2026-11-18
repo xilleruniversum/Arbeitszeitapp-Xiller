@@ -59,12 +59,10 @@ class PageController extends Controller {
 		Util::addScript('timesheet', 'timesheet-header');
 		// Nextcloud keys its browser cache by asset URL and installed app version.
 		Util::addScript('timesheet', 'timesheet-runtime');
-		if ($isHr || $tourEnabled) {
-			Util::addScript('timesheet', 'timesheet-mail-help');
-		}
-		Util::addScript('timesheet', 'timesheet-entries');
+		Util::addScript('timesheet', 'timesheet-mail-help-v2');
+		Util::addScript('timesheet', 'timesheet-entries-v2');
 		Util::addScript('timesheet', 'timesheet-employment-status');
-		Util::addScript('timesheet', 'timesheet-hr-dashboard-v2');
+		Util::addScript('timesheet', 'timesheet-hr-dashboard-v5');
 		Util::addScript('timesheet', 'timesheet-export');
 		Util::addScript('timesheet', 'timesheet-copy');
 		Util::addScript('timesheet', 'timesheet-settings-v2');
@@ -77,21 +75,19 @@ class PageController extends Controller {
 		}
 		if ($tourEnabled) {
 			Util::addScript('timesheet', 'timesheet-tour-launcher');
-			Util::addScript('timesheet', 'timesheet-guided-tour-v2');
+			Util::addScript('timesheet', 'timesheet-guided-tour-v5');
 		}
-		Util::addScript('timesheet', 'timesheet-main');
+		Util::addScript('timesheet', 'timesheet-main-v2');
 
-		Util::addStyle('timesheet', 'timesheet-layout-v4');
+		Util::addStyle('timesheet', 'timesheet-layout-v8');
 		if ($isHr) {
-			Util::addStyle('timesheet', 'timesheet-history');
+			Util::addStyle('timesheet', 'timesheet-history-v4');
 			Util::addStyle('timesheet', 'timesheet-hr-settings-v7');
 		}
 		if ($updateNotesEnabled) {
 			Util::addStyle('timesheet', 'timesheet-release-notes');
 		}
-		if ($isHr || $tourEnabled) {
-			Util::addStyle('timesheet', 'timesheet-help-panels');
-		}
+		Util::addStyle('timesheet', 'timesheet-help-panels-v3');
 		if ($tourEnabled) {
 			Util::addStyle('timesheet', 'timesheet-tour');
 		}
@@ -100,6 +96,7 @@ class PageController extends Controller {
 			? $this->userPreferencesStore->getBreakInputPreference($currentUser->getUID())
 			: ['breakInputMode' => 'minutes', 'revision' => hash('sha256', '')];
 		$historyPreference = ['historyView' => 'cards', 'revision' => hash('sha256', '')];
+		$hrOverviewWidthPreference = ['width' => null, 'revision' => ''];
 		$historyPreferenceAvailable = false;
 		if ($isHr && $currentUser !== null) {
 			try {
@@ -108,6 +105,13 @@ class PageController extends Controller {
 			} catch (\Throwable $loadError) {
 				// Display preferences must not block access to the employee history.
 				$this->logger->warning('Change history view could not be loaded.', ['exception' => $loadError]);
+			}
+		}
+		if ($currentUser !== null) {
+			try {
+				$hrOverviewWidthPreference = $this->userPreferencesStore->getHrOverviewWidthPreference($currentUser->getUID());
+			} catch (\Throwable $loadError) {
+				$this->logger->warning('Timesheet view width could not be loaded.', ['exception' => $loadError]);
 			}
 		}
 		$employmentStatus = (new EmploymentStatus())->toPublicArray();
@@ -164,6 +168,7 @@ class PageController extends Controller {
 			'updateNotesEnabled' => $updateNotesEnabled,
 			'breakInputMode' => $breakPreference['breakInputMode'],
 			'breakInputRevision' => $breakPreference['revision'],
+			'hrOverviewWidthPreference' => $hrOverviewWidthPreference,
 			'historyView' => $historyPreference['historyView'],
 			'historyViewRevision' => $historyPreference['revision'],
 			'historyViewAvailable' => $historyPreferenceAvailable,

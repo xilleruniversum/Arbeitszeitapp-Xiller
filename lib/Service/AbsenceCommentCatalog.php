@@ -10,7 +10,7 @@ use RuntimeException;
 /** Shares localized absence labels between the interface and reminder checks. */
 class AbsenceCommentCatalog {
 
-	/** @var array<string,array{vacation:string,timeOffInLieu:string}> */
+	/** @var array<string,array{vacation:string,sick:string,appointment:string}> */
 	private array $termsByLanguage = [];
 	/** @var array<string,true> */
 	private array $acceptedComments = [];
@@ -29,15 +29,17 @@ class AbsenceCommentCatalog {
 		foreach ($catalog as $language => $terms) {
 			if (!is_string($language) || !is_array($terms)
 				|| !$this->isValidTerm($terms['vacation'] ?? null)
-				|| !$this->isValidTerm($terms['timeOffInLieu'] ?? null)) {
+				|| !$this->isValidTerm($terms['sick'] ?? null)
+				|| !$this->isValidTerm($terms['appointment'] ?? null)) {
 				throw new RuntimeException('The absence comment catalog contains invalid terms.');
 			}
 			$language = $this->normalizeLanguage($language);
 			$this->termsByLanguage[$language] = [
 				'vacation' => $terms['vacation'],
-				'timeOffInLieu' => $terms['timeOffInLieu'],
+				'sick' => $terms['sick'],
+				'appointment' => $terms['appointment'],
 			];
-			foreach ([$terms['vacation'], $terms['timeOffInLieu']] as $term) {
+			foreach ($this->termsByLanguage[$language] as $term) {
 				$this->acceptedComments[$this->normalizeComment($term)] = true;
 				// Uppercase forms also preserve case pairs such as Turkish dotless i.
 				$this->acceptedComments[$this->normalizeComment(mb_strtoupper($term, 'UTF-8'))] = true;
@@ -45,7 +47,7 @@ class AbsenceCommentCatalog {
 		}
 	}
 
-	/** @return array{vacation:string,timeOffInLieu:string} */
+	/** @return array{vacation:string,sick:string,appointment:string} */
 	public function getTerms(string $language): array {
 		$language = $this->normalizeLanguage($language);
 		$baseLanguage = explode('_', $language, 2)[0];

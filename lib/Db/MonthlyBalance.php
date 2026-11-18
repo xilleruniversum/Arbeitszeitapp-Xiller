@@ -24,8 +24,8 @@ use OCP\AppFramework\Db\Entity;
  * @method void setClosingBalanceMinutes(int $minutes)
  * @method bool getIsClosed()
  * @method void setIsClosed(bool $isClosed)
- * @method bool getNeedsRecalculation()
- * @method void setNeedsRecalculation(bool $needsRecalculation)
+ * @method int getNeedsRecalculation()
+ * @method void setNeedsRecalculation(int $needsRecalculation)
  * @method int|null getCalculatedAt()
  * @method void setCalculatedAt(?int $calculatedAt)
  * @method int getUpdatedAt()
@@ -41,7 +41,7 @@ class MonthlyBalance extends Entity implements JsonSerializable {
 	protected $deltaMinutes = 0;
 	protected $closingBalanceMinutes = 0;
 	protected $isClosed = false;
-	protected $needsRecalculation = false;
+	protected $needsRecalculation = 0;
 	protected $calculatedAt;
 	protected $updatedAt;
 
@@ -55,7 +55,7 @@ class MonthlyBalance extends Entity implements JsonSerializable {
 		$this->addType('deltaMinutes', 'integer');
 		$this->addType('closingBalanceMinutes', 'integer');
 		$this->addType('isClosed', 'boolean');
-		$this->addType('needsRecalculation', 'boolean');
+		$this->addType('needsRecalculation', 'integer');
 		$this->addType('calculatedAt', 'integer');
 		$this->addType('updatedAt', 'integer');
 	}

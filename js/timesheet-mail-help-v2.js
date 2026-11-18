@@ -95,9 +95,9 @@
 	window.addEventListener('resize', positionEmailHelp);
 	window.addEventListener('scroll', positionEmailHelp, true);
 
-	function bindHrHelp() {
-		const overview = document.getElementById('tab-hr');
-		if (!overview?.querySelector('[data-hr-help]')) {
+	function bindHelpPopups() {
+		const app = document.getElementById('timesheet-app');
+		if (!app?.querySelector('[data-hr-help]')) {
 			return;
 		}
 
@@ -122,7 +122,9 @@
 		function reposition() {
 			if (!active) return;
 			const bounds = active.button.getBoundingClientRect();
-			if (!active.button.isConnected || bounds.width === 0 || bounds.bottom < 0 || bounds.top > window.innerHeight) {
+			if (!active.button.isConnected || !bounds.width
+				|| bounds.bottom <= 0 || bounds.top >= window.innerHeight
+				|| bounds.right <= 0 || bounds.left >= window.innerWidth) {
 				hide();
 				return;
 			}
@@ -146,25 +148,25 @@
 			return active && (active.button.contains(node) || active.popup.contains(node));
 		}
 
-		overview.addEventListener('pointerover', event => {
+		app.addEventListener('pointerover', event => {
 			if (event.pointerType === 'touch') return;
 			const button = findButton(event.target);
 			if (button) open(button);
 			if (isInside(event.target)) cancelClose();
 		});
-		overview.addEventListener('pointerout', event => {
+		app.addEventListener('pointerout', event => {
 			if (event.pointerType === 'touch' || !isInside(event.target) || isInside(event.relatedTarget)) return;
 			if (active.pinned || active.button.matches(':focus-visible')) return;
 			closeTimer = window.setTimeout(hide, 160);
 		});
-		overview.addEventListener('focusin', event => {
+		app.addEventListener('focusin', event => {
 			const button = findButton(event.target);
 			if (button?.matches(':focus-visible')) open(button);
 		});
-		overview.addEventListener('focusout', event => {
+		app.addEventListener('focusout', event => {
 			if (isInside(event.target) && !isInside(event.relatedTarget)) hide();
 		});
-		overview.addEventListener('click', event => {
+		app.addEventListener('click', event => {
 			const button = findButton(event.target);
 			if (!button) return;
 			if (active?.button === button && active.pinned) {
@@ -187,12 +189,12 @@
 		window.addEventListener('scroll', reposition, true);
 		new MutationObserver(() => {
 			if (active && (!active.button.isConnected || active.button.hidden)) hide();
-		}).observe(overview, { childList: true, subtree: true, attributeFilter: ['hidden'] });
+		}).observe(app, { childList: true, subtree: true, attributeFilter: ['hidden'] });
 	}
 
 
 	function bindHelp() {
-		bindHrHelp();
+		bindHelpPopups();
 		const link = document.querySelector('.hr-app-request');
 		link?.addEventListener('click', () => show(link));
 	}

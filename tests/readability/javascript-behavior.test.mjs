@@ -59,7 +59,8 @@ function createEnvironment(root) {
 		vm.runInContext(readFileSync(join(root, 'js', filename), 'utf8'), context, { filename });
 	}
 	load(root === candidateRoot ? 'timesheet-runtime.js' : 'timesheet-core.js');
-	return { context, load, controls, document, container, messages, requests, timers };
+	const loadEntries = () => load(root === candidateRoot ? 'timesheet-entries-v2.js' : 'timesheet-entries.js');
+	return { context, load, loadEntries, controls, document, container, messages, requests, timers };
 }
 
 function createRow(environment, overrides = {}, hr = false) {
@@ -195,9 +196,10 @@ for (const [name, overrides, existingId, hr] of [
 	test(`row saving matches baseline: ${name}`, async () => {
 		const result = await runForBoth(async (root) => {
 			const environment = createEnvironment(root);
-			environment.load('timesheet-entries.js');
+			environment.loadEntries();
 			const fixture = createRow(environment, overrides, hr);
 			if (existingId) fixture.row.dataset.id = existingId;
+			if (name === 'invalid break with incomplete time') fixture.row.dataset.savedComment = 'Previous comment';
 			const calls = [];
 			environment.context.Timesheet.api = async (path, options = {}) => {
 				calls.push({ path, options });
@@ -238,7 +240,7 @@ for (const [name, overrides, existingId, hr] of [
 test('edits made during an in-flight save are queued and persisted in the same order', async () => {
 	const result = await runForBoth(async (root) => {
 		const environment = createEnvironment(root);
-		environment.load('timesheet-entries.js');
+		environment.loadEntries();
 		const fixture = createRow(environment);
 		const calls = [];
 		let finishFirstSave;
@@ -263,36 +265,11 @@ test('edits made during an in-flight save are queued and persisted in the same o
 	assert.equal(result.dataset.saveQueued, undefined);
 });
 
-test('comment-only saves distinguish a selected reason from the same words entered as free text', async () => {
+test('a time edit preserves the stored comment while a text edit saves free text', async () => {
 	const environment = createEnvironment(candidateRoot);
-	environment.load('timesheet-entries.js');
-	const fixture = createRow(environment, { '.startTime': '', '.endTime': '', '.commentInput': 'Urlaub' });
-	fixture.fields['.commentSelect'] = { value: 'vacation' };
-	fixture.row.dataset.commentType = 'vacation';
-	const writes = [];
-	environment.context.Timesheet.api = async (path, options = {}) => {
-		if (options.method) writes.push({ path, method: options.method, body: JSON.parse(options.body) });
-		return path.includes('/summary') ? { overtimeMinutes: 0 } : { id: 42 };
-	};
-	await environment.context.Timesheet.entries.saveRowIfNeeded(fixture.row);
-	fixture.fields['.commentSelect'].value = 'custom';
-	fixture.row.dataset.commentType = 'custom';
-	await environment.context.Timesheet.entries.saveRowIfNeeded(fixture.row);
-	await environment.context.Timesheet.entries.saveRowIfNeeded(fixture.row);
-
-	assert.deepEqual(writes.map(({ method, body }) => [method, body.comment, body.commentType]), [
-		['POST', 'Urlaub', 'vacation'],
-		['PUT', 'Urlaub', 'custom'],
-	]);
-	assert.equal(fixture.row.dataset.savedCommentType, 'custom');
-});
-
-test('a time edit preserves an unchanged legacy comment', async () => {
-	const environment = createEnvironment(candidateRoot);
-	environment.load('timesheet-entries.js');
+	environment.loadEntries();
 	const fixture = createRow(environment, { '.commentInput': '  Urlaub  ' });
-	fixture.fields['.commentSelect'] = { value: 'custom' };
-	Object.assign(fixture.row.dataset, { id: '42', savedComment: '  Urlaub  ', savedCommentType: '' });
+	Object.assign(fixture.row.dataset, { id: '42', savedComment: '  Urlaub  ' });
 	const writes = [];
 	environment.context.Timesheet.api = async (_path, options = {}) => {
 		if (options.method) writes.push(JSON.parse(options.body));
@@ -302,12 +279,17 @@ test('a time edit preserves an unchanged legacy comment', async () => {
 	assert.equal(writes.length, 1);
 	assert.equal(writes[0].start, '08:00');
 	assert.ok(!Object.hasOwn(writes[0], 'comment') && !Object.hasOwn(writes[0], 'commentType'));
+
+	fixture.fields['.commentInput'].value = 'Stundenausgleich';
+	await environment.context.Timesheet.entries.saveRowIfNeeded(fixture.row);
+	assert.equal(writes[1].comment, 'Stundenausgleich');
+	assert.ok(!Object.hasOwn(writes[1], 'commentType'));
 });
 
 test('rule and holiday caches match baseline', async () => {
 	const result = await runForBoth(async (root) => {
 		const environment = createEnvironment(root);
-		environment.load('timesheet-entries.js');
+		environment.loadEntries();
 		const calls = [];
 		environment.context.Timesheet.api = async (path) => {
 			calls.push(path);

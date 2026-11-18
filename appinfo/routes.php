@@ -23,6 +23,7 @@ return [
 
 		// REST: User config
 		['name' => 'preferences#setBreakInputMode', 'url' => '/api/preferences/break-input-mode', 'verb' => 'PUT'],
+		['name' => 'preferences#setHrOverviewWidth', 'url' => '/api/preferences/hr-overview-width', 'verb' => 'PUT'],
 		['name' => 'preferences#setHistoryView', 'url' => '/api/preferences/change-history-view', 'verb' => 'PUT'],
 		['name' => 'employmentStatus#setFreelancerMode', 'url' => '/api/preferences/freelancer-mode', 'verb' => 'PUT'],
 		['name' => 'tour#complete', 'url' => '/api/preferences/tour/complete', 'verb' => 'POST'],

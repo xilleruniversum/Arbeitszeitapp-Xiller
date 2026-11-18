@@ -106,23 +106,20 @@ namespace {
 			}
 			public function get(string $app, ?string $language = null): \OCP\IL10N {
 				$this->requestedLanguages[] = [$app, $language];
-				return new class ($this, $language) implements \OCP\IL10N {
-					private const GERMAN_TEXTS = [
-						'Timesheet: missing time entries' => 'Timesheet: fehlende Zeiteinträge',
-						'Hello %1$s,' => 'Hallo %1$s,',
-						'Missing entry' => 'Fehlender Eintrag',
-						'Incomplete entry' => 'Unvollständiger Eintrag',
-						'Open Timesheet' => 'Timesheet öffnen',
-					];
-					public function __construct(private object $factory, private ?string $language) {
+				$german = in_array($language, ['de', 'de_DE'], true);
+				$messages = $german
+					? json_decode(file_get_contents(__DIR__ . '/../../l10n/' . $language . '.json'), true, 512, JSON_THROW_ON_ERROR)['translations']
+					: [];
+				return new class ($this, $german, $messages) implements \OCP\IL10N {
+					public function __construct(private object $factory, private bool $german, private array $messages) {
 					}
 					public function t(string $text, array $parameters = []): string {
 						$this->factory->requestedTexts[] = $text;
-						$translated = $this->language === 'de' ? (self::GERMAN_TEXTS[$text] ?? $text) : $text;
+						$translated = $this->messages[$text] ?? $text;
 						return $parameters === [] ? $translated : vsprintf($translated, $parameters);
 					}
 					public function l(string $type, $data, array $options = []): string {
-						return (new \DateTime($data))->format($this->language === 'de' ? 'd.m.Y' : 'Y-m-d');
+						return (new \DateTime($data))->format($this->german ? 'd.m.Y' : 'Y-m-d');
 					}
 				};
 			}
@@ -170,7 +167,7 @@ namespace {
 	$expectSame(1, count($transport->messages), 'one message created');
 	$message = $transport->messages[0];
 	$expectSame(['alex@example.test' => 'Alex <script> & "Team"'], $message->to, 'one private To address');
-	$expectSame('Timesheet: fehlende Zeiteinträge', $message->subject, 'German subject chosen');
+	$expectSame('Timesheet: Fehlende Zeiteinträge', $message->subject, 'German subject chosen');
 	$expectSame(['employee-a'], $translations->requestedUsers, 'recipient determines translation language');
 	$expectSame([['timesheet', 'de']], $translations->requestedLanguages, 'German timesheet translator requested');
 	$expectContains('Hallo Alex <script> & "Team",', $message->plainBody, 'plain greeting preserves readable characters');
@@ -217,18 +214,41 @@ namespace {
 	$expectContains('See the Nextcloud log.', $summaryMessage->plainBody, 'inspection failure setup notice');
 	$expectSame([['timesheet', 'en']], $translations->requestedLanguages, 'HR language selected independently');
 
-	// The editor displays the built-in text with literal placeholders and the recipient's localization.
-	$editorBody = MissingEntryReminderMailer::originalBody($translations->get('timesheet', 'de'), false);
-	$expectContains('Hallo {recipient},', $editorBody, 'editor greeting is localized and editable');
-	$expectContains("Timesheet öffnen: {appUrl}", $editorBody, 'editor includes localized link text');
-	$expectSame(1, substr_count($editorBody, '{entries}'), 'editor has exactly one dynamic findings placeholder');
+	// Verify the exact defaults in the editor and in both formats of the generated mail.
+	foreach ([
+		'de' => 'Passe deine Fehlzeiten bitte umgehend an.',
+		'de_DE' => 'Passen Sie Ihre Fehlzeiten bitte umgehend an.',
+	] as $language => $instruction) {
+		[$mailer, $transport, $translations, $urls] = createReminderMailFixture();
+		$translations->userLanguages['employee-a'] = $language;
+		$footer = 'Diese Benachrichtigung wurde automatisch durch HR erstellt.';
+		$expectedEditorBody = implode("\n\n", [
+			'Hallo {recipient},',
+			'Für folgende Tage fehlen Zeiteinträge oder sie sind unvollständig.',
+			'{entries}',
+			'Timesheet öffnen: {appUrl}',
+			$instruction,
+			$footer,
+		]);
+		$editorBody = MissingEntryReminderMailer::originalBody($translations->get('timesheet', $language), false);
+		$expectSame($expectedEditorBody, $editorBody, 'exact editable original for ' . $language);
+		$expectSame(true, $mailer->sendEmployeeReminder($employee, $issues), 'default reminder can be generated for ' . $language);
+		$expectedMailBody = strtr($expectedEditorBody, [
+			'{recipient}' => $employee->getDisplayName(),
+			'{entries}' => " - 01.10.2026: Fehlender Eintrag\n - 02.10.2026: Unvollständiger Eintrag",
+			'{appUrl}' => $urls->appUrl,
+		]);
+		$defaultMessage = $transport->messages[0];
+		$expectSame($expectedMailBody, $defaultMessage->plainBody, 'exact delivered plain text for ' . $language);
+		$expectContains('<p>' . $instruction . '</p><p>' . $footer . '</p>', $defaultMessage->htmlBody, 'closing paragraphs are localized in HTML for ' . $language);
+	}
 	$expectContains('The following employees have missing or incomplete time entries', MissingEntryReminderMailer::originalBody($translations->get('timesheet', 'en'), true), 'HR editor has HR-specific original');
 
 	[$mailer, $transport, , $urls] = createReminderMailFixture();
 	$body = "Guten Tag {recipient},\n\nBitte prüfen. <img src=x>\n\n{entries}\n\nLink: {appUrl}";
 	$expectSame(true, $mailer->sendEmployeeReminder($employee, $issues, ['de' => $body]), 'employee locale override is sent');
 	$customEmployee = $transport->messages[0];
-	$expectSame('Timesheet: fehlende Zeiteinträge', $customEmployee->subject, 'custom body retains subject');
+	$expectSame('Timesheet: Fehlende Zeiteinträge', $customEmployee->subject, 'custom body retains subject');
 	$expectContains('Guten Tag Alex <script> & "Team",', $customEmployee->plainBody, 'recipient token expands in plain output');
 	$expectContains('Bitte prüfen. &lt;img src=x&gt;', $customEmployee->htmlBody, 'custom text is escaped in HTML output');
 	$expectSame(false, str_contains($customEmployee->htmlBody, '<img src=x>'), 'custom text cannot inject HTML');

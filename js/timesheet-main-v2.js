@@ -169,28 +169,6 @@
 	}
 
 	function bindCommentEditor() {
-		document.addEventListener('change', async event => {
-			const select = event.target;
-			if (!select.matches?.('select.commentSelect')) return;
-			const row = select.closest('tr');
-			const textarea = row?.querySelector('.commentInput');
-			if (!textarea) return;
-
-			const type = select.value;
-			row.dataset.commentType = type || 'custom';
-			if (type === 'custom') {
-				if (textarea.hidden) textarea.value = '';
-				textarea.hidden = false;
-				resizeCommentTextarea(textarea);
-				textarea.focus();
-				return;
-			}
-
-			textarea.value = type ? select.selectedOptions[0].textContent : '';
-			textarea.hidden = true;
-			await timesheet.entries.saveRowIfNeeded(row);
-		});
-
 		document.addEventListener('input', event => {
 			const targetElement = event.target;
 			if (targetElement && targetElement.matches('textarea.commentInput')) {
@@ -417,7 +395,6 @@
 
 	// Auto-grow textarea function
 	function resizeCommentTextarea(textarea) {
-		if (textarea.hidden) return;
 		textarea.style.height = '21px';
 		textarea.style.height = `${textarea.scrollHeight}px`;
 	}
