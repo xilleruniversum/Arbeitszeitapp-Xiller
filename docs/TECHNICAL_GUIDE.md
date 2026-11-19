@@ -123,6 +123,15 @@ PHP-Stilprüfung, Psalm, Rector und PHPUnit sind vorbereitet, aber noch keine vo
 
 Nur eine erhöhte Versionsnummer löst einen neuen Update-Hinweis aus. Eine Textänderung, ein Push oder ein Merge installiert kein Update. Bei einer fehlgeschlagenen Datenbankumstellung erfordert eine Rückkehr die zusammengehörige Sicherung von Datenbank, Konfiguration und App-Dateien.
 
+### Admin-Checkliste für das Update auf 1.4.5
+
+Ab Version 1.4.5 erscheinen Mitarbeitende in der HR-Übersicht und im Änderungsverlauf nur mit einer gültigen Statusgruppe **und** einer passenden HR-Zuordnung. Bestehende Zeiteinträge bleiben erhalten.
+
+1. **Aktive Mitarbeitende prüfen.** Alle aktiven Mitarbeitenden, die HR sehen soll, müssen der Nextcloud-Gruppe mit der exakten Kennung `Zeitnachweis` angehören. Bestehende Abteilungsgruppen und HR-Zuordnungen beibehalten.
+2. **Archivgruppe bei Bedarf anlegen.** Wenn ehemalige Mitarbeitende sichtbar bleiben sollen, die Gruppe `Zeitnachweis-Archiv` anlegen. Beim Archivieren zuerst das Konto aus `Zeitnachweis` entfernen, dann zu `Zeitnachweis-Archiv` hinzufügen. Sind alle aktiven Mitarbeitenden korrekt zugeordnet, kann das Update auch ohne Archivgruppe installiert werden.
+3. **HR-Zugriff kontrollieren.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** prüfen, ob archivierte Konten weiterhin über eine passende Mitarbeitendengruppe dem zuständigen HR-Konto zugeordnet sind. Die gemeinsame Archivgruppe nur einer HR-Regel hinzufügen, wenn die zuständigen HR-Konten alle Mitglieder dieser Gruppe sehen dürfen.
+4. **Nach dem Update testen.** Mit einem zuständigen HR-Konto in der HR-Übersicht und im Änderungsverlauf die Filter **Alle**, **Aktiv** und **Inaktiv** prüfen.
+
 ## 7. Ein App-Paket veröffentlichen
 
 1. Einen vollständigen Ausgabeordner `timesheet` mit Laufzeitbibliotheken und Lizenzhinweisen vorbereiten. Prüfprogramme und Entwicklungsdateien gehören nicht ins Installationspaket.
@@ -259,6 +268,15 @@ PHP style checks, Psalm, Rector and PHPUnit are prepared but do not yet form a f
 6. Reload the app and check the changed behavior. The demo's release notes can be reopened using [this link](http://localhost:8133/apps/timesheet/?update-notes=1).
 
 Only an increased version triggers a new update notice. Editing text, pushing or merging does not install an update. After a failed database migration, rollback requires the matching database, configuration and app-file backup.
+
+### Administrator checklist for updating to 1.4.5
+
+Starting with version 1.4.5, employees appear in the HR overview and change history only when they belong to one of the two status groups **and** are covered by an HR assignment. Existing time entries are retained.
+
+1. **Check active employees.** All active employees who should be visible to HR must belong to the Nextcloud group with the exact ID `Zeitnachweis`. Keep existing department groups and HR assignments.
+2. **Create the archive group if needed.** If former employees should stay visible, create the `Zeitnachweis-Archiv` group. To archive an account, first remove it from `Zeitnachweis`, then add it to `Zeitnachweis-Archiv`. If all active employees are assigned correctly, you can install the update without creating the archive group.
+3. **Check HR access.** Under **Profile → Settings → Administration → Timesheet**, check that archived accounts remain assigned to the responsible HR account through an appropriate employee group. Add the shared archive group to an HR rule only if the responsible HR accounts are allowed to see all members of that group.
+4. **Test after updating.** Using a responsible HR account, check the **All**, **Active** and **Inactive** filters in the HR overview and change history.
 
 ## 7. Publish an app package
 

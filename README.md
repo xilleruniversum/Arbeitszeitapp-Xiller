@@ -34,7 +34,7 @@ Die Übersicht hilft HR, auffällige Einträge zu finden und die erfassten Zeite
 
 ### Einstellungen und Grenzen
 
-HR ordnet unter **Profil → Einstellungen → Arbeitszeitnachweis** die HR-Gruppen den Mitarbeitergruppen zu und legt Zeitregeln und deren Prioritäten fest. Persönliche Einstellungen betreffen unter anderem Tagesziel, Feiertagsregion und HR-Benachrichtigungen.
+Nextcloud-Admins verwalten die Zuordnung von HR-Gruppen und HR-Konten zu Mitarbeitendengruppen unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis**. HR legt Zeitregeln und deren Prioritäten unter **Profil → Einstellungen → Arbeitszeitnachweis** fest. Zu den persönlichen Einstellungen gehören Tagesziel, Feiertagsregion und HR-Benachrichtigungen.
 
 Die App verwendet ein einheitliches Tagesziel pro Person. Für die Sollzeitberechnung zählen nur vollständige Zeiteinträge: Leere Tage und reine Kommentare erzeugen nicht automatisch Minusstunden. Pausen werden als Gesamtdauer pro Tag erfasst.
 
@@ -50,6 +50,15 @@ Für Version 1.4.5 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompati
 Das sind die deklarierten Versionsgrenzen. Sie sind kein Nachweis, dass jede Kombination praktisch getestet wurde. Timesheet läuft innerhalb einer eingerichteten Nextcloud-Installation.
 
 Für Feiertagsdaten benötigt Nextcloud ausgehenden HTTPS-Zugriff auf `get.api-feiertage.de`, sofern keine gültigen zwischengespeicherten Daten vorhanden sind.
+
+## Admin-Checkliste für das Update auf 1.4.5
+
+Ab Version 1.4.5 erscheinen Mitarbeitende in der HR-Übersicht und im Änderungsverlauf nur mit einer gültigen Statusgruppe **und** einer passenden HR-Zuordnung. Bestehende Zeiteinträge bleiben erhalten.
+
+1. **Aktive Mitarbeitende prüfen.** Alle aktiven Mitarbeitenden, die HR sehen soll, müssen der Nextcloud-Gruppe mit der exakten Kennung `Zeitnachweis` angehören. Bestehende Abteilungsgruppen und HR-Zuordnungen beibehalten.
+2. **Archivgruppe bei Bedarf anlegen.** Wenn ehemalige Mitarbeitende sichtbar bleiben sollen, die Gruppe `Zeitnachweis-Archiv` anlegen. Beim Archivieren zuerst das Konto aus `Zeitnachweis` entfernen, dann zu `Zeitnachweis-Archiv` hinzufügen. Sind alle aktiven Mitarbeitenden korrekt zugeordnet, kann das Update auch ohne Archivgruppe installiert werden.
+3. **HR-Zugriff kontrollieren.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** prüfen, ob archivierte Konten weiterhin über eine passende Mitarbeitendengruppe dem zuständigen HR-Konto zugeordnet sind. Die gemeinsame Archivgruppe nur einer HR-Regel hinzufügen, wenn die zuständigen HR-Konten alle Mitglieder dieser Gruppe sehen dürfen.
+4. **Nach dem Update testen.** Mit einem zuständigen HR-Konto in der HR-Übersicht und im Änderungsverlauf die Filter **Alle**, **Aktiv** und **Inaktiv** prüfen.
 
 ## Installation und Weiterentwicklung
 
@@ -95,7 +104,7 @@ The overview helps HR find entries that need attention and review recorded hours
 
 ### Settings and limitations
 
-Under **Profile → Settings → Timesheet**, HR assigns HR groups to employee groups and configures time rules and their priorities. Personal settings include the daily target, public holiday region and HR notifications.
+Nextcloud administrators manage the assignment of HR groups and HR accounts to employee groups under **Profile → Settings → Administration → Timesheet**. HR configures time rules and their priorities under **Profile → Settings → Timesheet**. Personal settings include the daily target, public holiday region and HR notifications.
 
 The app uses a uniform daily target for each person. Only complete time entries count towards target hours: empty days and comments on their own do not automatically create negative hours. Breaks are recorded as a total duration per day.
 
@@ -111,6 +120,15 @@ The [app metadata](appinfo/info.xml) declares the following compatibility for ve
 These are declared version limits, not evidence that every combination has been tested. Timesheet runs inside a configured Nextcloud installation.
 
 For public holiday data, Nextcloud needs outbound HTTPS access to `get.api-feiertage.de` unless valid cached data is available.
+
+## Administrator checklist for updating to 1.4.5
+
+Starting with version 1.4.5, employees appear in the HR overview and change history only when they belong to one of the two status groups **and** are covered by an HR assignment. Existing time entries are retained.
+
+1. **Check active employees.** All active employees who should be visible to HR must belong to the Nextcloud group with the exact ID `Zeitnachweis`. Keep existing department groups and HR assignments.
+2. **Create the archive group if needed.** If former employees should stay visible, create the `Zeitnachweis-Archiv` group. To archive an account, first remove it from `Zeitnachweis`, then add it to `Zeitnachweis-Archiv`. If all active employees are assigned correctly, you can install the update without creating the archive group.
+3. **Check HR access.** Under **Profile → Settings → Administration → Timesheet**, check that archived accounts remain assigned to the responsible HR account through an appropriate employee group. Add the shared archive group to an HR rule only if the responsible HR accounts are allowed to see all members of that group.
+4. **Test after updating.** Using a responsible HR account, check the **All**, **Active** and **Inactive** filters in the HR overview and change history.
 
 ## Installation and development
 
