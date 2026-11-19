@@ -13,7 +13,7 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 	<fieldset id="hr-notifications-section" class="hr-personal-notifications" disabled>
 		<legend><?php p($l->t('Alerts for HR')); ?></legend>
 		<div class="hr-notifications-grid">
-			<p class="hr-notification-intro"><?php p($l->t('Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.')); ?></p>
+			<p class="hr-notification-intro"><?php p($l->t('Each HR account (not an HR group) sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.')); ?></p>
 			<div class="hr-notification-row hr-notification-header" aria-hidden="true">
 				<span><?php p($l->t('Alert')); ?></span>
 				<span><?php p($l->t('Alert threshold')); ?></span>
@@ -40,8 +40,7 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 							</label>
 							<?php if ($isDays) {
 								$renderHelpPopup('hr-weekly-email-help', $l->t('Include in my weekly email'), [
-									$l->t('When checked, this alert is also included in the weekly summary email.'),
-									$l->t('The employee list shows the current alerts in the app. The weekly email to HR bundles the selected alerts that still apply on Monday.'),
+									$l->t('When checked, this alert is also included in the weekly summary email to your own HR account.'),
 								]);
 							} ?>
 						</div>
@@ -62,7 +61,12 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 	</p>
 
 	<section class="hr-group-notifications" aria-labelledby="hr-group-notifications-heading">
-		<h5 id="hr-group-notifications-heading"><?php p($l->t('Notifications by group')); ?></h5>
+		<div class="hr-help-heading">
+			<h5 id="hr-group-notifications-heading"><?php p($l->t('Notifications by group')); ?></h5>
+			<?php $renderHelpPopup('hr-group-notifications-help', $l->t('Notifications by group'), [
+				$l->t('Working time rules for breaks are available under Profile → Settings → Timesheet. Administrators manage the assignment of HR and employee groups in their personal settings.'),
+			]); ?>
+		</div>
 		<?php if (is_array($_['notificationRuleSettings'] ?? null)): ?>
 			<?php
 			$ruleEditorData = $_['notificationRuleSettings'];

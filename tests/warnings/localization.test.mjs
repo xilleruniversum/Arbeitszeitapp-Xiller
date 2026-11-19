@@ -102,6 +102,35 @@ test('German incomplete time warnings use the account catalog when the browser i
 	}
 });
 
+test('comments suppress incomplete-time warnings on load and after adding or clearing a comment', async () => {
+	const app = openEntries('de');
+	const expected = app.translations['Time incomplete'];
+	const whitespace = '\t\u00A0\u0085\uFEFF';
+	for (const times of [{ startMin: 480, endMin: null }, { startMin: null, endMin: 990 }]) {
+		assert.equal(renderedWarning(app, { ...times, comment: '0' }), '');
+		assert.equal(renderedWarning(app, { ...times, comment: whitespace }), expected);
+	}
+	for (const hr of [false, true]) {
+		const { row, fields } = editableRow(app, hr);
+		await app.context.Timesheet.entries.saveRowIfNeeded(row);
+		assert.equal(fields['.ts-warn'].textContent, expected);
+
+		fields['.commentInput'].value = 'Termin wurde verschoben.';
+		await app.context.Timesheet.entries.saveRowIfNeeded(row);
+		assert.equal(fields['.ts-warn'].textContent, '');
+		assert.equal(row.dataset.savedComment, 'Termin wurde verschoben.');
+
+		fields['.commentInput'].value = whitespace;
+		await app.context.Timesheet.entries.saveRowIfNeeded(row);
+		assert.equal(fields['.ts-warn'].textContent, expected);
+
+		fields['.commentInput'].value = '';
+		await app.context.Timesheet.entries.saveRowIfNeeded(row);
+		assert.equal(fields['.ts-warn'].textContent, expected);
+		assert.equal(row.dataset.savedComment, '');
+	}
+});
+
 for (const accountLanguage of ['de', 'de_DE', 'en_GB', 'ja', 'ar']) {
 	test('loaded and newly saved incomplete entries share localized warnings: ' + accountLanguage, async () => {
 		const app = openEntries(accountLanguage, accountLanguage === 'en_GB' ? 'de-DE' : 'en-GB');

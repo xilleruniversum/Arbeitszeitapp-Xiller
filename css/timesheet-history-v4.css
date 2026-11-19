@@ -16,6 +16,9 @@
 	flex-wrap: wrap;
 	gap: 12px;
 }
+#tab-change-history #history-heading {
+	margin-block: 0;
+}
 .ts-history-toolbar {
 	display: flex;
 	flex-direction: column;

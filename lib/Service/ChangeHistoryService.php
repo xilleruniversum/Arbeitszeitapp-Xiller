@@ -34,24 +34,36 @@ class ChangeHistoryService {
 		if (!$userId || !$this->hrService->isHr($userId)) {
 			throw new ForbiddenException();
 		}
-		$assignedEmployees = $this->hrService->getAccessibleUsers($userId);
-		$employees = [['id' => $userId, 'name' => $user->getDisplayName()]];
-		foreach ($assignedEmployees as $employee) {
-			if ($employee['id'] !== $userId) {
-				$employees[] = $employee;
+		$employees = $this->hrService->getEmployeesForOverview($userId);
+		$allEmployeeIds = array_column($employees, 'id');
+		if (!in_array($userId, $allEmployeeIds, true)) {
+			$isActive = $this->groupManager->isInGroup($userId, EmploymentStatusStore::ACTIVE_GROUP_ID);
+			if ($isActive || $this->groupManager->isInGroup($userId, EmploymentStatusStore::ARCHIVE_GROUP_ID)) {
+				array_unshift($employees, ['id' => $userId, 'name' => $user->getDisplayName(), 'isActive' => $isActive]);
+				array_unshift($allEmployeeIds, $userId);
 			}
 		}
+		$filters = $this->filters($query);
+		// HR can still explicitly read their own history outside the employee groups.
+		$ownHistory = $filters['employee'] === $userId && $filters['employmentStatus'] === 'all';
+		if ($filters['employee'] !== '' && !$ownHistory && !in_array($filters['employee'], $allEmployeeIds, true)) {
+			throw new ForbiddenException();
+		}
+		if ($filters['employmentStatus'] !== 'all') {
+			$showActive = $filters['employmentStatus'] === 'active';
+			$employees = array_values(array_filter($employees, static fn (array $employee): bool =>
+				$employee['isActive'] === $showActive));
+		}
 		$employeeIds = array_column($employees, 'id');
+		if ($ownHistory && !in_array($userId, $employeeIds, true)) {
+			$employeeIds[] = $userId;
+		}
 		$cutoff = $this->retentionCutoff();
 		$actors = $this->history->actors($employeeIds, $cutoff);
 		$actorIds = array_column($actors, 'id');
 		$pendingIds = $this->accountQueue->pendingAccountIds();
 		if (array_intersect($pendingIds, [...$employeeIds, ...$actorIds]) !== []) {
 			throw new \RuntimeException('Account history cleanup is pending.');
-		}
-		$filters = $this->filters($query);
-		if ($filters['employee'] !== '' && !in_array($filters['employee'], $employeeIds, true)) {
-			throw new ForbiddenException();
 		}
 		if (($filters['actor'] !== '' && !in_array($filters['actor'], $actorIds, true))
 			|| ($filters['actorDeleted'] && !in_array(null, $actorIds, true))) {
@@ -66,12 +78,9 @@ class ChangeHistoryService {
 			'nextCursor' => $hasMore ? $items[count($items) - 1]['id'] : null,
 			'recordingStartedAt' => $this->recording->getStartedAt(),
 			'retentionMonths' => self::RETENTION_MONTHS,
-			'hasHistory' => $actors !== [],
+			'hasHistory' => $actors !== [] || ($employeeIds !== $allEmployeeIds && $this->history->actors($allEmployeeIds, $cutoff) !== []),
 			'filters' => [
-				'employees' => array_map(fn (array $employee): array => [
-					...$employee,
-					'isActive' => $this->groupManager->isInGroup($employee['id'], EmploymentStatusStore::ACTIVE_GROUP_ID),
-				], $employees),
+				'employees' => $employees,
 				'actors' => array_values(array_filter($actors, fn (array $actor): bool =>
 					$actor['id'] !== null && $this->hrService->isHr($actor['id']))),
 			],
@@ -95,6 +104,10 @@ class ChangeHistoryService {
 		}
 		$employee = $this->identifier($query['employee'] ?? '');
 		$actor = $this->identifier($query['actor'] ?? '');
+		$employmentStatus = $query['employmentStatus'] ?? 'all';
+		if (!in_array($employmentStatus, ['all', 'active', 'inactive'], true)) {
+			throw new \InvalidArgumentException('Invalid history filter');
+		}
 		$actorDeleted = $query['actorDeleted'] ?? false;
 		$employeeChanges = $query['employeeChanges'] ?? false;
 		$booleanValues = [false, true, 0, 1, '0', '1'];
@@ -109,7 +122,8 @@ class ChangeHistoryService {
 		}
 		$beforeId = isset($query['beforeId']) && $query['beforeId'] !== '' ? $this->positiveInteger($query['beforeId']) : null;
 		return ['from' => $from->getTimestamp(), 'through' => $to->modify('+1 day')->getTimestamp(), 'employee' => $employee,
-			'actor' => $actor, 'actorDeleted' => $actorDeleted, 'employeeChanges' => $employeeChanges, 'kind' => $kind, 'beforeId' => $beforeId];
+			'actor' => $actor, 'actorDeleted' => $actorDeleted, 'employeeChanges' => $employeeChanges, 'kind' => $kind,
+			'employmentStatus' => $employmentStatus, 'beforeId' => $beforeId];
 	}
 
 	private function date(mixed $value, \DateTimeZone $zone): \DateTimeImmutable {

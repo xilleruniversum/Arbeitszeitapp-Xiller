@@ -87,29 +87,17 @@ class OverviewController extends Controller {
 			return new DataResponse([], 403);
 		}
 
-		$accessibleUsers = $this->hrService->getAccessibleUsers();
-		if ($accessibleUsers === []) {
-			return new DataResponse([]);
-		}
-
-		$userIds = array_map(fn($userInfo) => (string)($userInfo['id'] ?? ''), $accessibleUsers);
-		$userIds = array_values(array_filter($userIds, fn($userId) => $userId !== ''));
-		if ($userIds === []) {
-			return new DataResponse([]);
-		}
 		try {
-			$employmentStatuses = $this->employmentStatusStore->getStatusesForUsers($userIds);
+			$employees = $this->hrService->getEmployeesForOverview();
+			$employmentStatuses = $this->employmentStatusStore->getStatusesForUsers(array_column($employees, 'id'));
 		} catch (\Throwable $loadError) {
 			return new DataResponse(['message' => 'Loading employment status failed'], 500);
 		}
 
 		$userSummaries = [];
 
-		foreach ($accessibleUsers as $user) {
-			$userId = (string)($user['id'] ?? '');
-			if ($userId === '') {
-				continue;
-			}
+		foreach ($employees as $user) {
+			$userId = $user['id'];
 
 			$summary = $this->monthlyBalanceService->calculateCurrentBalance($userId);
 			$employmentStatus = $employmentStatuses[$userId];
@@ -123,6 +111,7 @@ class OverviewController extends Controller {
 				'balanceSource' => $summary['source'] ?? 'entries',
 				'lastSnapshot' => $summary['lastSnapshot'] ?? null,
 				...$employmentStatus->toPublicArray(),
+				'isActive' => $user['isActive'],
 				'missingEntryReferenceDate' => $employmentStatus->getMissingEntryReferenceDate($summary['lastEntryDate'] ?? null),
 			];
 		}

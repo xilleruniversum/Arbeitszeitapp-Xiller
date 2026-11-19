@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace OCA\Timesheet\Service;
 
-use Normalizer;
 use RuntimeException;
 
-/** Shares localized absence labels between the interface and reminder checks. */
+/** Supplies localized labels for existing absence comment types. */
 class AbsenceCommentCatalog {
 
 	/** @var array<string,array{vacation:string,sick:string,appointment:string}> */
 	private array $termsByLanguage = [];
-	/** @var array<string,true> */
-	private array $acceptedComments = [];
 
 	public function __construct() {
 		$catalogFile = __DIR__ . '/absence-comment-terms.json';
@@ -39,11 +36,6 @@ class AbsenceCommentCatalog {
 				'sick' => $terms['sick'],
 				'appointment' => $terms['appointment'],
 			];
-			foreach ($this->termsByLanguage[$language] as $term) {
-				$this->acceptedComments[$this->normalizeComment($term)] = true;
-				// Uppercase forms also preserve case pairs such as Turkish dotless i.
-				$this->acceptedComments[$this->normalizeComment(mb_strtoupper($term, 'UTF-8'))] = true;
-			}
 		}
 	}
 
@@ -66,25 +58,11 @@ class AbsenceCommentCatalog {
 		return $this->termsByLanguage['en'];
 	}
 
-	public function isExemptComment(?string $comment): bool {
-		// Recognition is independent of the reader's language and later account changes.
-		return isset($this->acceptedComments[$this->normalizeComment($comment ?? '')]);
-	}
-
 	private function isValidTerm(mixed $term): bool {
-		return is_string($term) && mb_check_encoding($term, 'UTF-8') && $this->normalizeComment($term) !== '';
+		return is_string($term) && preg_match('/[^\s\p{Z}\x{FEFF}]/u', $term) === 1;
 	}
 
 	private function normalizeLanguage(string $language): string {
 		return strtolower(str_replace('-', '_', trim($language)));
-	}
-
-	private function normalizeComment(string $comment): string {
-		if (!mb_check_encoding($comment, 'UTF-8')) {
-			return '';
-		}
-		$trimmedComment = preg_replace('/\A[\s\p{Z}]+|[\s\p{Z}]+\z/u', '', $comment);
-		$normalizedComment = Normalizer::normalize($trimmedComment ?? '', Normalizer::FORM_C);
-		return mb_convert_case($normalizedComment === false ? '' : $normalizedComment, MB_CASE_FOLD, 'UTF-8');
 	}
 }

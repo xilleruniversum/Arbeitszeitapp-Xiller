@@ -17,10 +17,12 @@ use OCA\Timesheet\Db\ChangeHistoryRecordingStore;
 use OCA\Timesheet\Notification\UpdateNotesNotifier;
 use OCA\Timesheet\Listener\UpdateNotesUserCreatedListener;
 use OCA\Timesheet\Listener\EmployeeActivityListener;
+use OCA\Timesheet\Listener\ExclusiveEmploymentGroupListener;
 use OCA\Timesheet\Listener\ChangeHistoryUserDeletedListener;
 use OCA\Timesheet\Listener\ChangeHistoryUserCreatedListener;
 use OCP\Group\Events\UserAddedEvent;
 use OCP\Group\Events\UserRemovedEvent;
+use OCP\Group\Events\BeforeUserAddedEvent;
 use OCP\User\Events\UserCreatedEvent;
 use OCP\User\Events\UserDeletedEvent;
 
@@ -42,6 +44,7 @@ class Application extends App implements IBootstrap {
 		$context->registerNotifierService(UpdateNotesNotifier::class);
 		$context->registerEventListener(UserCreatedEvent::class, ChangeHistoryUserCreatedListener::class);
 		$context->registerEventListener(UserCreatedEvent::class, UpdateNotesUserCreatedListener::class);
+		$context->registerEventListener(BeforeUserAddedEvent::class, ExclusiveEmploymentGroupListener::class);
 		$context->registerEventListener(UserAddedEvent::class, EmployeeActivityListener::class);
 		$context->registerEventListener(UserRemovedEvent::class, EmployeeActivityListener::class);
 		$context->registerEventListener(UserDeletedEvent::class, ChangeHistoryUserDeletedListener::class);

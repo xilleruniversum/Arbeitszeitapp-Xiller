@@ -6,25 +6,13 @@ $usesHistoryTable = ($_['historyView'] ?? 'cards') === 'table';
 $hrOverviewWidthPreference = $_['hrOverviewWidthPreference'] ?? ['width' => null, 'revision' => ''];
 $hrOverviewWidth = $hrOverviewWidthPreference['width'] ?? 50;
 $absenceCommentTerms = $_['absenceCommentTerms'];
-$absenceCommentLabels = [
-	$absenceCommentTerms['vacation'],
-	$absenceCommentTerms['sick'],
-	$absenceCommentTerms['appointment'],
-];
-$commentColumnHelp = $l->t('Completely missing time entries in the timesheet trigger an email notification to your own account and, if configured, to HR as well. Only the following reasons in the Comment column prevent a reminder: "%1$s", "%2$s", "%3$s".', $absenceCommentLabels);
+$commentColumnHelp = $l->t('Completely or partially missing time entries in the timesheet trigger an email notification to your own account and, if configured, to the HR supervisor. A corresponding comment in the Comment column prevents a reminder.');
 $employmentStatus = $_['employmentStatus'] ?? [];
 $tourEnabled = $_['tourEnabled'] ?? true;
 $mailDraft = static fn(string $recipient, string $subject, string $body): string =>
 	'mailto:' . $recipient . '?' . http_build_query(['subject' => $subject, 'body' => $body], '', '&', PHP_QUERY_RFC3986);
 if ($tourEnabled) {
-	$commentTourDescription = strtr(
-		$l->t('Use the Comment column to record information about your workday. If both start and end times are missing, only the following reasons prevent a notification: {vacation}, {sick} or {appointment}. Otherwise, entries with no time or only one time are marked as incomplete.'),
-		[
-			'{vacation}' => $absenceCommentTerms['vacation'],
-			'{sick}' => $absenceCommentTerms['sick'],
-			'{appointment}' => $absenceCommentTerms['appointment'],
-		]
-	);
+	$commentTourDescription = $l->t('Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.');
 	$contactBody = implode("\r\n", [
 		$l->t('Hello Timesheet team,'),
 		'',
@@ -186,20 +174,11 @@ if ($tourEnabled) {
 
 	<!-- HR overview -->
 	<?php if ($_['isHR']): ?>
-		<?php
-		$employeeHelpParagraphs = [
-			$l->t('Time rules are managed under Profile → Settings → Timesheet. Email settings are available below under Notifications. Administrators manage HR and employee assignments.'),
-			$l->t('If both start and end times are missing, only the reasons listed in the Comment column’s help box prevent a reminder. Custom comments do not prevent reminders. Entries with only one time remain incomplete.'),
-		];
-		?>
 		<div id="tab-hr" class="ts-tabview">
 			<div class="ts-hr-row">
 				<section id="hr-userlist-section" class="ts-hr-section" aria-labelledby="hr-userlist-heading">
 					<div class="hr-employee-list-header">
-						<div class="hr-employee-list-title">
-							<h4 id="hr-userlist-heading"><?php p($l->t('Employee list')); ?></h4>
-							<?php $renderHelpPopup('hr-overview-help', $l->t('Employee list'), $employeeHelpParagraphs); ?>
-						</div>
+						<h4 id="hr-userlist-heading"><?php p($l->t('Employee list')); ?></h4>
 						<div class="hr-employee-list-actions">
 							<button type="button" id="hr-stats-button" aria-haspopup="dialog" aria-expanded="false" aria-controls="hr-stats-section"><?php p($l->t('Statistics')); ?></button>
 							<button type="button" id="hr-employee-filter-button" aria-haspopup="dialog" aria-expanded="false" aria-controls="hr-employee-filter-popup"><?php p($l->t('Filter')); ?></button>
@@ -410,7 +389,12 @@ if ($tourEnabled) {
 			data-history-view-revision="<?php p($_['historyViewRevision'] ?? ''); ?>"
 			data-history-view-available="<?php p(($_['historyViewAvailable'] ?? false) ? '1' : '0'); ?>">
 			<div class="ts-history-heading">
-				<h3 id="history-heading"><?php p($l->t('Change history')); ?></h3>
+				<div class="hr-help-heading">
+					<h3 id="history-heading"><?php p($l->t('Change history')); ?></h3>
+					<?php $renderHelpPopup('history-help', $l->t('Change history'), [
+						$l->t('Use the filters below to track changes to the timesheet by HR supervisors or employees.'),
+					]); ?>
+				</div>
 				<div class="ts-history-toolbar">
 					<button type="button" id="history-refresh"><?php p($l->t('Refresh')); ?></button>
 				</div>
@@ -440,6 +424,11 @@ if ($tourEnabled) {
 			<div id="history-filters" class="ts-history-filters">
 				<label for="history-from"><?php p($l->t('Changed from')); ?><input type="date" id="history-from" required></label>
 				<label for="history-to"><?php p($l->t('Changed through')); ?><input type="date" id="history-to" required></label>
+				<label for="history-employment-status"><?php p($l->t('Employment status')); ?><select id="history-employment-status">
+					<option value="all"><?php p($l->t('All employees')); ?></option>
+					<option value="active"><?php p($l->t('Active employees')); ?></option>
+					<option value="inactive"><?php p($l->t('Inactive employees')); ?></option>
+				</select></label>
 				<?php $renderHistoryAccountPicker('employee', $l->t('Employee'), $l->t('All employees')); ?>
 				<div class="ts-history-editor-filters">
 					<?php $renderHistoryAccountPicker('actor', $l->t('Changed by'), $l->t('All editors')); ?>

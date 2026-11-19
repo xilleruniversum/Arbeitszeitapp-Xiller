@@ -295,6 +295,7 @@ test('English HR settings describe the days checked by reminders', async () => {
 	assert.ok(!hrSettings.card().innerHTML.includes('Priority'));
 	assert.ok(hrSettings.card().innerHTML.includes('Reminder for missing or incomplete time entries'));
 	assert.ok(hrSettings.card().innerHTML.includes('calendar days after the workday'));
+	assert.ok(hrSettings.card().innerHTML.includes('In both cases, the Comment column must be empty.'));
 	const admin = await openAdminSettings();
 	assert.ok(admin.card().innerHTML.includes('Priority'));
 	assert.ok(!admin.card().innerHTML.includes('Reminder for missing or incomplete time entries'));

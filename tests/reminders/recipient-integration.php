@@ -15,7 +15,6 @@ use OCA\Timesheet\Db\EntryMapper;
 use OCA\Timesheet\Db\MissingEntryReminderStore;
 use OCA\Timesheet\Db\UserConfig;
 use OCA\Timesheet\Db\UserConfigMapper;
-use OCA\Timesheet\Service\AbsenceCommentCatalog;
 use OCA\Timesheet\Service\GroupRuleService;
 use OCA\Timesheet\Service\HolidayService;
 use OCA\Timesheet\Service\HrService;
@@ -150,7 +149,7 @@ $makeService = static function () use ($container, $entryMapper, $userConfigMapp
 	return new MissingEntryReminderService(
 		$container->get(GroupRuleService::class), $entryMapper, $userConfigMapper,
 		new HrService($appConfig, $session, $groups, $users), $container->get(HolidayService::class),
-		new MissingEntryDetector(new AbsenceCommentCatalog()), $store, $mailer, $groups, $users,
+		new MissingEntryDetector(), $store, $mailer, $groups, $users,
 		$clock, \OCP\Server::get(\Psr\Log\LoggerInterface::class),
 		new EmploymentStatusStore($config, \OCP\Server::get(\OCP\Lock\ILockingProvider::class), $clock, $groups),
 	);

@@ -380,7 +380,7 @@
 						<span>${escapeHtml(t('timesheet', 'Reminder for missing or incomplete time entries'))}</span>
 						${renderNotificationHelp(`${identifier}-summary`, 'Reminder for missing or incomplete time entries',
 							'The reminder shows which workdays still need an entry or a correction. The group rule lets you change which HR account receives the notification email.',
-							'The new rule works as in this example. Employee A records no working time for Tuesday. On Wednesday, employee B only records that he started at 8 a.m. With a two-calendar-day waiting period, employee A receives an email notification on Thursday and employee B on Friday.')}
+							'The new rule works as in this example. Employee A records no working time for Tuesday. On Wednesday, employee B only records that he started at 8 a.m. With a two-calendar-day waiting period, employee A receives an email notification on Thursday and employee B on Friday. In both cases, the Comment column must be empty.')}
 					</span></caption>
 					<colgroup><col class="ts-notification-label-column" /><col class="ts-notification-value-column" /></colgroup>
 					<tbody role="rowgroup">

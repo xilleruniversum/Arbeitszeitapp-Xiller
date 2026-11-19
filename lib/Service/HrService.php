@@ -2,6 +2,7 @@
 
 namespace OCA\Timesheet\Service;
 
+use OCA\Timesheet\Db\EmploymentStatusStore;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\IGroupManager;
 use OCP\IUserManager;
@@ -81,6 +82,19 @@ class HrService {
 	/** @return array<int,array{id:string,name:string}> */
 	public function getAccessibleUsers(?string $hrUid = null): array {
 		return $this->usersInGroups($this->allowedEmployeeGroups($hrUid, false));
+	}
+
+	/** @return array<int,array{id:string,name:string,isActive:bool}> */
+	public function getEmployeesForOverview(?string $hrUid = null): array {
+		$employees = [];
+		foreach ($this->getAccessibleUsers($hrUid) as $employee) {
+			$userId = $employee['id'];
+			$isActive = $this->groupManager->isInGroup($userId, EmploymentStatusStore::ACTIVE_GROUP_ID);
+			if ($isActive || $this->groupManager->isInGroup($userId, EmploymentStatusStore::ARCHIVE_GROUP_ID)) {
+				$employees[] = [...$employee, 'isActive' => $isActive];
+			}
+		}
+		return $employees;
 	}
 
 	/** Email lists exclude rules whose mail selection omits this otherwise responsible HR user. */

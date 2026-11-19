@@ -861,7 +861,7 @@ test('the final launcher step closes the profile and ending restores unsaved fie
 });
 
 test('comment guidance uses the account language even when the browser catalog lacks the new text', async () => {
-	const description = 'Die Kommentarspalte kann genutzt werden, um eigene Informationen zum Tagesablauf festzuhalten. Fehlen Start- und Endzeit, verhindern nur die folgenden Gründe eine Benachrichtigung: Urlaub, Krank oder Termin. Einträge mit keiner oder nur einer Zeitangabe werden andernfalls als unvollständig gekennzeichnet.';
+	const description = 'Ein Kommentar verhindert Erinnerungen an fehlende oder unvollständige Zeiteinträge.';
 	const fixture = createFixture({
 		translate: message => message === 'Comments and absences' ? 'Kommentare und Abwesenheiten' : message,
 	});

@@ -25,7 +25,7 @@
     "Federal state",
     "The public holidays shown in the Status column depend on the selected federal state.",
     "Comments and absences",
-    "Use the Comment column to record information about your workday. If both start and end times are missing, only the following reasons prevent a notification: {vacation}, {sick} or {appointment}. Otherwise, entries with no time or only one time are marked as incomplete.",
+    "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.",
     "Time entry warnings",
     "Breaks that exceed or fall below the limits and missing timesheets trigger warnings and should be corrected promptly.",
     "Freelancer mode",

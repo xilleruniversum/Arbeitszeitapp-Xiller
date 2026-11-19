@@ -9,7 +9,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const coverage = JSON.parse(readFileSync(resolve(root, 'tests/settings/assignment-translation-coverage.json'), 'utf8'));
 const accountLanguages = JSON.parse(readFileSync(resolve(root, 'tests/employment/translation-coverage.json'), 'utf8')).locales;
 const messages = new Set(coverage.messages);
-const hrThresholdIntro = 'Each HR account sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.';
+const hrThresholdIntro = 'Each HR account (not an HR group) sets its own thresholds for alerts about the employees it is responsible for. The same threshold applies to each alert in the employee list and in the weekly email sent to that HR account.';
+const weeklyHrEmailHelp = 'When checked, this alert is also included in the weekly summary email to your own HR account.';
 const notificationMessages = [
 	'Alert',
 	'Alert threshold',
@@ -43,8 +44,7 @@ const notificationMessages = [
 	'Select a valid start date for reminders.',
 	'Select at least one weekday for reminders.',
 	'Sunday',
-	'The employee list shows the current alerts in the app. The weekly email to HR bundles the selected alerts that still apply on Monday.',
-	'The new rule works as in this example. Employee A records no working time for Tuesday. On Wednesday, employee B only records that he started at 8 a.m. With a two-calendar-day waiting period, employee A receives an email notification on Thursday and employee B on Friday.',
+	'The new rule works as in this example. Employee A records no working time for Tuesday. On Wednesday, employee B only records that he started at 8 a.m. With a two-calendar-day waiting period, employee A receives an email notification on Thursday and employee B on Friday. In both cases, the Comment column must be empty.',
 	'The reminder delay must be a whole number from 1 to 365.',
 	'The reminder shows which workdays still need an entry or a correction. The group rule lets you change which HR account receives the notification email.',
 	'This alert highlights long gaps in time tracking. At a threshold of 14 days, HR can see who has gone at least 14 days without a complete time entry.',
@@ -54,7 +54,7 @@ const notificationMessages = [
 	'Wednesday',
 	'Weekdays',
 	'Weekly email to HR',
-	'When checked, this alert is also included in the weekly summary email.',
+	weeklyHrEmailHelp,
 	'With a threshold of 10 hours, HR can see in the employee list who has 10 or more hours of overtime.',
 	'With a threshold of 10 hours, HR can see in the employee list who has a time deficit of 10 hours or more.',
 	'calendar days',
@@ -155,7 +155,8 @@ test('both German variants use concise, neutral assignment and delivery wording'
 	assert.equal(german[0]['No selected accounts means no HR summary for this rule.'], 'Ohne ausgewählte Konten wird für diese Regel keine HR-Übersicht versendet.');
 	assert.equal(german[0]['HR assignments or email recipients are invalid.'], 'HR-Zuordnungen oder E-Mail-Empfänger sind ungültig.');
 	assert.equal(german[0]['Email selection does not change HR access.'], 'Hier steht, wer die HR-Mails für diese Gruppe erhält. Die HR-Zuständigkeit wird in der Administration festgelegt.');
-	for (const catalog of german) assert.equal(catalog[hrThresholdIntro], 'Jedes HR-Konto legt hier seine persönlichen Grenzwerte für Hinweise zu den betreuten Mitarbeitenden fest. Pro Hinweis gilt derselbe Grenzwert in der Mitarbeitendenliste sowie in der wöchentlichen E-Mail an das eigene HR-Konto.');
+	for (const catalog of german) assert.equal(catalog[hrThresholdIntro], 'Jedes HR-Konto (nicht HR-Gruppe) legt hier seine persönlichen Grenzwerte für Hinweise zu den betreuten Mitarbeitenden fest. Pro Hinweis gilt derselbe Grenzwert in der Mitarbeitendenliste sowie in der wöchentlichen E-Mail an das eigene HR-Konto.');
+	for (const catalog of german) assert.equal(catalog[weeklyHrEmailHelp], 'Mit aktiviertem Häkchen wird dieser Hinweis auch in der wöchentlichen Übersichtsmail an das eigene HR-Konto aufgeführt.');
 	assert.equal(german[0]['Send reminders to employees'], 'Erinnerungen an Mitarbeitende senden');
 	assert.equal(german[0]['Send reminders to responsible HR'], 'Erinnerungen an zuständiges HR senden');
 	assert.equal(german[0]['Employee balance notifications'], 'Benachrichtigungen zum Stundenstand');

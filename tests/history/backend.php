@@ -66,13 +66,23 @@ namespace OCA\Timesheet\Db {
 namespace OCA\Timesheet\Service {
 	class HrService {
 		public array $hrUsers = ['hr-a', 'hr-b', 'hr-admin'];
-		public function __construct(private \HistorySession $session) {}
+		public array $assignedEmployees = ['employee', 'inactive', 'freelancer', 'unclassified'];
+		public function __construct(private \HistorySession $session, private \HistoryGroups $groups) {}
 		public function isHr(?string $id = null): bool { return in_array($id ?? $this->session->getUser()?->getUID(), $this->hrUsers, true); }
 		public function canAccessUser(string $employee, ?string $actor = null): bool {
 			$actor ??= $this->session->getUser()?->getUID();
-			return $actor === $employee || ($this->isHr($actor) && in_array($employee, ['employee', 'inactive', 'freelancer'], true));
+			return $actor === $employee || ($this->isHr($actor) && in_array($employee, $this->assignedEmployees, true));
 		}
-		public function getAccessibleUsers(?string $id = null): array { return array_map(static fn($uid) => ['id' => $uid, 'name' => $uid], ['employee', 'inactive', 'freelancer']); }
+		public function getEmployeesForOverview(?string $id = null): array {
+			$employees = [];
+			foreach ($this->assignedEmployees as $uid) {
+				$isActive = $this->groups->isInGroup($uid, 'Zeitnachweis');
+				if ($isActive || $this->groups->isInGroup($uid, 'Zeitnachweis-Archiv')) {
+					$employees[] = ['id' => $uid, 'name' => $uid, 'isActive' => $isActive];
+				}
+			}
+			return $employees;
+		}
 	}
 	class MonthlyBalanceService {
 		public function __construct(private \HistoryMemoryDatabase $database) {}
@@ -161,8 +171,12 @@ namespace {
 		public function getDateTime($time = 'now', ?DateTimeZone $zone = null) { $value = $this->now->setTimezone($zone ?? new DateTimeZone('UTC')); if ($time === 'today') $value = $value->setTime(0, 0); return DateTime::createFromImmutable($value); }
 	}
 	class HistoryGroups implements \OCP\IGroupManager {
+		public array $members = [
+			'Zeitnachweis' => ['hr-a', 'employee', 'freelancer', 'foreign'],
+			'Zeitnachweis-Archiv' => ['inactive', 'freelancer'],
+		];
 		public function isInGroup(string $userId, string $groupId): bool {
-			return $groupId === 'Zeitnachweis' && in_array($userId, ['employee', 'freelancer', 'foreign'], true);
+			return in_array($userId, $this->members[$groupId] ?? [], true);
 		}
 	}
 	class HistoryMemoryRecording extends \OCA\Timesheet\Db\ChangeHistoryRecordingStore {
@@ -204,14 +218,14 @@ namespace {
 	}
 	function historyFixture(): array {
 		$db = new HistoryMemoryDatabase(); $users = new HistoryUsers(); foreach (['hr-a', 'hr-b', 'hr-admin', 'employee', 'inactive', 'freelancer', 'foreign', 'admin'] as $id) $users->users[$id] = new HistoryUser($id);
-		$session = new HistorySession($users->get('hr-a')); $hr = new \OCA\Timesheet\Service\HrService($session); $locks = new HistoryLocks();
+		$session = new HistorySession($users->get('hr-a')); $groups = new HistoryGroups(); $hr = new \OCA\Timesheet\Service\HrService($session, $groups); $locks = new HistoryLocks();
 		$clock = new HistoryClock(new DateTimeImmutable('2026-11-03 10:30:00', new DateTimeZone('Europe/Berlin'))); $history = new HistoryMemoryStore($db); $queue = new HistoryMemoryQueue($db);
 		$writes = new \OCA\Timesheet\Service\HistoryWriteCoordinator($db, $locks, $session, $hr, $users, $history, $clock, $queue);
 		$mapper = new \OCA\Timesheet\Db\EntryMapper($db); $balances = new \OCA\Timesheet\Service\MonthlyBalanceService($db);
 		$entries = new \OCA\Timesheet\Service\EntryService($mapper, $session, $balances, $writes);
 		$configs = new \OCA\Timesheet\Service\WorkSettingsService(new \OCA\Timesheet\Db\UserConfigMapper($db), $balances, $writes);
-		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, new HistoryGroups(), $clock, $queue, new HistoryMemoryRecording());
-		return compact('db', 'users', 'session', 'hr', 'locks', 'clock', 'history', 'queue', 'writes', 'mapper', 'entries', 'configs', 'reader');
+		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, $groups, $clock, $queue, new HistoryMemoryRecording());
+		return compact('db', 'users', 'session', 'hr', 'groups', 'locks', 'clock', 'history', 'queue', 'writes', 'mapper', 'entries', 'configs', 'reader');
 	}
 	$checks = 0; $failures = 0;
 	function checkHistory(string $name, callable $test): void { global $checks, $failures; $checks++; try { $test(); } catch (Throwable $error) { $failures++; fwrite(STDERR, $name . ': ' . $error->getMessage() . "\n"); } }
@@ -280,6 +294,11 @@ namespace {
 		sameHistory($record['items'][2]['changes'], [['field' => 'comment', 'before' => 'Original', 'after' => 'Own']]);
 		sameHistory($record['filters']['employees'][0]['id'], 'hr-a');
 		sameHistory($f['reader']->list([])['items'], $record['items']);
+		$f['groups']->members['Zeitnachweis'] = ['employee', 'freelancer', 'foreign'];
+		$all = $f['reader']->list([]);
+		sameHistory($all['items'], []);
+		sameHistory(in_array('hr-a', array_column($all['filters']['employees'], 'id'), true), false);
+		sameHistory($f['reader']->list(['employee' => 'hr-a'])['items'], $record['items']);
 		sameHistory($f['locks']->held, []);
 
 		$f['session']->user = $f['users']->get('hr-b');
@@ -385,13 +404,59 @@ namespace {
 		$f = historyFixture();
 		$filters = $f['reader']->list(['employee' => 'inactive'])['filters'];
 		sameHistory(array_column($filters['employees'], 'isActive', 'id'), [
-			'hr-a' => false, 'employee' => true, 'inactive' => false, 'freelancer' => true,
+			'hr-a' => true, 'employee' => true, 'inactive' => false, 'freelancer' => true,
 		]);
 		$f['entries']->create($entryData, 'employee');
 		$f['entries']->create($entryData, 'inactive');
 		$filtered = $f['reader']->list(['employee' => 'inactive']);
 		sameHistory(array_column(array_column($filtered['items'], 'employee'), 'id'), ['inactive']);
 		failsHistory(fn () => $f['reader']->list(['employee' => 'foreign']), \OC\ForbiddenException::class);
+	});
+	checkHistory('employment status filters the authorized history scope before pagination', function () use ($entryData): void {
+		$f = historyFixture();
+		$f['entries']->create($entryData, 'inactive');
+		$former = $f['db']->records[0];
+		$former['employee'] = ['id' => 'former', 'name' => 'Former employee'];
+		$f['hr']->assignedEmployees[] = 'former';
+		$f['groups']->members['Zeitnachweis-Archiv'][] = 'former';
+		$f['history']->append($former);
+		$f['session']->user = $f['users']->get('hr-b');
+		$f['entries']->create($entryData, 'employee');
+		$f['session']->user = $f['users']->get('hr-a');
+		$f['entries']->create($entryData, 'hr-a');
+
+		$unclassified = $former;
+		$unclassified['employee'] = ['id' => 'unclassified', 'name' => 'Unclassified'];
+		$f['history']->append($unclassified);
+		$all = $f['reader']->list([]);
+		sameHistory(array_column($all['items'], 'id'), [4, 3, 2, 1]);
+		sameHistory(array_column($all['filters']['employees'], 'isActive', 'id'), [
+			'hr-a' => true, 'employee' => true, 'inactive' => false, 'freelancer' => true, 'former' => false,
+		]);
+		$active = $f['reader']->list(['employmentStatus' => 'active']);
+		sameHistory(array_column($active['items'], 'id'), [4, 3]);
+		sameHistory(array_column($active['filters']['employees'], 'id'), ['hr-a', 'employee', 'freelancer']);
+		failsHistory(fn () => $f['reader']->list(['employee' => 'unclassified']), \OC\ForbiddenException::class);
+		$page = $f['reader']->list(['employmentStatus' => 'inactive', 'limit' => 1]);
+		sameHistory(array_column($page['items'], 'id'), [2]);
+		sameHistory($page['nextCursor'], 2);
+		sameHistory(array_column($page['filters']['employees'], 'id'), ['inactive', 'former']);
+		sameHistory(array_column($page['filters']['actors'], 'id'), ['hr-a']);
+		$next = $f['reader']->list(['employmentStatus' => 'inactive', 'limit' => 1, 'beforeId' => 2]);
+		sameHistory(array_column($next['items'], 'id'), [1]);
+		sameHistory($next['nextCursor'], null);
+		sameHistory($f['reader']->list(['employmentStatus' => 'inactive', 'employee' => 'employee'])['items'], []);
+		failsHistory(fn () => $f['reader']->list(['employmentStatus' => 'inactive', 'employee' => 'foreign']), \OC\ForbiddenException::class);
+		failsHistory(fn () => $f['reader']->list(['employmentStatus' => 'unknown']), InvalidArgumentException::class);
+		failsHistory(fn () => $f['reader']->list(['employmentStatus' => ['inactive']]), InvalidArgumentException::class);
+	});
+	checkHistory('an empty inactive history still distinguishes existing activity in the full HR scope', function () use ($entryData): void {
+		$f = historyFixture();
+		$f['entries']->create($entryData, 'employee');
+		$page = $f['reader']->list(['employmentStatus' => 'inactive']);
+		sameHistory($page['items'], []);
+		sameHistory($page['hasHistory'], true);
+		sameHistory($page['filters']['actors'], []);
 	});
 	checkHistory('comment filter scans past sparse nonmatching batches while keeping scope and other filters', function () use ($entryData): void {
 		$f = historyFixture(); $f['entries']->create($entryData, 'employee'); $template = $f['db']->records[0]; $f['db']->records = [];

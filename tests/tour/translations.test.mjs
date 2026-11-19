@@ -9,10 +9,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const coverage = JSON.parse(readFileSync(resolve(root, 'tests/tour/translation-coverage.json'), 'utf8'));
 const absenceTerms = JSON.parse(readFileSync(resolve(root, 'lib/Service/absence-comment-terms.json'), 'utf8'));
 const federalStateExplanation = 'The public holidays shown in the Status column depend on the selected federal state.';
-const commentsExplanation = 'Use the Comment column to record information about your workday. If both start and end times are missing, only the following reasons prevent a notification: {vacation}, {sick} or {appointment}. Otherwise, entries with no time or only one time are marked as incomplete.';
-const commentHelp = 'Only the following reasons prevent a reminder for a completely missing time entry: "%1$s", "%2$s", "%3$s".';
-const commentColumnHelp = 'Completely missing time entries in the timesheet trigger an email notification to your own account and, if configured, to HR as well. Only the following reasons in the Comment column prevent a reminder: "%1$s", "%2$s", "%3$s".';
-const commentHelpBoxReminder = 'If both start and end times are missing, only the reasons listed in the Comment column’s help box prevent a reminder. Custom comments do not prevent reminders. Entries with only one time remain incomplete.';
+const commentsExplanation = 'Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.';
+const commentColumnHelp = 'Completely or partially missing time entries in the timesheet trigger an email notification to your own account and, if configured, to the HR supervisor. A corresponding comment in the Comment column prevents a reminder.';
+const groupNotificationHelp = 'Working time rules for breaks are available under Profile → Settings → Timesheet. Administrators manage the assignment of HR and employee groups in their personal settings.';
+const changeHistoryHelp = 'Use the filters below to track changes to the timesheet by HR supervisors or employees.';
 const generalHelpExplanation = 'Questions, help and privacy information about Nextcloud in general.';
 const restartExplanation = 'Questions and suggestions for HR. The guide can be restarted using the tour icon.';
 const warningsExplanation = 'Breaks that exceed or fall below the limits and missing timesheets trigger warnings and should be corrected promptly.';
@@ -46,7 +46,7 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 		});
 		assert.ok(browser, 'Browser catalog registers its translations');
 		assert.equal(server.pluralForm, pluralForm);
-		for (const message of [...coverage.messages, commentHelp, commentColumnHelp, commentHelpBoxReminder, ...contactDraftMessages]) {
+		for (const message of [...coverage.messages, commentColumnHelp, groupNotificationHelp, changeHistoryHelp, ...contactDraftMessages]) {
 			const translated = server.translations[message];
 			assert.equal(typeof translated, 'string', `Missing ${locale} translation: ${message}`);
 			assert.ok(translated.trim(), `Empty ${locale} translation: ${message}`);
@@ -56,7 +56,7 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 		assert.ok(absenceTerms[locale], 'The displayed absence terms are available for this account language');
 		if (!locale.startsWith('en')) {
 			assert.notEqual(server.translations['A short tour explains the main features.'], 'A short tour explains the main features.', 'An English copy is not a translated tour');
-			for (const message of [federalStateExplanation, commentsExplanation, commentHelp, commentColumnHelp, commentHelpBoxReminder, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages]) {
+			for (const message of [federalStateExplanation, commentsExplanation, commentColumnHelp, groupNotificationHelp, changeHistoryHelp, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages]) {
 				assert.notEqual(server.translations[message], message, 'New explanations are translated into the account language');
 			}
 		}
@@ -102,10 +102,10 @@ test('German employee guidance uses the shortened copy without approval promises
 		assert.equal(translations['Explore Timesheet?'], 'Arbeitszeitnachweis kennenlernen?');
 		assert.equal(translations['Federal state'], 'Bundesland');
 		assert.equal(translations[federalStateExplanation], 'Die Feiertage in der Spalte „Status“ richten sich nach dem gewählten Bundesland.');
-		assert.equal(translations[commentsExplanation], 'Die Kommentarspalte kann genutzt werden, um eigene Informationen zum Tagesablauf festzuhalten. Fehlen Start- und Endzeit, verhindern nur die folgenden Gründe eine Benachrichtigung: {vacation}, {sick} oder {appointment}. Einträge mit keiner oder nur einer Zeitangabe werden andernfalls als unvollständig gekennzeichnet.');
-		assert.equal(translations[commentHelp], 'Nur die folgenden Gründe verhindern die Erinnerung eines vollständig fehlenden Arbeitszeiteintrages: "%1$s", "%2$s", "%3$s".');
-		assert.equal(translations[commentColumnHelp], 'Vollständig fehlende Zeiteinträge im Arbeitszeitnachweis bewirken eine E-Mail Benachrichtigung an das persönliche Konto und, falls eingestellt, auch an HR. Nur die folgenden Gründe in der Kommentarspalte verhindern eine Erinnerung: "%1$s", "%2$s", "%3$s".');
-		assert.equal(translations[commentHelpBoxReminder], 'Fehlen Start- und Endzeit, verhindern nur die vorgegebenen Gründe in der Infobox der Kommentarspalte eine Erinnerung. Eigene Kommentare verhindern keine Erinnerung. Einträge mit nur einer Zeitangabe bleiben unvollständig.');
+		assert.equal(translations[commentsExplanation], 'Die Kommentarspalte kann genutzt werden, um eigenen Informationen zum Tagesablauf festzuhalten oder Fehlzeiten zu entschuldigen. Fehlen Start- und/oder Endzeit, verhindert nur ein dementsprechender Hinweis in der Kommentarspalte eine Benachrichtigung. Einträge mit keiner oder nur einer Zeitangabe, die nicht durch einen Kommentar ausgewiesen sind, werden andernfalls als unvollständig gekennzeichnet.');
+		assert.equal(translations[commentColumnHelp], 'Vollständig oder teilweise fehlende Zeiteinträge im Arbeitszeitnachweis bewirken eine E-Mail Benachrichtigung an das persönliche Konto und, falls eingestellt, auch an den HR-Betreuer. Nur ein dementsprechender Kommentar in der Kommentarspalte verhindert eine Erinnerung.');
+		assert.equal(translations[groupNotificationHelp], 'Zeitregeln bezüglich der Pausen stehen unter Profil -> Einstellungen -> Arbeitszeitnachweis. Administratoren verwalten in ihren persönlichen Einstellungen die Zuordnung von HR- und Mitarbeitergruppen.');
+		assert.equal(translations[changeHistoryHelp], 'Die untenstehenden Filter dienen dazu, Änderungen im Arbeitszeitnachweis durch HR-Betreuer oder Mitarbeiter nachzuverfolgen.');
 		assert.doesNotMatch(translations[commentsExplanation], /Freigabe|Genehmigung|Warnung|Strg\+C|Command\+C/u);
 		assert.equal(translations['Time entry warnings'], 'Warnungen');
 		assert.equal(translations['Freelancer mode'], 'Freelancer-Modus');

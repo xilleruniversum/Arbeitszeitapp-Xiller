@@ -69,6 +69,7 @@ function openHistory({ present = true, now = '2026-11-03T23:30:00Z', respond = (
 			invalidDateRangeMessage: 'Select a valid date range.' };
 		for (const name of ['from', 'to', 'employee-changes']) add('input', `history-${name}`);
 		add('select', 'history-kind');
+		add('select', 'history-employment-status');
 		for (const [field, allLabel] of Object.entries({ employee: 'All employees', actor: 'All editors' })) {
 			const id = `history-${field}`;
 			const picker = add('div', `${id}-picker`);
@@ -164,6 +165,53 @@ test('initialization is read-only and the default interval is thirty Berlin cale
 	const query = new URL('http://localhost' + app.requests[0].path).searchParams;
 	assert.equal(query.get('from'), '2026-10-06'); assert.equal(query.get('to'), '2026-11-04'); assert.equal(query.get('limit'), '50');
 	assert.ok(app.nodes.get('history-recording').textContent.startsWith('Recording started on '));
+});
+
+test('employment status reloads the filtered history, options, and cursor', async () => {
+	const app = openHistory({ respond(path) {
+		const query = new URL('http://localhost' + path).searchParams;
+		if (query.get('employmentStatus') === 'active') {
+			const person = { id: 'marvin-one', name: 'Marvin Beispiel', isActive: true };
+			return response([item(11, { employee: person })], {
+				filters: { employees: [person], actors: [{ id: 'anton', name: 'Anton Beispiel' }] },
+			});
+		}
+		if (query.get('employmentStatus') !== 'inactive') return response([item(10)], { nextCursor: 10 });
+		const person = { id: 'marvin-two', name: 'Marvin Beispiel', isActive: false };
+		const id = query.has('beforeId') ? 4 : 5;
+		return response([item(id, { employee: person })], {
+			nextCursor: id === 5 ? 5 : null,
+			filters: { employees: [person], actors: [{ id: 'anton', name: 'Anton Beispiel' }] },
+		});
+	} });
+	const mode = app.nodes.get('history-employment-status');
+	assert.equal(mode.value, 'all');
+	await app.history.show();
+	await app.chooseFilter('employee', 'marvin-one');
+	await app.chooseFilter('actor', 'user:anton');
+	mode.value = 'inactive';
+	await app.fire(mode, 'change');
+	let query = new URL('http://localhost' + app.requests.at(-1).path).searchParams;
+	assert.equal(query.get('employmentStatus'), 'inactive');
+	for (const filter of ['employee', 'actor', 'beforeId']) assert.equal(query.has(filter), false);
+	assert.deepEqual(app.pickerOptions('employee').map(option => option.value), ['', 'marvin-two']);
+	await app.chooseFilter('employee', 'marvin-two');
+	await app.fire('history-more');
+	query = new URL('http://localhost' + app.requests.at(-1).path).searchParams;
+	assert.equal(query.get('employmentStatus'), 'inactive');
+	assert.equal(query.get('employee'), 'marvin-two');
+	assert.equal(query.get('beforeId'), '5');
+	mode.value = 'active';
+	await app.fire(mode, 'change');
+	query = new URL('http://localhost' + app.requests.at(-1).path).searchParams;
+	assert.equal(query.get('employmentStatus'), 'active');
+	for (const filter of ['employee', 'actor', 'beforeId']) assert.equal(query.has(filter), false);
+	assert.deepEqual(app.pickerOptions('employee').map(option => option.value), ['', 'marvin-one']);
+	mode.value = 'all';
+	await app.fire(mode, 'change');
+	query = new URL('http://localhost' + app.requests.at(-1).path).searchParams;
+	for (const filter of ['employmentStatus', 'employee', 'beforeId']) assert.equal(query.has(filter), false);
+	assert.deepEqual(app.pickerOptions('employee').map(option => option.value), ['', 'marvin-one', 'marvin-two']);
 });
 
 test('the account preference restores table view without writing during initialization or loading', async () => {

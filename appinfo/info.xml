@@ -36,7 +36,7 @@ Timesheet gives employees a simple way to record their working hours. The app ha
 - **Identify unusual entries:** Receive warnings about short breaks or long working days, for example.
 - **Follow up on missing entries:** Employees can receive reminders about individual missing or incomplete days. The responsible HR staff receive a separate summary.
 - **Configure the check:** Set the delay, expected weekdays and inspection start date through group rules.
-- **Account for absences:** On days without time entries, the specified comments for vacation or time off in lieu prevent a reminder. The terms are displayed in the account language.
+- **Pause reminders with a comment:** A comment on a workday prevents reminders when the start time, end time or both are missing.
 
 ## Settings and responsibilities
 
@@ -77,7 +77,7 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 - **Auffällige Einträge erkennen:** Hinweise auf beispielsweise zu kurze Pausen oder lange Arbeitstage erhalten.
 - **Fehlende Zeiten nachhalten:** Mitarbeitende erhalten auf Wunsch Erinnerungen an einzelne fehlende oder unvollständige Tage. Zuständiges HR bekommt eine getrennte Zusammenfassung.
 - **Prüfung einstellen:** Wartefrist, erwartete Wochentage und Beginn des geprüften Zeitraums über Gruppenregeln festlegen.
-- **Abwesenheiten berücksichtigen:** Die Kommentare Urlaub, Krank oder Termin verhindern bei Tagen ohne Zeitangaben eine Erinnerung. Die Begriffe werden in der jeweiligen Kontosprache angezeigt.
+- **Erinnerungen mit einem Kommentar aussetzen:** Ein Kommentar zum Arbeitstag verhindert Erinnerungen, wenn Startzeit, Endzeit oder beide Zeiten fehlen.
 
 ## Einstellungen und Zuständigkeiten
 
@@ -95,7 +95,7 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_hrOverview.png</screenshot>
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_englishSupport.png</screenshot>
 
-	<version>1.4.4</version>
+	<version>1.4.5</version>
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="dgu@xiller.com">David Gun (www.xiller-academy.de)</author>
 	<category>tools</category>

@@ -28,6 +28,7 @@ namespace {
 	use OCA\Timesheet\Service\HrService;
 
 	require __DIR__ . '/../../lib/Service/HrRuleAssignments.php';
+	require __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
 	require __DIR__ . '/../../lib/Service/HrService.php';
 
 	class AssignmentUser {
@@ -64,7 +65,7 @@ namespace {
 		}
 	}
 	class AssignmentGroups implements \OCP\IGroupManager {
-		public array $members = ['HR' => ['anton', 'bea', 'off'], 'HR backup' => ['anton'], 'Staff A' => ['alice'], 'Staff B' => ['bob']];
+		public array $members = ['HR' => ['anton', 'bea', 'off'], 'HR backup' => ['anton'], 'Staff A' => ['alice'], 'Staff B' => ['bob'], 'Zeitnachweis' => [], 'Zeitnachweis-Archiv' => []];
 		public function __construct(private AssignmentUsers $users) { }
 		public function groupExists(string $groupId): bool { return array_key_exists($groupId, $this->members); }
 		public function isInGroup(string $userId, string $groupId): bool { return in_array($userId, $this->members[$groupId] ?? [], true); }
@@ -250,6 +251,32 @@ namespace {
 			$f = assignmentFixture([array_merge($legacy, ['mailRecipients' => $invalid])]); sameAssignment([], $f['service']->getMailRecipientUserIds());
 		});
 	}
+
+
+	checkAssignment('Overview includes both status groups only within the current HR rule', function () use ($legacy): void {
+		$f = assignmentFixture([
+			array_merge($legacy, ['userGroups' => ['Staff A', 'Zeitnachweis-Archiv']]),
+			['id' => 'other', 'hrUsers' => ['cara'], 'userGroups' => ['Staff B']],
+		]);
+		$f['groups']->members['Staff A'][] = 'outside';
+		$f['groups']->members['Zeitnachweis'] = ['alice', 'bob'];
+		$f['groups']->members['Zeitnachweis-Archiv'] = ['alice', '0'];
+		$f['users']->records['0']->enabled = false;
+		sameAssignment(['alice' => true, 0 => false], array_column($f['service']->getEmployeesForOverview('anton'), 'isActive', 'id'));
+		sameAssignment(['bob' => true], array_column($f['service']->getEmployeesForOverview('cara'), 'isActive', 'id'));
+		sameAssignment(true, $f['service']->canAccessUser('0', 'anton'));
+		sameAssignment(false, $f['service']->canAccessUser('0', 'cara'));
+		sameAssignment(false, $f['users']->records['0']->isEnabled());
+	});
+
+	checkAssignment('Archive membership does not bypass assignment to the responsible HR user', function () use ($legacy): void {
+		$f = assignmentFixture([$legacy]);
+		$f['groups']->members['Zeitnachweis-Archiv'] = ['0'];
+		sameAssignment([], $f['service']->getEmployeesForOverview('anton'));
+		sameAssignment(false, $f['service']->canAccessUser('0', 'anton'));
+		$f['groups']->members['Staff A'][] = '0';
+		sameAssignment([0 => false], array_column($f['service']->getEmployeesForOverview('anton'), 'isActive', 'id'));
+	});
 
 	fwrite(STDOUT, "HR assignments: $checks checks, $failures failures.\n");
 	exit($failures === 0 ? 0 : 1);

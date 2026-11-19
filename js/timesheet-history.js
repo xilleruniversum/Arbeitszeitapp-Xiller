@@ -44,7 +44,7 @@
 		const end = `${parts.year}-${parts.month}-${parts.day}`;
 		const start = new Date(`${end}T12:00:00Z`);
 		start.setUTCDate(start.getUTCDate() - 29);
-		return { from: start.toISOString().slice(0, 10), to: end, employee: '', actor: '', kind: '', employeeChanges: false };
+		return { from: start.toISOString().slice(0, 10), to: end, employee: '', actor: '', kind: '', employmentStatus: 'all', employeeChanges: false };
 	}
 
 	function readFilters() {
@@ -53,12 +53,14 @@
 			from: controls.from.value,
 			to: controls.to.value,
 			kind: controls.kind.value,
+			employmentStatus: controls.employmentStatus?.value ?? filters.employmentStatus,
 			employeeChanges: controls.employeeChanges.checked,
 		};
 	}
 
 	function writeFilters() {
 		for (const name of ['from', 'to', 'kind']) controls[name].value = filters[name];
+		if (controls.employmentStatus) controls.employmentStatus.value = filters.employmentStatus;
 		controls.employeeChanges.checked = filters.employeeChanges;
 	}
 
@@ -395,11 +397,17 @@
 			if (filters.actor === 'deleted:') parameters.set('actorDeleted', '1');
 			else if (filters.actor.startsWith('user:')) parameters.set('actor', filters.actor.slice(5));
 			if (filters.kind) parameters.set('kind', filters.kind);
+			if (filters.employmentStatus !== 'all') parameters.set('employmentStatus', filters.employmentStatus);
 			if (filters.employeeChanges) parameters.set('employeeChanges', '1');
 			if (append && nextCursor !== null) parameters.set('beforeId', String(nextCursor));
 			const data = await timesheet.api('/api/hr/change-history?' + parameters.toString(), { signal });
 			if (currentGeneration !== generation || !visible) return;
 			if (!validResponse(data)) throw new Error('Invalid change history response');
+			if (filters.employmentStatus !== 'all' && filters.employee && !data.filters.employees.some(account => account.id === filters.employee)) {
+				filters.employee = '';
+				controls.employee.setAccounts(data.filters.employees);
+				return load();
+			}
 			if (filters.actor && !data.filters.actors.some(account => editorFilterValue(account) === filters.actor)) {
 				filters.actor = '';
 				controls.actor.setAccounts(data.filters.actors);
@@ -441,6 +449,7 @@
 		controls = { root };
 		for (const name of ['from', 'to', 'kind', 'refresh', 'more', 'recording', 'message', 'list']) controls[name] = document.getElementById(`history-${name}`);
 		controls.employeeChanges = document.getElementById('history-employee-changes');
+		controls.employmentStatus = document.getElementById('history-employment-status');
 		controls.cardView = document.getElementById('history-view-cards');
 		controls.tableView = document.getElementById('history-view-table');
 		controls.tableContainer = document.getElementById('history-table-container');
@@ -464,6 +473,12 @@
 				void load();
 			});
 		}
+		controls.employmentStatus?.addEventListener('change', () => {
+			filters = { ...readFilters(), employee: '', actor: '' };
+			controls.employee.close();
+			controls.actor.close();
+			void load();
+		});
 		controls.refresh.addEventListener('click', () => load());
 		controls.more.addEventListener('click', () => { if (nextCursor !== null) load(true); });
 	}

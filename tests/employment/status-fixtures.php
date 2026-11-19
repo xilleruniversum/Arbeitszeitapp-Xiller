@@ -148,7 +148,10 @@ namespace OCA\Timesheet\Service {
 	class HrService {
 		public array $hrUsers = ['hr', 'hr-admin'];
 		public array $accessible = [['id' => 'alice', 'name' => 'Alice'], ['id' => 'bob', 'name' => 'Bob']];
-		public function __construct(private \OCP\IUserSession $session) {
+		public function __construct(
+			private \OCP\IUserSession $session,
+			private \OCP\IGroupManager $groups,
+		) {
 		}
 		public function isHr(?string $userId = null): bool {
 			return in_array($userId ?? $this->session->getUser()?->getUID(), $this->hrUsers, true);
@@ -158,6 +161,16 @@ namespace OCA\Timesheet\Service {
 		}
 		public function getAccessibleUsers(?string $hrUserId = null): array {
 			return $this->isHr($hrUserId) ? $this->accessible : [];
+		}
+		public function getEmployeesForOverview(?string $hrUserId = null): array {
+			$employees = [];
+			foreach ($this->getAccessibleUsers($hrUserId) as $employee) {
+				$isActive = $this->groups->isInGroup($employee['id'], \OCA\Timesheet\Db\EmploymentStatusStore::ACTIVE_GROUP_ID);
+				if ($isActive || $this->groups->isInGroup($employee['id'], \OCA\Timesheet\Db\EmploymentStatusStore::ARCHIVE_GROUP_ID)) {
+					$employees[] = [...$employee, 'isActive' => $isActive];
+				}
+			}
+			return $employees;
 		}
 	}
 	class MonthlyBalanceService {

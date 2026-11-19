@@ -92,7 +92,6 @@ namespace OCA\Timesheet\Service {
 			return [];
 		}
 	}
-	class AbsenceCommentCatalog { public function isExemptComment(?string $comment): bool { return false; } }
 	class MissingEntryReminderMailer {
 		public array $employees = [];
 		public array $employeeTemplates = [];
@@ -167,7 +166,7 @@ namespace {
 		$holidays = new \OCA\Timesheet\Service\HolidayService();
 		$preferences = new \OCA\Timesheet\Db\HrPreferencesStore();
 		$legacy = static fn() => new HrNotificationService($preferences, $hr, $balances, $statuses, $clock, $logger, $users);
-		$daily = static fn() => new MissingEntryReminderService($rules, $entries, $configs, $hr, $holidays, new \OCA\Timesheet\Service\MissingEntryDetector(new \OCA\Timesheet\Service\AbsenceCommentCatalog()), $store, $mailer, $groups, $users, $clock, $logger, $statuses);
+		$daily = static fn() => new MissingEntryReminderService($rules, $entries, $configs, $hr, $holidays, new \OCA\Timesheet\Service\MissingEntryDetector(), $store, $mailer, $groups, $users, $clock, $logger, $statuses);
 		return compact('users', 'statuses', 'hr', 'balances', 'entries', 'configs', 'holidays', 'rules', 'clock', 'store', 'mailer', 'logger', 'preferences', 'legacy', 'daily');
 	}
 	$checks = 0; $failures = 0;

@@ -63,6 +63,7 @@ if ($phase === 'lifecycle') {
 	$user = $users->createUser($testId, getenv('HISTORY_TEST_PASSWORD'));
 	$user->setDisplayName('Former account identity');
 	$groups->get('history-staff-main')->addUser($user);
+	$groups->get('Zeitnachweis')->addUser($user);
 	historyAs('history-hr-a');
 	$entryService->upsertCommentOnly($testId, '2026-11-05', 'Old account history');
 	$failingRemoval = new class($database) extends \OCA\Timesheet\Db\ChangeHistoryStore {
@@ -82,6 +83,7 @@ if ($phase === 'lifecycle') {
 	$replacement = $users->createUser($testId, getenv('HISTORY_TEST_PASSWORD'));
 	$replacement->setDisplayName('New account identity');
 	$groups->get('history-staff-main')->addUser($replacement);
+	$groups->get('Zeitnachweis')->addUser($replacement);
 	$entryService->upsertCommentOnly($testId, '2026-11-07', 'New account history');
 	$writes->retryAccountCleanup($staleJobId);
 	$items = $historyService->list(['employee' => $testId])['items'];
@@ -111,14 +113,15 @@ if ($phase === 'seed') {
 	}
 	foreach ([
 		'history-hr-main' => ['hr-a', 'hr-b', 'hr-admin'], 'history-hr-other' => ['hr-other'],
-		'history-staff-main' => ['employee-a', 'inactive', 'freelancer', 'baseline'], 'history-staff-other' => ['other'],
-		'Zeitnachweis' => ['employee-a', 'freelancer', 'other', 'baseline'], 'admin' => ['hr-admin'],
+		'history-staff-main' => ['employee-a', 'freelancer', 'baseline'], 'history-staff-other' => ['other'],
+		'Zeitnachweis' => ['hr-a', 'employee-a', 'freelancer', 'other', 'baseline'], 'admin' => ['hr-admin'],
+		'Zeitnachweis-Archiv' => ['inactive'],
 	] as $groupId => $suffixes) {
 		$group = $groups->get($groupId) ?? $groups->createGroup($groupId);
 		foreach ($suffixes as $suffix) $group->addUser($users->get('history-' . $suffix));
 	}
 	$appConfig->setAppValueString('hr_access_rules', json_encode([
-		['id' => 'history-main', 'hrGroups' => ['history-hr-main'], 'userGroups' => ['history-staff-main'], 'priority' => 1, 'mailRecipients' => ['mode' => 'selected', 'userIds' => []]],
+		['id' => 'history-main', 'hrGroups' => ['history-hr-main'], 'userGroups' => ['history-staff-main', 'Zeitnachweis-Archiv'], 'priority' => 1, 'mailRecipients' => ['mode' => 'selected', 'userIds' => []]],
 		['id' => 'history-other', 'hrGroups' => ['history-hr-other'], 'userGroups' => ['history-staff-other'], 'priority' => 1],
 	], JSON_THROW_ON_ERROR));
 	$statuses = $container->get(\OCA\Timesheet\Db\EmploymentStatusStore::class);
@@ -159,7 +162,7 @@ if ($phase === 'reset') {
 			$query->insert($table)->values(array_map(fn(mixed $value) => $query->createNamedParameter($value, $value === null ? \OCP\DB\QueryBuilder\IQueryBuilder::PARAM_NULL : (is_int($value) ? \OCP\DB\QueryBuilder\IQueryBuilder::PARAM_INT : \OCP\DB\QueryBuilder\IQueryBuilder::PARAM_STR)), $row))->executeStatement();
 		}
 	}
-	$groups->get('history-staff-main')->addUser($users->get('history-inactive'));
+	$groups->get('Zeitnachweis-Archiv')->addUser($users->get('history-inactive'));
 	echo "Reset only the guarded disposable history database to its saved baseline.\n";
 	exit;
 }
@@ -251,7 +254,12 @@ historyCheck(historyRows('ts_monthly_balances'), $beforeBalances, 'Failed settin
 
 // Current employee assignments limit items and every filter option independently of mail settings.
 $response = $history->list([]);
-historyCheck(in_array('history-inactive', array_column($response['filters']['employees'], 'id'), true), true, 'Inactive employees remain in scope');
+historyCheck(array_column($response['filters']['employees'], 'isActive', 'id')['history-inactive'] ?? null, false, 'The scoped archive group is included in All');
+$inactiveHistory = $history->list(['employmentStatus' => 'inactive']);
+historyCheck(array_column($inactiveHistory['filters']['employees'], 'id'), ['history-inactive'], 'Inactive employees come from the archive group');
+historyCheck(array_values(array_unique(array_column(array_column($inactiveHistory['items'], 'employee'), 'id'))), ['history-inactive'], 'Archived records use the same status as the employee filter');
+$activeHistory = $history->list(['employmentStatus' => 'active']);
+historyCheck(in_array('history-inactive', array_column($activeHistory['filters']['employees'], 'id'), true), false, 'Archived employees stay out of Active');
 historyCheck(in_array('history-freelancer', array_column($response['filters']['employees'], 'id'), true), true, 'Freelancers remain in scope');
 historyCheck(in_array('history-other', array_column($response['filters']['employees'], 'id'), true), false, 'Foreign employee names do not leak through filters');
 $denied = false;
@@ -277,9 +285,9 @@ try {
 	$hrEditors->addUser($historicalEditor);
 }
 historyCheck(in_array('history-hr-b', array_column($history->list([])['filters']['actors'], 'id'), true), true, 'An editor regaining HR rights returns to the dropdown');
-$groups->get('history-staff-main')->removeUser($users->get('history-inactive'));
+$groups->get('Zeitnachweis-Archiv')->removeUser($users->get('history-inactive'));
 historyCheck(in_array('history-inactive', array_column(array_column($history->list([])['items'], 'employee'), 'id'), true), false, 'Removed employee assignment hides earlier history');
-$groups->get('history-staff-main')->addUser($users->get('history-inactive'));
+$groups->get('Zeitnachweis-Archiv')->addUser($users->get('history-inactive'));
 historyCheck(count($history->list(['employee' => 'history-inactive'])['items']), 2, 'Reassignment restores retained history without recreating it');
 
 // Native account deletion removes the subject history or anonymises the editor in other histories.

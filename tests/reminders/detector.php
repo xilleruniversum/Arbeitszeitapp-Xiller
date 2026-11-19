@@ -6,11 +6,10 @@ use OCA\Timesheet\Service\MissingEntryDetector;
 use OCA\Timesheet\Service\AbsenceCommentCatalog;
 
 require_once __DIR__ . '/../../lib/Service/AbsenceCommentCatalog.php';
-require_once __DIR__ . '/../../lib/Service/EntryCommentType.php';
 require_once __DIR__ . '/../../lib/Service/MissingEntryDetector.php';
 
 $absenceComments = new AbsenceCommentCatalog();
-$detector = new MissingEntryDetector($absenceComments);
+$detector = new MissingEntryDetector();
 $testCount = 0;
 $failureCount = 0;
 
@@ -69,40 +68,26 @@ $test('Both complete midnight values count as a complete entry', static function
 	$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', 0, 0)], []));
 });
 
-// Whole-comment matching deliberately rejects synonyms, additions and negation.
-foreach (['Urlaub', 'urlaub', ' URLAUB ', "\tUrlaub\n", 'Krank', ' KRANK ', 'Termin', 'termin'] as $comment) {
-	$test('Whole absence comment exempts a day: ' . json_encode($comment), static function () use ($detector, $date, $entry, $assertSame, $weekdays, $comment): void {
-		$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-	});
-}
-foreach (['Vacation', ' VACATION ', 'Sick leave', ' sick leave ', 'Appointment'] as $comment) {
-	$test('English absence comments exempt a whole day: ' . json_encode($comment), static function () use ($detector, $date, $entry, $assertSame, $weekdays, $comment): void {
-		$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-	});
-}
-foreach (['Congés annuels', 'CONGÉS ANNUELS', 'Congé maladie', 'Rendez-vous', '年次休暇'] as $comment) {
-	$test('French and Japanese absence comments exempt a whole day: ' . json_encode($comment), static function () use ($detector, $date, $entry, $assertSame, $weekdays, $comment): void {
-		$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-	});
-}
-
-// Every displayed term must be accepted identically by background checks.
-$localizedTerms = json_decode(file_get_contents(__DIR__ . '/../../lib/Service/absence-comment-terms.json'), true, 512, JSON_THROW_ON_ERROR);
-foreach ($localizedTerms as $language => $terms) {
-	foreach ($terms as $kind => $term) {
-		$test('Localized whole-day absence remains recognized: ' . $language . '/' . $kind, static function () use ($detector, $date, $entry, $assertSame, $weekdays, $term): void {
-			foreach ([$term, mb_strtoupper($term, 'UTF-8'), mb_strtolower($term, 'UTF-8'), "\u{00A0}" . $term . "\u{3000}"] as $comment) {
-				$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-			}
-			foreach ([[0, null], [null, 0]] as [$startMinutes, $endMinutes]) {
-				$assertSame([['date' => '2026-10-12', 'reason' => 'incomplete']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', $startMinutes, $endMinutes, $term)], []));
-			}
-			foreach (['not ' . $term, $term . ' requested', $term . '.'] as $comment) {
-				$assertSame([['date' => '2026-10-12', 'reason' => 'missing']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-			}
-		});
+$test('Any saved comment covers a missing or incomplete entry independently of its type', static function () use ($detector, $date, $entry, $assertSame, $weekdays): void {
+	foreach ([['I will add the times tomorrow.', null], ['0', null], ['資料を確認中', 'custom'], ['Urlaub', 'vacation']] as [$comment, $type]) {
+		foreach ([[null, null], [480, null], [null, 960], [480, 960]] as [$start, $end]) {
+			$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [
+				$entry('2026-10-12', $start, $end, $comment, $type),
+			], []));
+		}
 	}
-}
+});
+
+$test('Empty and whitespace-only comments are eligible despite a stale absence type', static function () use ($detector, $date, $entry, $assertSame, $weekdays): void {
+	foreach ([null, '', " \t\n", "\u{00A0}\u{3000}\u{FEFF}"] as $comment) {
+		foreach ([[null, null, 'missing'], [480, null, 'incomplete'], [null, 960, 'incomplete']] as [$start, $end, $reason]) {
+			$assertSame([['date' => '2026-10-12', 'reason' => $reason]], $detector->findMissingEntries(
+				$date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', $start, $end, $comment, 'vacation')], [],
+			));
+		}
+	}
+});
+
 $test('Language resolution uses account language, regional variants and English fallback', static function () use ($absenceComments, $assertSame): void {
 	$assertSame(['vacation' => 'Vacation', 'sick' => 'Sick leave', 'appointment' => 'Appointment'], $absenceComments->getTerms('en'));
 	$assertSame($absenceComments->getTerms('en_GB'), $absenceComments->getTerms('EN-gb'));
@@ -112,51 +97,6 @@ $test('Language resolution uses account language, regional variants and English 
 	$assertSame($absenceComments->getTerms('en'), $absenceComments->getTerms('unknown-LANGUAGE'));
 	$assertSame($absenceComments->getTerms('en'), $absenceComments->getTerms(''));
 });
-$test('A changed viewer language cannot invalidate existing absence comments', static function () use ($absenceComments, $detector, $date, $entry, $assertSame, $weekdays): void {
-	foreach (['de', 'en', 'fr', 'ja'] as $language) {
-		$absenceComments->getTerms($language);
-		foreach (['Urlaub', 'Krank', 'Termin', 'Vacation', 'Sick leave', 'Appointment', 'Congés annuels', '年次休暇'] as $comment) {
-			$assertSame([], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-		}
-	}
-});
-$test('Canonical Unicode spellings share recognition without broadening the accepted words', static function () use ($absenceComments, $assertSame): void {
-	$assertSame(true, $absenceComments->isExemptComment(Normalizer::normalize('Congés annuels', Normalizer::FORM_D)));
-	$assertSame(false, $absenceComments->isExemptComment('Conges annuels'));
-	$assertSame(false, $absenceComments->isExemptComment('Sick  leave'));
-	$assertSame(false, $absenceComments->isExemptComment("Vacation\xff"));
-});
-foreach ([null, '', '  ', 'A', 'Freizeit', 'Auszeit', 'Ausgleich', 'kein Urlaub', 'Urlaub beantragt', 'Urlaub.', 'Krank gemeldet', 'Termin beim Arzt', 'Stundenausgleich', 'STUNDENAUSGLEICH', 'Time off in lieu', 'Repos compensateur', '代休', '0'] as $comment) {
-	$test('Other comments remain missing: ' . json_encode($comment), static function () use ($detector, $date, $entry, $assertSame, $weekdays, $comment): void {
-		$assertSame([['date' => '2026-10-12', 'reason' => 'missing']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', null, null, $comment)], []));
-	});
-}
-foreach (['Urlaub', 'Krank', 'Termin'] as $comment) {
-	foreach ([[480, null], [null, 960]] as [$startMin, $endMin]) {
-		$test('An absence comment never hides a partially entered time', static function () use ($detector, $date, $entry, $assertSame, $weekdays, $comment, $startMin, $endMin): void {
-			$assertSame([['date' => '2026-10-12', 'reason' => 'incomplete']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, [$entry('2026-10-12', $startMin, $endMin, $comment)], []));
-		});
-	}
-}
-
-$test('Explicit reasons exempt whole days independently of the display language, and one time is still incomplete', static function () use ($detector, $date, $entry, $assertSame, $weekdays): void {
-	foreach (['vacation' => 'Urlaub', 'sick' => 'Maladie', 'appointment' => 'Termin'] as $commentType => $label) {
-		foreach ([[null, null, []], [480, null, ['incomplete']], [null, 960, ['incomplete']], [480, 960, []]] as [$start, $end, $reasons]) {
-			$entries = [$entry('2026-10-12', $start, $end, $label, $commentType)];
-			$issues = $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, $entries, []);
-			$assertSame($reasons, array_column($issues, 'reason'));
-		}
-	}
-});
-$test('Explicit custom text cannot exempt a missing or incomplete day even when it matches a reason label', static function () use ($detector, $date, $entry, $assertSame, $weekdays): void {
-	foreach (['Urlaub', 'Krank', 'Termin', 'Stundenausgleich', 'Congés annuels'] as $label) {
-		$missing = [$entry('2026-10-12', null, null, $label, 'custom')];
-		$incomplete = [$entry('2026-10-12', 480, null, $label, 'custom')];
-		$assertSame([['date' => '2026-10-12', 'reason' => 'missing']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, $missing, []));
-		$assertSame([['date' => '2026-10-12', 'reason' => 'incomplete']], $detector->findMissingEntries($date('2026-10-13'), '2026-10-12', 1, $weekdays, $incomplete, []));
-	}
-});
-
 $test('Configured weekend workdays are checked', static function () use ($detector, $date, $assertSame): void {
 	$assertSame([
 		['date' => '2026-10-17', 'reason' => 'missing'],

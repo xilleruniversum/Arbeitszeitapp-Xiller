@@ -16,6 +16,7 @@ use OCP\PreConditionNotMetException;
 /** Combines group-derived activity and the personal freelancer preference with their histories. */
 class EmploymentStatusStore {
 	public const ACTIVE_GROUP_ID = 'Zeitnachweis';
+	public const ARCHIVE_GROUP_ID = 'Zeitnachweis-Archiv';
 	private const APP_ID = 'timesheet';
 	private const STATUS_KEY = 'employment_status';
 

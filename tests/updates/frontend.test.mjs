@@ -111,7 +111,7 @@ test('the automatic modal is opened once, confirmed after painting and leaves th
 	assert.equal(app.requests.length, 1);
 	assert.equal(app.requests[0].body.mode, 'automatic');
 	assert.ok(app.get('ts-update-notes-dialog'));
-	assert.equal(app.all('ts-update-notes-close').length, 0);
+	assert.equal(app.all('ts-update-notes-close').length, 1);
 	assert.equal(app.all('ts-update-notes-action').length, 1);
 	assert.equal(app.header.inert, true);
 	assert.equal(app.app.inert, true);
@@ -216,25 +216,46 @@ test('Escape before a visible render never writes a display confirmation', async
 	assert.equal(app.header.inert, false);
 });
 
-test('the heading receives initial focus, the single close control traps Tab, and Escape restores the page', async () => {
+test('both close controls are reachable by Tab and Escape restores the page', async () => {
 	const app = fixture(); const complete = app.init(); await flush();
-	const close = app.all('ts-update-notes-action')[0];
+	const headerClose = app.all('ts-update-notes-close')[0];
+	const footerClose = app.all('ts-update-notes-action')[0];
 	const heading = app.get('ts-update-notes-title');
-	assert.equal(app.all('ts-update-notes-close').length, 0);
 	assert.equal(heading.getAttribute('tabindex'), '-1');
 	assert.equal(app.document.activeElement, heading);
 	assert.equal(app.key('Tab', true).prevented, true);
-	assert.equal(app.document.activeElement, close);
+	assert.equal(app.document.activeElement, footerClose);
 	heading.focus();
 	assert.equal(app.key('Tab').prevented, true);
-	assert.equal(app.document.activeElement, close);
-	assert.equal(app.key('Tab', true).prevented, true);
-	assert.equal(app.document.activeElement, close);
+	assert.equal(app.document.activeElement, headerClose);
+	app.key('Tab');
+	assert.equal(app.document.activeElement, footerClose);
+	app.key('Tab');
+	assert.equal(app.document.activeElement, headerClose);
+	app.key('Tab', true);
+	assert.equal(app.document.activeElement, footerClose);
+	app.key('Tab', true);
+	assert.equal(app.document.activeElement, headerClose);
 	app.month.focus();
-	assert.equal(app.document.activeElement, close);
+	assert.equal(app.document.activeElement, headerClose);
 	app.key('Escape'); await complete;
-	app.month.focus();
 	assert.equal(app.document.activeElement, app.month);
+});
+
+test('the labelled header close button closes the dialog like the footer action', async () => {
+	const app = fixture({ translate: message => message === 'Close' ? 'Schließen' : message });
+	const complete = app.init(); await flush(); await app.paint();
+	const header = app.all('ts-update-notes-header')[0];
+	const close = app.all('ts-update-notes-close')[0];
+	assert.ok(header.contains(close));
+	assert.equal(close.type, 'button');
+	assert.equal(close.textContent, '×');
+	assert.equal(close.getAttribute('aria-label'), 'Schließen');
+	app.click(close); await complete;
+	assert.equal(app.get('ts-update-notes-dialog'), null);
+	assert.equal(app.header.inert, false);
+	assert.equal(app.document.activeElement, app.month);
+	assert.equal(app.requests.length, 2, 'Closing the window does not dismiss the bell');
 });
 
 test('a failed shown write leaves the popup usable and does not attempt to dismiss the bell', async () => {

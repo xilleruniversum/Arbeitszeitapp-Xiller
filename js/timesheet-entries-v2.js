@@ -159,6 +159,11 @@
 		return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 	}
 
+	function getIncompleteTimeWarning(comment) {
+		// Match the Unicode whitespace rules used for reminders.
+		return /[^\s\p{White_Space}]/u.test(comment) ? '' : t(appState.appName, 'Time incomplete');
+	}
+
 	// Entry row rendering and monthly totals
 	function createEntryTableRow(date, entry, holidayMap = {}, dailyMinimumMinutes = null, specialDaysEnabled = false, thresholds = null) {
 		const dateString = utils.toLocalIsoDate(date);
@@ -176,7 +181,8 @@
 			: specialDaysEnabled && (isHoliday || isWeekend)
 				? durationMinutes
 				: dailyMinimumMinutes != null ? durationMinutes - dailyMinimumMinutes : null;
-		const warning = isIncompleteTime ? t(appState.appName, 'Time incomplete') : utils.checkRules({
+		const commentText = entry?.comment ?? '';
+		const warning = isIncompleteTime ? getIncompleteTimeWarning(commentText) : utils.checkRules({
 			startMin: startMinutes,
 			endMin: endMinutes,
 			breakMinutes: breakMinutes
@@ -184,7 +190,6 @@
 		const startText = startMinutes != null ? utils.minToHm(startMinutes) : '';
 		const endText = endMinutes != null ? utils.minToHm(endMinutes) : '';
 		const breakText = utils.formatBreakValue(breakMinutes, appState.breakInputMode);
-		const commentText = entry?.comment ?? '';
 		const durationText = utils.minToHm(durationMinutes);
 		const differenceText = utils.minToHm(differenceMinutes);
 		const breakMode = appState.breakInputMode === 'hours' ? 'hours' : 'minutes';
@@ -553,7 +558,7 @@
 					return;
 				}
 			} else {
-				clearEntryRowSummary(fields, warningCell ? t(appState.appName, 'Time incomplete') : '');
+				clearEntryRowSummary(fields, getIncompleteTimeWarning(comment));
 
 				// Check if anything changed
 				if (startValue === savedStart && endValue === savedEnd && breakMinutes === savedBreakMinutes && !commentChanged) {

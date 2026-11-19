@@ -651,13 +651,6 @@
 	padding: 0;
 }
 
-.hr-employee-list-title {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	min-inline-size: 0;
-}
-
 .hr-employee-list-header h4,
 .hr-list-popup-heading h5 {
 	margin: 0;

@@ -28,7 +28,6 @@ use OCA\Timesheet\Service\GroupRuleService;
 use OCA\Timesheet\Service\HolidayService;
 use OCA\Timesheet\Service\HrService;
 use OCA\Timesheet\Service\MissingEntryDetector;
-use OCA\Timesheet\Service\AbsenceCommentCatalog;
 use OCA\Timesheet\Service\MissingEntryReminderMailer;
 use OCA\Timesheet\Service\MissingEntryReminderService;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -188,7 +187,7 @@ $appConfig->setAppValueString('hr_access_rules', '[]');
 $makeService = static function (?HolidayService $holidays = null) use ($container, $entryMapper, $configMapper, $appConfig, $session, $groups, $users, $store, $clock, $capturingMailer, $logger, $config): MissingEntryReminderService {
 	return new MissingEntryReminderService(
 		$container->get(GroupRuleService::class), $entryMapper, $configMapper,
-		new HrService($appConfig, $session, $groups, $users), $holidays ?? $container->get(HolidayService::class), new MissingEntryDetector(new AbsenceCommentCatalog()),
+		new HrService($appConfig, $session, $groups, $users), $holidays ?? $container->get(HolidayService::class), new MissingEntryDetector(),
 		$store, $capturingMailer, $groups, $users, $clock, $logger,
 		new \OCA\Timesheet\Db\EmploymentStatusStore($config, \OCP\Server::get(\OCP\Lock\ILockingProvider::class), $clock, $groups),
 	);
@@ -218,9 +217,14 @@ foreach (['employee-a', 'employee-b', 'no-mail'] as $suffix) {
 		$entry = new Entry();
 		$entry->setUserId($testUsers[$suffix]->getUID());
 		$entry->setWorkDate($date);
-		$entry->setStartMin($date === '2026-10-22' ? null : 480);
+		$entry->setStartMin(in_array($date, ['2026-10-20', '2026-10-22'], true) ? null : 480);
 		$entry->setEndMin(in_array($date, ['2026-10-21', '2026-10-22'], true) ? null : 1020);
-		$entry->setComment($date === '2026-10-22' ? ' URLAUB ' : ($date === '2026-10-21' ? 'Urlaub' : ''));
+		$entry->setComment(match ($date) {
+			'2026-10-21' => 'I will add the end time later.',
+			'2026-10-22' => 'Covered by the team today.',
+			default => '',
+		});
+		$entry->setCommentType($date === '2026-10-22' ? 'custom' : null);
 		$entry->setBreakMinutes(0);
 		$entry->setCreatedAt($clock->getTime());
 		$entry->setUpdatedAt($clock->getTime());
@@ -234,9 +238,13 @@ $statistics = $makeService()->sendReminders();
 verifyReminder($statistics['employeeSent'], 1, 'One successful employee delivery');
 verifyReminder($statistics['hrSent'], 2, 'Independent HR summaries');
 verifyReminder($statistics['checkedEmployees'], 4, 'Deduplicate groups and exclude disabled accounts');
-verifyReminder($capturingMailer->employees['reminder-employee-a'], [
-	['date' => '2026-10-19', 'reason' => 'missing'], ['date' => '2026-10-21', 'reason' => 'incomplete'],
-], 'Individual gap and commented partial entry are reported');
+$initialIssues = [
+	['date' => '2026-10-19', 'reason' => 'missing'],
+	['date' => '2026-10-20', 'reason' => 'incomplete'],
+];
+verifyReminder($capturingMailer->employees['reminder-employee-a'], $initialIssues, 'Only the missing and incomplete dates without comments are reported to the employee');
+$hrAEmployeeIssues = array_column($capturingMailer->hrSummaries['reminder-hr-a'], 'issues', 'name');
+verifyReminder($hrAEmployeeIssues[$testUsers['employee-a']->getDisplayName()], $initialIssues, 'The HR email receives the same dates');
 verifyReminder(isset($capturingMailer->employees['reminder-no-region']), false, 'Unknown holiday region blocks employee delivery');
 $hrANames = array_column($capturingMailer->hrSummaries['reminder-hr-a'], 'name');
 verifyReminder(in_array('reminder-employee-b', $hrANames, true), false, 'HR A cannot see group B');
@@ -267,11 +275,19 @@ $makeService()->prepareRuleChanges($rules, $rules);
 verifyReminder($store->rememberEnrollment('reminder-late', 'reminder-rule-a', false, '2026-11-01'), $enrollment, 'Re-enabling preserves first detection');
 verifyReminder($store->isDeliveryDue('reminder-employee-a', 'employee', $clock->now()), false, 'Re-enabling preserves cooldown');
 
-$entryMapper->upsertCommentOnly('reminder-employee-a', '2026-10-19', 'Termin');
+$entryMapper->upsertCommentOnly('reminder-employee-a', '2026-10-19', 'Comment added after the first reminder.');
+$entryMapper->upsertCommentOnly('reminder-employee-a', '2026-10-21', '');
 $clock->current = $clock->current->modify('+7 days');
 $capturingMailer->employees = [];
+$capturingMailer->hrSummaries = [];
 $makeService()->sendReminders();
-verifyReminder($capturingMailer->employees['reminder-employee-a'], [['date' => '2026-10-21', 'reason' => 'incomplete']], 'Filled gap disappears and new seven-day delivery is due');
+$updatedIssues = [
+	['date' => '2026-10-20', 'reason' => 'incomplete'],
+	['date' => '2026-10-21', 'reason' => 'incomplete'],
+];
+verifyReminder($capturingMailer->employees['reminder-employee-a'], $updatedIssues, 'Adding a comment hides a date and deleting a comment makes its date eligible again');
+$hrAEmployeeIssues = array_column($capturingMailer->hrSummaries['reminder-hr-a'], 'issues', 'name');
+verifyReminder($hrAEmployeeIssues[$testUsers['employee-a']->getDisplayName()], $updatedIssues, 'The next HR email reflects the same changed comments');
 verifyReminder($capturingMailer->employees['reminder-late'], [['date' => '2026-10-29', 'reason' => 'missing']], 'Later joiner starts only at its own date');
 
 // Date checks themselves never write entries or balances.

@@ -60,13 +60,17 @@
 		heading.id = 'ts-update-notes-title';
 		heading.setAttribute('tabindex', '-1');
 		const header = createElement('div', 'ts-update-notes-header');
-		header.append(heading);
+		const closeLabel = translate('Close');
+		const headerCloseButton = createElement('button', 'ts-update-notes-close', '×');
+		headerCloseButton.type = 'button';
+		headerCloseButton.setAttribute('aria-label', closeLabel);
+		header.append(heading, headerCloseButton);
 		const content = createElement('div', 'ts-update-notes-content');
 		// Reverse only the display order; account progress uses the chronological API order.
 		const releasesNewestFirst = [...notes.releases].reverse();
 		for (const release of releasesNewestFirst) addRelease(content, release);
 		const footer = createElement('div', 'ts-update-notes-footer');
-		const closeButton = createElement('button', 'ts-update-notes-action', translate('Close'));
+		const closeButton = createElement('button', 'ts-update-notes-action', closeLabel);
 		closeButton.type = 'button';
 		footer.append(closeButton);
 		dialog.append(header, content, footer);
@@ -105,13 +109,13 @@
 					event.stopPropagation();
 					close();
 				} else if (event.key === 'Tab') {
-					// The single close control remains the keyboard focus in either direction.
 					event.preventDefault();
-					closeButton.focus();
+					const [first, last] = event.shiftKey ? [closeButton, headerCloseButton] : [headerCloseButton, closeButton];
+					(document.activeElement === first ? last : first).focus();
 				}
 			}
 			function keepFocusInDialog(event) {
-				if (!closed && !dialog.contains(event.target)) closeButton.focus();
+				if (!closed && !dialog.contains(event.target)) headerCloseButton.focus();
 			}
 
 			try {
@@ -123,6 +127,7 @@
 					}
 				}
 				document.body.style.overflow = 'hidden';
+				headerCloseButton.addEventListener('click', close);
 				closeButton.addEventListener('click', close);
 				document.addEventListener('keydown', keepKeyboardInDialog, true);
 				document.addEventListener('focusin', keepFocusInDialog, true);

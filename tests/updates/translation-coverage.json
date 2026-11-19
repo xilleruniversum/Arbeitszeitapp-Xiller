@@ -36,7 +36,13 @@
     "Help for the HR overview is available beside the employee list at any width.",
     "Comments can be entered as free text again. The comment help explains which absence reasons prevent reminders when both times are missing.",
     "Reminders for missing or incomplete time entries use an updated default message for employees.",
-    "Fixed a PostgreSQL error in the HR employee list when monthly balances are recalculated after a change to target hours."
+    "Fixed a PostgreSQL error in the HR employee list when monthly balances are recalculated after a change to target hours.",
+    "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.",
+    "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.",
+    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.",
+    "The comment help, guided tour and group rule example explain the new reminder rule.",
+    "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.",
+    "The update window can also be closed using the × in the top right corner."
   ],
   "locales": {
     "ar": "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;",

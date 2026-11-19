@@ -19,7 +19,7 @@ $fixture = static function (?string $actor = 'alice'): array {
 	$store = new EmploymentStatusStore($config, $locks, $clock, $groups);
 	$session = new EmploymentSessionFixture($actor === null ? null : new EmploymentUserFixture($actor));
 	$request = new EmploymentRequestFixture();
-	$hr = new HrService($session);
+	$hr = new HrService($session, $groups);
 	$logger = new EmploymentLoggerFixture();
 	$controller = new EmploymentStatusController('timesheet', $request, $store, $session, $hr, $logger, $groups);
 	$balances = new \OCA\Timesheet\Service\MonthlyBalanceService();
@@ -65,7 +65,7 @@ foreach ([null, 'alice', 'hr', 'admin', 'hr-admin'] as $actor) {
 		})($parameters);
 		$suite->same($actor === 'alice', str_contains($html, 'data-tour-comments-description="'));
 		if ($actor === 'alice') {
-			$suite->same(true, str_contains($html, 'only the following reasons prevent a notification: Urlaub, Krank or Termin.'));
+			$suite->same(true, str_contains($html, 'only a corresponding comment prevents a notification.'));
 		}
 		$suite->same($actor === 'alice', str_contains($html, 'id="freelancer-mode-switch"'));
 		$suite->same($actor === 'alice', str_contains($html, 'id="freelancer-mode-feedback"'));
@@ -189,7 +189,7 @@ foreach ([null, 'alice', 'admin'] as $actor) {
 		$suite->same([], $state['balances']->calls);
 	});
 }
-$suite->test('HR list only enriches assigned IDs and retains balances for inactive employees', static function () use ($suite, $fixture): void {
+$suite->test('HR list only enriches assigned active and archived IDs', static function () use ($suite, $fixture): void {
 	$state = $fixture('hr');
 	$state['clock']->instant = '2026-10-10T12:00:00+00:00';
 	$alice = $state['store']->setFreelancerMode('alice', true, hash('sha256', ''));
@@ -197,14 +197,19 @@ $suite->test('HR list only enriches assigned IDs and retains balances for inacti
 	$state['store']->setFreelancerMode('alice', false, $alice->statusRevision);
 	$state['clock']->instant = '2026-11-02T12:00:00+00:00';
 	$state['groups']->membersByGroup['Zeitnachweis'] = ['alice'];
+	$state['groups']->membersByGroup['Zeitnachweis-Archiv'] = ['alice', 'bob', 'unassigned'];
+	$state['hr']->accessible[] = ['id' => 'unclassified', 'name' => 'Unclassified'];
 	$state['store']->syncActivity('bob');
 	$state['config']->values['unassigned'] = 'malformed-but-outside-HR-scope';
+	$state['config']->values['unclassified'] = 'malformed-without-an-employment-group';
 	$state['config']->reads = [];
 	$state['config']->writes = [];
 	$response = $state['overview']->getHrUserListData();
 	$suite->same(200, $response->getStatus());
 	$suite->same([['alice', 'bob']], $state['config']->reads);
+	$suite->same(['alice', 'bob'], array_column($response->getData(), 'id'));
 	[$aliceRow, $bobRow] = $response->getData();
+	$suite->same(true, $aliceRow['isActive']);
 	$suite->same('2026-10-01', $aliceRow['lastEntryDate']);
 	$suite->same('2026-10-20', $aliceRow['missingEntryReferenceDate']);
 	$suite->same(false, $bobRow['isActive']);

@@ -122,7 +122,6 @@ class EntryService {
 			if ($existing !== null && $this->trimComment($existing->getComment()) === $trimmedComment) {
 				return $existing->getCommentType();
 			}
-			// A new or edited free-text comment is evaluated by the text-based reminder rule.
 			return null;
 		}
 

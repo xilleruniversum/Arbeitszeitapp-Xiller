@@ -9,9 +9,6 @@ use InvalidArgumentException;
 
 class MissingEntryDetector {
 
-	public function __construct(private AbsenceCommentCatalog $absenceComments) {
-	}
-
 	/**
 	 * Find overdue dates without changing entries or working-time balances.
 	 *
@@ -98,15 +95,9 @@ class MissingEntryDetector {
 		if ($hasStartTime && $hasEndTime) {
 			return null;
 		}
-		if ($hasStartTime || $hasEndTime) {
-			return 'incomplete';
+		if (preg_match('/[^\s\p{Z}\x{FEFF}]/u', $entry['comment'] ?? '') === 1) {
+			return null;
 		}
-
-		$commentType = $entry['commentType'] ?? null;
-		if ($commentType === null) {
-			// Match free-text comments against the localized absence terms.
-			return $this->absenceComments->isExemptComment($entry['comment']) ? null : 'missing';
-		}
-		return is_string($commentType) && EntryCommentType::tryFrom($commentType)?->isAbsence() ? null : 'missing';
+		return $hasStartTime || $hasEndTime ? 'incomplete' : 'missing';
 	}
 }

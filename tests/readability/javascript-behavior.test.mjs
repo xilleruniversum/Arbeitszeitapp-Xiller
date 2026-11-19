@@ -189,7 +189,7 @@ for (const [name, overrides, existingId, hr] of [
 	['comment only', { '.startTime': '', '.endTime': '', '.commentInput': '  Note  ' }, null, false],
 	['incomplete time', { '.endTime': '', '.commentInput': '' }, null, false],
 	['invalid break with complete time', { '.breakMinutes': 'invalid' }, null, false],
-	['invalid break with incomplete time', { '.breakMinutes': 'invalid', '.endTime': '' }, '42', false],
+	['invalid break with incomplete time', { '.breakMinutes': 'invalid', '.endTime': '', '.commentInput': '' }, '42', false],
 	['automatic deletion', { '.startTime': '', '.endTime': '', '.commentInput': '' }, '42', false],
 	['empty unsaved row', { '.startTime': '', '.endTime': '', '.commentInput': '' }, null, false],
 ]) {
