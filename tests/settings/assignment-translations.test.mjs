@@ -155,6 +155,7 @@ test('both German variants use concise, neutral assignment and delivery wording'
 	assert.equal(german[0]['No selected accounts means no HR summary for this rule.'], 'Ohne ausgewählte Konten wird für diese Regel keine HR-Übersicht versendet.');
 	assert.equal(german[0]['HR assignments or email recipients are invalid.'], 'HR-Zuordnungen oder E-Mail-Empfänger sind ungültig.');
 	assert.equal(german[0]['Email selection does not change HR access.'], 'Hier steht, wer die HR-Mails für diese Gruppe erhält. Die HR-Zuständigkeit wird in der Administration festgelegt.');
+	for (const catalog of german) assert.equal(catalog['Alerts for HR'], 'Hinweise für das persönliche HR-Konto');
 	for (const catalog of german) assert.equal(catalog[hrThresholdIntro], 'Jedes HR-Konto (nicht HR-Gruppe) legt hier seine persönlichen Grenzwerte für Hinweise zu den betreuten Mitarbeitenden fest. Pro Hinweis gilt derselbe Grenzwert in der Mitarbeitendenliste sowie in der wöchentlichen E-Mail an das eigene HR-Konto.');
 	for (const catalog of german) assert.equal(catalog[weeklyHrEmailHelp], 'Mit aktiviertem Häkchen wird dieser Hinweis auch in der wöchentlichen Übersichtsmail an das eigene HR-Konto aufgeführt.');
 	assert.equal(german[0]['Send reminders to employees'], 'Erinnerungen an Mitarbeitende senden');

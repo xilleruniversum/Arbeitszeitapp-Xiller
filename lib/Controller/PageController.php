@@ -81,7 +81,7 @@ class PageController extends Controller {
 
 		Util::addStyle('timesheet', 'timesheet-layout-v8');
 		if ($isHr) {
-			Util::addStyle('timesheet', 'timesheet-history-v4');
+			Util::addStyle('timesheet', 'timesheet-history-v5');
 			Util::addStyle('timesheet', 'timesheet-hr-settings-v7');
 		}
 		if ($updateNotesEnabled) {

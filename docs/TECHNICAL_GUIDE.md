@@ -72,7 +72,7 @@ Die Befehle beziehen sich auf die vorhandene Docker-Demo mit dem Container `time
 - Nextcloud-Hintergrundaufgaben regelmäßig ausführen lassen. `HrNotificationJob`, `MissingEntryReminderJob` und `ChangeHistoryCleanupJob` werden täglich eingeplant; die ältere HR-Warnungsübersicht versendet regulär montags.
 - Für E-Mails sind Nextcloud-Mailversand und gültige Kontoadressen erforderlich. Versandtests verwenden Testkonten und Mailpit. Die Glockenhinweise benötigen die aktivierte Nextcloud-App **Benachrichtigungen**.
 - Feiertagsdaten benötigen ausgehenden HTTPS-Zugriff auf `get.api-feiertage.de`, sofern keine gültigen gespeicherten Daten vorliegen. Ohne verlässliche Feiertagsdaten wird die betreffende Erinnerungsprüfung ausgesetzt.
-- Die Gruppenkennung `Zeitnachweis` bestimmt den Aktivstatus. Die Gruppenkennung `Zeitnachweis-Archiv` bestimmt den Inaktiv-Status. HR-Zugriff und Mail-Empfänger werden getrennt in `hr_access_rules` festgelegt. Änderungen an Gruppenkennungen betreffen daher auch die App.
+- Bei den Statusgruppen hat die exakte Gruppenkennung `Zeitnachweis` Vorrang. Konten in `Zeitnachweis` gelten als aktiv, auch wenn sie zusätzlich `Zeitnachweis-Archiv` angehören. Ist `Zeitnachweis-Archiv` die einzige Statusgruppe eines Kontos, gilt es als inaktiv. HR-Zugriff und Mail-Empfänger werden getrennt in `hr_access_rules` festgelegt. Änderungen an Gruppenkennungen betreffen daher auch die App.
 - App-Daten liegen in Nextcloud-Datenbanktabellen, Konfigurationswerten und Benutzereinstellungen. Sicherungen umfassen Datenbank, Nextcloud-Konfiguration und App-Dateien gemeinsam.
 - Der Änderungsverlauf liegt in `ts_change_history` und wird zwölf Kalendermonate aufbewahrt. Kontolöschungen entfernen den betroffenen Verlauf beziehungsweise anonymisieren gelöschte Bearbeiter. Fehlgeschlagene Bereinigungen werden erneut versucht; betroffene Zugriffe bleiben bis dahin gesperrt.
 - Veröffentlichte Migrationen unter `lib/Migration/` bleiben unverändert. Historische negative Pausenwerte können Saldoüberträge enthalten und dürfen nicht pauschal bereinigt werden.
@@ -123,14 +123,14 @@ PHP-Stilprüfung, Psalm, Rector und PHPUnit sind vorbereitet, aber noch keine vo
 
 Nur eine erhöhte Versionsnummer löst einen neuen Update-Hinweis aus. Eine Textänderung, ein Push oder ein Merge installiert kein Update. Bei einer fehlgeschlagenen Datenbankumstellung erfordert eine Rückkehr die zusammengehörige Sicherung von Datenbank, Konfiguration und App-Dateien.
 
-### Admin-Checkliste für das Update auf 1.4.5
+### Admin-Checkliste für aktive und archivierte Mitarbeitende
 
-Ab Version 1.4.5 erscheinen Mitarbeitende in der HR-Übersicht und im Änderungsverlauf nur mit einer gültigen Statusgruppe **und** einer passenden HR-Zuordnung. Bestehende Zeiteinträge bleiben erhalten.
+Die HR-Übersicht und der Änderungsverlauf zeigen Mitarbeitende, die mindestens einer der beiden Statusgruppen angehören **und** eine passende HR-Zuordnung haben. Beim Wechsel des Status bleiben die Zeiteinträge erhalten.
 
-1. **Aktive Mitarbeitende prüfen.** Alle aktiven Mitarbeitenden, die HR sehen soll, müssen der Nextcloud-Gruppe mit der exakten Kennung `Zeitnachweis` angehören. Bestehende Abteilungsgruppen und HR-Zuordnungen beibehalten.
-2. **Archivgruppe bei Bedarf anlegen.** Wenn ehemalige Mitarbeitende sichtbar bleiben sollen, die Gruppe `Zeitnachweis-Archiv` anlegen. Beim Archivieren zuerst das Konto aus `Zeitnachweis` entfernen, dann zu `Zeitnachweis-Archiv` hinzufügen. Sind alle aktiven Mitarbeitenden korrekt zugeordnet, kann das Update auch ohne Archivgruppe installiert werden.
-3. **HR-Zugriff kontrollieren.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** prüfen, ob archivierte Konten weiterhin über eine passende Mitarbeitendengruppe dem zuständigen HR-Konto zugeordnet sind. Die gemeinsame Archivgruppe nur einer HR-Regel hinzufügen, wenn die zuständigen HR-Konten alle Mitglieder dieser Gruppe sehen dürfen.
-4. **Nach dem Update testen.** Mit einem zuständigen HR-Konto in der HR-Übersicht und im Änderungsverlauf die Filter **Alle**, **Aktiv** und **Inaktiv** prüfen.
+1. **Aktive Mitarbeitende prüfen.** Konten in der Nextcloud-Gruppe mit der exakten Kennung `Zeitnachweis` erscheinen unter **Aktiv** und **Alle** jeweils einmal, auch bei gleichzeitiger Mitgliedschaft in `Zeitnachweis-Archiv`. Bestehende Abteilungsgruppen und HR-Zuordnungen beibehalten.
+2. **Archivgruppe bei Bedarf anlegen.** Neue Mitarbeitende können bei der Einrichtung beiden Gruppen zugewiesen werden. Zum Archivieren genügt dann das Entfernen aus `Zeitnachweis`. Das Konto bleibt in `Zeitnachweis-Archiv` und erscheint bei passender HR-Zuordnung unter **Inaktiv** und **Alle**.
+3. **HR-Zugriff kontrollieren.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** prüfen, ob archivierte Konten weiterhin über eine passende Mitarbeitendengruppe dem zuständigen HR-Konto zugeordnet sind. Die gemeinsame Archivgruppe nur einer HR-Regel hinzufügen, wenn die zuständigen HR-Konten alle Mitglieder dieser Gruppe sehen dürfen. Bei Doppelmitgliedschaft gehören dazu auch aktive Konten.
+4. **Filter testen.** Mit einem zuständigen HR-Konto in der HR-Übersicht und im Änderungsverlauf die Filter **Alle**, **Aktiv** und **Inaktiv** prüfen.
 
 ## 7. Ein App-Paket veröffentlichen
 
@@ -218,7 +218,7 @@ Changes to mounted PHP, JavaScript and CSS files need no upload or build. A hard
 - Run Nextcloud background jobs regularly. `HrNotificationJob`, `MissingEntryReminderJob` and `ChangeHistoryCleanupJob` are scheduled daily; the older HR warning summary normally sends on Mondays.
 - Email delivery requires configured Nextcloud mail and valid account addresses. Delivery tests use test accounts and Mailpit. Bell notices require the enabled Nextcloud **Notifications** app.
 - Holiday data requires outbound HTTPS access to `get.api-feiertage.de` unless valid cached data exists. Unreliable holiday data suspends the affected reminder check.
-- The exact group ID `Zeitnachweis` determines activity status. The exact group ID `Zeitnachweis-Archiv` determines inactivity status. HR access and mail recipients are configured separately in `hr_access_rules`. Renaming group IDs therefore also affects the app.
+- The exact group ID `Zeitnachweis` takes precedence. Its members count as active, including accounts that also belong to `Zeitnachweis-Archiv`. Accounts whose only status group is `Zeitnachweis-Archiv` count as inactive. HR access and mail recipients are configured separately in `hr_access_rules`. Renaming group IDs therefore also affects the app.
 - App data is stored in Nextcloud database tables, configuration values and user preferences. Backups cover the database, Nextcloud configuration and app files together.
 - Change records are stored in `ts_change_history` for twelve calendar months. Account deletion removes the affected employee's records or anonymises deleted editors. Failed cleanup is retried; affected access remains blocked until it succeeds.
 - Published migrations in `lib/Migration/` remain unchanged. Historical negative break values may carry balance transfers and must not be normalised indiscriminately.
@@ -269,14 +269,14 @@ PHP style checks, Psalm, Rector and PHPUnit are prepared but do not yet form a f
 
 Only an increased version triggers a new update notice. Editing text, pushing or merging does not install an update. After a failed database migration, rollback requires the matching database, configuration and app-file backup.
 
-### Administrator checklist for updating to 1.4.5
+### Administrator checklist for active and archived employees
 
-Starting with version 1.4.5, employees appear in the HR overview and change history only when they belong to one of the two status groups **and** are covered by an HR assignment. Existing time entries are retained.
+The HR overview and change history show employees who belong to at least one of the two status groups **and** are covered by an HR assignment. Changing status preserves existing time entries.
 
-1. **Check active employees.** All active employees who should be visible to HR must belong to the Nextcloud group with the exact ID `Zeitnachweis`. Keep existing department groups and HR assignments.
-2. **Create the archive group if needed.** If former employees should stay visible, create the `Zeitnachweis-Archiv` group. To archive an account, first remove it from `Zeitnachweis`, then add it to `Zeitnachweis-Archiv`. If all active employees are assigned correctly, you can install the update without creating the archive group.
-3. **Check HR access.** Under **Profile → Settings → Administration → Timesheet**, check that archived accounts remain assigned to the responsible HR account through an appropriate employee group. Add the shared archive group to an HR rule only if the responsible HR accounts are allowed to see all members of that group.
-4. **Test after updating.** Using a responsible HR account, check the **All**, **Active** and **Inactive** filters in the HR overview and change history.
+1. **Check active employees.** Accounts in the Nextcloud group with the exact ID `Zeitnachweis` appear once under **Active** and once under **All**, even if they also belong to `Zeitnachweis-Archiv`. Keep existing department groups and HR assignments.
+2. **Create the archive group if needed.** You can assign new employees to both groups when you create their accounts. To archive one of these accounts, remove it from `Zeitnachweis`. It stays in `Zeitnachweis-Archiv` and appears under **Inactive** and **All** if it is covered by an HR assignment.
+3. **Check HR access.** Under **Profile → Settings → Administration → Timesheet**, check that archived accounts remain assigned to the responsible HR account through an appropriate employee group. Add the shared archive group to an HR rule only if the responsible HR accounts are allowed to see all members of that group. That includes active accounts assigned to both status groups.
+4. **Test the filters.** Using a responsible HR account, check the **All**, **Active** and **Inactive** filters in the HR overview and change history.
 
 ## 7. Publish an app package
 

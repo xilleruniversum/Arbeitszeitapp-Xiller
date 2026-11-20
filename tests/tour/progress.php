@@ -339,7 +339,7 @@ namespace {
 			$expectSame(true, in_array('timesheet-main-v2', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
 			$expectedStyles = ['timesheet-layout-v8'];
-			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v4', 'timesheet-hr-settings-v7']);
+			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v5', 'timesheet-hr-settings-v7']);
 			$expectedStyles[] = 'timesheet-release-notes';
 			$expectedStyles[] = 'timesheet-help-panels-v3';
 			$expectSame($expectedStyles, \OCP\Util::$styles);

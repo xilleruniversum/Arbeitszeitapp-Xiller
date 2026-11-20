@@ -53,6 +53,68 @@ if ($phase === 'fresh') {
 	exit;
 }
 
+if ($phase === 'dual-membership') {
+	$employeeId = 'history-dual-employee';
+	$hrId = 'history-dual-hr';
+	$otherHrId = 'history-dual-other-hr';
+	$employee = $users->createUser($employeeId, getenv('HISTORY_TEST_PASSWORD'));
+	$users->createUser($hrId, getenv('HISTORY_TEST_PASSWORD'));
+	$users->createUser($otherHrId, getenv('HISTORY_TEST_PASSWORD'));
+	$activeGroupId = \OCA\Timesheet\Db\EmploymentStatusStore::ACTIVE_GROUP_ID;
+	$archiveGroupId = \OCA\Timesheet\Db\EmploymentStatusStore::ARCHIVE_GROUP_ID;
+	$activeGroup = $groups->get($activeGroupId) ?? $groups->createGroup($activeGroupId);
+	$archiveGroup = $groups->get($archiveGroupId) ?? $groups->createGroup($archiveGroupId);
+	$team = $groups->createGroup('history-dual-team');
+	$otherTeam = $groups->createGroup('history-dual-other-team');
+	$team->addUser($employee);
+	$appConfig->setAppValueString('hr_access_rules', json_encode([
+		['id' => 'history-dual', 'hrUsers' => [$hrId], 'userGroups' => [$team->getGID(), $archiveGroupId]],
+		['id' => 'history-dual-other', 'hrUsers' => [$otherHrId], 'userGroups' => [$otherTeam->getGID()]],
+	], JSON_THROW_ON_ERROR));
+	historyAs($hrId);
+	$overview = $container->get(\OCA\Timesheet\Controller\OverviewController::class);
+	$history = $container->get(\OCA\Timesheet\Service\ChangeHistoryService::class);
+	$entries = $container->get(\OCA\Timesheet\Service\EntryService::class);
+	$statuses = $container->get(\OCA\Timesheet\Db\EmploymentStatusStore::class);
+
+	$activeGroup->addUser($employee);
+	$archiveGroup->addUser($employee);
+	historyCheck($archiveGroup->inGroup($employee), true, 'The native archive group accepts an existing active member');
+	$workDate = (new DateTimeImmutable('today', new DateTimeZone('Europe/Berlin')))->format('Y-m-d');
+	$entry = $entries->upsertCommentOnly($employeeId, $workDate, 'Preserved during archiving');
+	$entryId = (int)$entry->getId();
+	$assertViews = static function (bool $isActive) use ($overview, $history, $statuses, $employeeId, $entryId): void {
+		$expected = [$employeeId => $isActive];
+		$status = $overview->getHrUserListData();
+		historyCheck($status->getStatus(), 200, 'The HR overview accepts the employee status');
+		historyCheck(array_column($status->getData(), 'id'), [$employeeId], 'Overlapping assigned groups produce one overview row');
+		historyCheck(array_column($status->getData(), 'isActive', 'id'), $expected, 'The overview uses the active group to determine status');
+		historyCheck($statuses->getStatus($employeeId)->isActive, $isActive, 'The stored activity status follows the active group');
+		foreach (['all', 'active', 'inactive'] as $filter) {
+			$visible = $filter === 'all' || $filter === ($isActive ? 'active' : 'inactive');
+			$result = $history->list(['employmentStatus' => $filter]);
+			historyCheck(count($result['filters']['employees']), $visible ? 1 : 0, 'Employee filter has no duplicate for ' . $filter);
+			historyCheck(array_column($result['filters']['employees'], 'isActive', 'id'), $visible ? $expected : [], 'The history employee filter uses the same status for ' . $filter);
+			historyCheck(array_column($result['items'], 'entryId'), $visible ? [$entryId] : [], 'The existing entry history follows the status for ' . $filter);
+		}
+	};
+	$assertViews(true);
+
+	$activeGroup->removeUser($employee);
+	historyCheck($archiveGroup->inGroup($employee), true, 'Removing only active membership leaves archive membership intact');
+	$assertViews(false);
+	historyAs($otherHrId);
+	historyCheck($overview->getHrUserListData()->getData(), [], 'Another HR account cannot see the archived employee in the overview');
+	historyCheck($history->list(['employmentStatus' => 'inactive'])['items'], [], 'Another HR account cannot read the archived employee history');
+
+	historyAs($hrId);
+	$activeGroup->addUser($employee);
+	historyCheck($archiveGroup->inGroup($employee), true, 'An existing archive member can also be reactivated');
+	$assertViews(true);
+	echo json_encode(['historyDualMembershipChecks' => $checks, 'result' => 'passed'], JSON_THROW_ON_ERROR) . "\n";
+	exit;
+}
+
 if ($phase === 'lifecycle') {
 	$entryService = $container->get(\OCA\Timesheet\Service\EntryService::class);
 	$historyService = $container->get(\OCA\Timesheet\Service\ChangeHistoryService::class);

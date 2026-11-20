@@ -64,7 +64,7 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 		<div class="hr-help-heading">
 			<h5 id="hr-group-notifications-heading"><?php p($l->t('Notifications by group')); ?></h5>
 			<?php $renderHelpPopup('hr-group-notifications-help', $l->t('Notifications by group'), [
-				$l->t('Working time rules for breaks are available under Profile → Settings → Timesheet. Administrators manage the assignment of HR and employee groups in their personal settings.'),
+				$l->t('Break rules are available under Profile → Settings → Timesheet. The effective break rule for each employee depends on their group membership and rule priority. Administrators manage HR and employee group assignments under Profile → Settings → Administration → Timesheet.'),
 			]); ?>
 		</div>
 		<?php if (is_array($_['notificationRuleSettings'] ?? null)): ?>
