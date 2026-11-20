@@ -134,13 +134,32 @@
 	line-height: 1.25;
 }
 
+.ts-tour-exit-actions,
 .ts-tour-navigation {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: flex-end;
 	gap: 8px;
 	max-width: 100%;
+}
+
+.ts-tour-exit-actions {
+	margin-inline-end: auto;
+}
+
+.ts-tour-navigation {
+	justify-content: flex-end;
 	margin-inline-start: auto;
+}
+
+.ts-tour-actions .ts-tour-preference-error {
+	flex: 1 0 100%;
+	margin: 0;
+	color: var(--color-error-text, var(--color-main-text, #222));
+}
+
+.ts-tour-dismiss[hidden],
+.ts-tour-preference-error[hidden] {
+	display: none;
 }
 
 /* The mask reveals the original controls while blocking their interaction. */
@@ -191,10 +210,6 @@
 	margin-block-end: 8px;
 	color: var(--color-text-maxcontrast, #666);
 	font-size: .9em;
-}
-
-.ts-tour-end {
-	margin-inline-end: auto !important;
 }
 
 /* Keep the export preview inside narrow screens only while its tour step is open. */

@@ -311,12 +311,13 @@ namespace {
 
 	foreach ([[true, false], [false, true], [true, true]] as [$isHr, $isAdmin]) {
 		$roleName = $isHr ? ($isAdmin ? 'HR administrator' : 'HR account') : 'administrator';
-		$test('An ' . $roleName . ' cannot complete any tour or read its state', static function () use ($fixture, $expectSame, $isHr, $isAdmin): void {
+		$test('An ' . $roleName . ' cannot complete a tour, dismiss the reminder or read its state', static function () use ($fixture, $expectSame, $isHr, $isAdmin): void {
 			foreach ([false, true] as $legacyFlag) {
 				[$controller, , $config, $locks] = $fixture('alice', $isHr, $isAdmin);
 				$response = $controller->complete(1, $legacyFlag);
 				$expectSame(403, $response->getStatus());
 				$expectSame(['code' => 'tour_unavailable'], $response->getData());
+				$expectSame(403, $controller->dismiss()->getStatus());
 				$expectSame([], $config->reads);
 				$expectSame([], $config->writes);
 				$expectSame(0, $locks->acquisitions);
@@ -334,7 +335,7 @@ namespace {
 			$expectSame(false, $parameters['tourEnabled']);
 			$expectSame(false, $parameters['tourStateAvailable']);
 			$expectSame(false, in_array('timesheet-tour-launcher', \OCP\Util::$scripts, true));
-			$expectSame(false, in_array('timesheet-guided-tour-v5', \OCP\Util::$scripts, true));
+			$expectSame(false, in_array('timesheet-guided-tour-v6', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-main-v2', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
 			$expectedStyles = ['timesheet-layout-v8'];
@@ -354,17 +355,57 @@ namespace {
 
 	$test('A new employee has one incomplete tour state', static function () use ($fixture, $expectSame): void {
 		[, $store, $config] = $fixture();
-		$expectSame(['version' => 1, 'employeeCompleted' => false], $store->getProgress('alice'));
-		$expectSame(['tour_employee_version'], $config->reads);
+		$expectSame(['version' => 1, 'employeeCompleted' => false, 'employeeReminderDismissed' => false], $store->getProgress('alice'));
+		$expectSame(['tour_employee_version', 'tour_employee_reminder_dismissed'], $config->reads);
 	});
 	$test('Completion belongs only to the signed-in employee', static function () use ($fixture, $expectSame): void {
 		[$controller, $store, $config] = $fixture();
 		$response = $controller->complete(1);
 		$expectSame(200, $response->getStatus());
-		$expectSame(['version' => 1, 'employeeCompleted' => true, 'hrCompleted' => false, 'isHr' => false], $response->getData());
+		$expectSame(['version' => 1, 'employeeCompleted' => true, 'employeeReminderDismissed' => false, 'hrCompleted' => false, 'isHr' => false], $response->getData());
 		$expectSame(false, $store->getProgress('somebody-else')['employeeCompleted']);
 		$expectSame(['tour_employee_version'], array_column($config->writes, 'key'));
 		$expectSame('alice', $config->writes[0]['userId']);
+	});
+	$test('Dismissing the reminder is persistent, account-specific and independent of completion', static function () use ($fixture, $expectSame): void {
+		[$controller, , $config, $locks, $session] = $fixture();
+		$dismissed = ['version' => 1, 'employeeCompleted' => false, 'employeeReminderDismissed' => true];
+		$response = $controller->dismiss();
+		$expectSame(200, $response->getStatus());
+		$expectSame($dismissed, $response->getData());
+		$expectSame($dismissed, $controller->dismiss()->getData());
+		$expectSame(['tour_employee_reminder_dismissed'], array_column($config->writes, 'key'));
+		$expectSame('alice', $config->writes[0]['userId']);
+		$expectSame(2, $locks->acquisitions);
+		$expectSame(2, $locks->releases);
+		$freshStore = new TourProgressStore($config, $locks);
+		$expectSame($dismissed, $freshStore->getProgress('alice'));
+		$expectSame(false, $freshStore->getProgress('somebody-else')['employeeReminderDismissed']);
+		$session->user = new TourUserFixture('bob');
+		$expectSame(true, $controller->dismiss()->getData()['employeeReminderDismissed']);
+		$expectSame('bob', $config->writes[1]['userId']);
+		$session->user = new TourUserFixture('alice');
+		$completion = $controller->complete(1)->getData();
+		$expectSame(true, $completion['employeeCompleted']);
+		$expectSame(true, $completion['employeeReminderDismissed']);
+	});
+	$test('A blocked or failed reminder save can be retried without changing completion', static function () use ($fixture, $expectSame): void {
+		[$controller, $store, $config, $locks] = $fixture();
+		$locks->busy = true;
+		$response = $controller->dismiss();
+		$expectSame(409, $response->getStatus());
+		$expectSame(['code' => 'preference_busy'], $response->getData());
+		$expectSame([], $config->writes);
+		$locks->busy = false;
+		$config->rejectWrites = true;
+		$response = $controller->dismiss();
+		$expectSame(500, $response->getStatus());
+		$expectSame(['message' => 'Saving tour reminder preference failed'], $response->getData());
+		$expectSame([], $locks->held);
+		$expectSame(false, $store->getProgress('alice')['employeeReminderDismissed']);
+		$config->rejectWrites = false;
+		$expectSame(200, $controller->dismiss()->getStatus());
+		$expectSame(false, $store->getProgress('alice')['employeeCompleted']);
 	});
 	$test('The obsolete false flag remains accepted for an already open employee client', static function () use ($fixture, $expectSame): void {
 		[$controller] = $fixture();
@@ -394,7 +435,7 @@ namespace {
 		[$controller, $store, $config, , , $hrService] = $fixture('alice', true);
 		$config->values['alice']['timesheet'] = ['tour_employee_version' => '1', 'tour_hr_version' => '1'];
 		$hrService->hrUsers = [];
-		$expectSame(['version' => 1, 'employeeCompleted' => true], $store->getProgress('alice'));
+		$expectSame(['version' => 1, 'employeeCompleted' => true, 'employeeReminderDismissed' => false], $store->getProgress('alice'));
 		$expectSame(200, $controller->complete(1)->getStatus());
 		$expectSame([], $config->writes);
 		$expectSame('1', $config->values['alice']['timesheet']['tour_hr_version']);
@@ -402,7 +443,7 @@ namespace {
 	$test('Old HR preferences remain untouched and are never read', static function () use ($fixture, $expectSame): void {
 		[$controller, $store, $config] = $fixture();
 		$config->values['alice']['timesheet'] = ['tour_hr_version' => '8', 'break_input_mode' => 'hours'];
-		$expectSame(['version' => 1, 'employeeCompleted' => false], $store->getProgress('alice'));
+		$expectSame(['version' => 1, 'employeeCompleted' => false, 'employeeReminderDismissed' => false], $store->getProgress('alice'));
 		$controller->complete(1);
 		$expectSame(false, in_array('tour_hr_version', $config->reads, true));
 		$expectSame(['tour_employee_version'], array_column($config->writes, 'key'));
@@ -413,6 +454,7 @@ namespace {
 		$test('An unauthenticated or empty account cannot complete a tour (' . var_export($userId, true) . ')', static function () use ($fixture, $expectSame, $userId): void {
 			[$controller, , $config] = $fixture($userId);
 			$expectSame(403, $controller->complete(1)->getStatus());
+			$expectSame(403, $controller->dismiss()->getStatus());
 			$expectSame([], $config->writes);
 		});
 	}
@@ -504,14 +546,24 @@ namespace {
 		$expectSame(false, in_array(\OCP\AppFramework\Http\Attribute\NoCSRFRequired::class, $attributes, true));
 		$expectSame(['version', 'includeHr'], array_map(static fn(\ReflectionParameter $parameter): string => $parameter->getName(), $method->getParameters()));
 	});
-	$test('Exactly one protected POST route belongs to tour completion', static function () use ($expectSame): void {
-		$routes = require __DIR__ . '/../../appinfo/routes.php';
-		$tourRoutes = array_values(array_filter($routes['routes'], static fn(array $route): bool => $route['name'] === 'tour#complete'));
-		$expectSame([['name' => 'tour#complete', 'url' => '/api/preferences/tour/complete', 'verb' => 'POST']], $tourRoutes);
+	$test('Dismissing the reminder uses a protected POST for the signed-in employee', static function () use ($expectSame): void {
+		$method = new \ReflectionMethod(TourController::class, 'dismiss');
+		$expectSame(1, count($method->getAttributes(\OCP\AppFramework\Http\Attribute\NoAdminRequired::class)));
+		$expectSame([], $method->getAttributes(\OCP\AppFramework\Http\Attribute\NoCSRFRequired::class));
+		$expectSame([], $method->getParameters());
 	});
-	$test('Employee page startup preserves progress and loads tour modules before main', static function () use ($fixture, $expectSame): void {
+	$test('The tour preference routes use POST', static function () use ($expectSame): void {
+		$routes = require __DIR__ . '/../../appinfo/routes.php';
+		$tourRoutes = array_values(array_filter($routes['routes'], static fn(array $route): bool => str_starts_with($route['name'], 'tour#')));
+		$expectSame([
+			['name' => 'tour#complete', 'url' => '/api/preferences/tour/complete', 'verb' => 'POST'],
+			['name' => 'tour#dismiss', 'url' => '/api/preferences/tour/dismiss', 'verb' => 'POST'],
+		], $tourRoutes);
+	});
+	$test('Employee page startup preserves completion and reminder preference and loads tour modules before main', static function () use ($fixture, $expectSame): void {
 		[, $store, $config, $locks, $session, $hrService, $groupManager] = $fixture();
 		$store->markCompleted('alice');
+		$store->dismissReminder('alice');
 		$logger = new TourLoggerFixture();
 		\OCP\Util::$scripts = [];
 		\OCP\Util::$styles = [];
@@ -520,11 +572,11 @@ namespace {
 		$expectSame(true, $parameters['tourEnabled']);
 		$expectSame(true, $parameters['tourStateAvailable']);
 		$expectSame(false, $parameters['isHR']);
-		$expectSame(['version' => 1, 'employeeCompleted' => true], $parameters['tourProgress']);
+		$expectSame(['version' => 1, 'employeeCompleted' => true, 'employeeReminderDismissed' => true], $parameters['tourProgress']);
 		$expectSame(true, in_array('timesheet-mail-help-v2', \OCP\Util::$scripts, true));
 		$expectSame(true, array_search('timesheet-mail-help-v2', \OCP\Util::$scripts, true) < array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true));
-		$expectSame(true, array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true) < array_search('timesheet-guided-tour-v5', \OCP\Util::$scripts, true));
-		$expectSame(true, array_search('timesheet-guided-tour-v5', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
+		$expectSame(true, array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true) < array_search('timesheet-guided-tour-v6', \OCP\Util::$scripts, true));
+		$expectSame(true, array_search('timesheet-guided-tour-v6', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
 		$expectSame(['timesheet-layout-v8', 'timesheet-release-notes', 'timesheet-help-panels-v3', 'timesheet-tour'], \OCP\Util::$styles);
 		$expectSame([], $logger->warnings);
 	});
@@ -538,7 +590,7 @@ namespace {
 		$expectSame('minutes', $parameters['breakInputMode']);
 		$expectSame(false, $parameters['isHR']);
 		$expectSame(1, count($logger->warnings));
-		$expectSame(['version' => 1, 'employeeCompleted' => false], $parameters['tourProgress']);
+		$expectSame(['version' => 1, 'employeeCompleted' => false, 'employeeReminderDismissed' => false], $parameters['tourProgress']);
 	});
 	$test('The account language still selects absence terms for HR pages without a tour', static function () use ($fixture, $expectSame): void {
 		foreach ([
@@ -606,7 +658,7 @@ namespace {
 	});
 	$test('Page attributes expose only employee introduction state', static function () use ($expectSame): void {
 		$template = file_get_contents(__DIR__ . '/../../templates/main.php');
-		foreach (['enabled', 'version', 'employee-completed', 'state-available'] as $attribute) {
+		foreach (['enabled', 'version', 'employee-completed', 'employee-reminder-dismissed', 'state-available'] as $attribute) {
 			$expectSame(true, str_contains($template, 'data-tour-' . $attribute . '="'));
 		}
 		foreach (['hr-completed', 'is-hr'] as $attribute) {

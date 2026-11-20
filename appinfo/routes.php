@@ -27,6 +27,7 @@ return [
 		['name' => 'preferences#setHistoryView', 'url' => '/api/preferences/change-history-view', 'verb' => 'PUT'],
 		['name' => 'employmentStatus#setFreelancerMode', 'url' => '/api/preferences/freelancer-mode', 'verb' => 'PUT'],
 		['name' => 'tour#complete', 'url' => '/api/preferences/tour/complete', 'verb' => 'POST'],
+		['name' => 'tour#dismiss', 'url' => '/api/preferences/tour/dismiss', 'verb' => 'POST'],
 		['name' => 'updateNotes#load', 'url' => '/api/update-notes', 'verb' => 'POST'],
 		['name' => 'updateNotes#shown', 'url' => '/api/update-notes/shown', 'verb' => 'POST'],
 

@@ -119,7 +119,7 @@ PHP-Stilprüfung, Psalm, Rector und PHPUnit sind vorbereitet, aber noch keine vo
 
    Die installierte App-Version entspricht anschließend der neuen Versionsnummer. Nextcloud meldet `maintenance: false` und `needsDbUpgrade: false`.
 
-6. Die App neu laden und die geänderten Abläufe prüfen. Die Änderungsliste lässt sich in der Demo über [diesen Aufruf](http://localhost:8133/apps/timesheet/?update-notes=1) erneut öffnen.
+6. Die App neu laden und die geänderten Abläufe prüfen. Neue Versionshinweise finden sich in der Nextcloud-Glocke. **Änderungen ansehen** öffnet die Versionshistorie. In der Demo lässt sie sich auch [direkt aufrufen](http://localhost:8133/apps/timesheet/?update-notes=1).
 
 Nur eine erhöhte Versionsnummer löst einen neuen Update-Hinweis aus. Eine Textänderung, ein Push oder ein Merge installiert kein Update. Bei einer fehlgeschlagenen Datenbankumstellung erfordert eine Rückkehr die zusammengehörige Sicherung von Datenbank, Konfiguration und App-Dateien.
 
@@ -265,7 +265,7 @@ PHP style checks, Psalm, Rector and PHPUnit are prepared but do not yet form a f
 
    The installed app version should match the new version. Nextcloud should report `maintenance: false` and `needsDbUpgrade: false`.
 
-6. Reload the app and check the changed behavior. The demo's release notes can be reopened using [this link](http://localhost:8133/apps/timesheet/?update-notes=1).
+6. Reload the app and check the changed behavior. New release notes appear in the Nextcloud notification bell. **View changes** opens the version history. In the demo, you can also [open it directly](http://localhost:8133/apps/timesheet/?update-notes=1).
 
 Only an increased version triggers a new update notice. Editing text, pushing or merging does not install an update. After a failed database migration, rollback requires the matching database, configuration and app-file backup.
 

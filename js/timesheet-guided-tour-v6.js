@@ -22,6 +22,7 @@
 	let previousButton;
 	let nextButton;
 	let endButton;
+	let reminderButton;
 	let maskHoles;
 	let outlines;
 	let maskSvg;
@@ -33,6 +34,7 @@
 	let active = false;
 	let preparing = false;
 	let finishing = false;
+	let savingDismissal = false;
 	let ending = false;
 	let internalAction = false;
 	let pendingViewAction = Promise.resolve();
@@ -81,14 +83,29 @@
 		}
 	}
 
-	// Completion belongs to the account; dismissing an invitation belongs to this visit.
 	function readProgress() {
 		const data = appRoot.dataset;
 		return {
 			version: Number(data.tourVersion) || tourVersion,
 			employeeCompleted: data.tourEmployeeCompleted === 'true',
+			employeeReminderDismissed: data.tourEmployeeReminderDismissed === 'true',
 			available: data.tourStateAvailable === 'true',
 		};
+	}
+
+	function canDismissReminder() {
+		return progress.available && !progress.employeeCompleted && !progress.employeeReminderDismissed;
+	}
+
+	function createReminderDismissal(id) {
+		const status = createElement('p', 'ts-tour-preference-error');
+		status.setAttribute('role', 'alert');
+		status.hidden = true;
+		const button = createButton("Don't remind me again", 'ts-tour-dismiss', () => dismissReminder(button, status));
+		button.id = id;
+		button.dataset.tourAction = 'dismiss';
+		button.hidden = !canDismissReminder();
+		return { button, status };
 	}
 
 	function hideInvitation() {
@@ -108,21 +125,23 @@
 		heading.id = 'ts-tour-invitation-title';
 		const description = createElement('p', '', translate('A short tour explains the main features.'));
 		const actions = createElement('div', 'ts-tour-actions');
-		const closeButton = createButton('', 'ts-tour-close', hideInvitation);
+		const closeForVisit = () => {
+			hideInvitation();
+			launcher.focus({ preventScroll: true });
+		};
+		const closeButton = createButton('', 'ts-tour-close', closeForVisit);
 		closeButton.setAttribute('aria-label', translate('Close tour invitation'));
-		closeButton.dataset.tourAction = 'later';
-		const laterButton = createButton('Later', '', hideInvitation);
-		laterButton.dataset.tourAction = 'later';
+		closeButton.dataset.tourAction = 'close';
+		const reminder = createReminderDismissal('ts-tour-invitation-dismiss');
 		const startButton = createButton('Tutorial', 'primary', () => start());
 		startButton.id = 'ts-tour-start';
 		startButton.dataset.tourAction = 'start';
-		actions.append(laterButton, startButton);
+		actions.append(reminder.button, startButton, reminder.status);
 		invitation.append(heading, description, closeButton, actions);
 		invitation.addEventListener('keydown', event => {
 			if (event.key === 'Escape') {
 				event.stopPropagation();
-				hideInvitation();
-				launcher.focus();
+				closeForVisit();
 			}
 		});
 		document.body.append(invitation);
@@ -271,6 +290,8 @@
 		content.append(progressLabel, dialogTitle, dialogDescription);
 		const actions = createElement('div', 'ts-tour-actions');
 		endButton = createButton('End tour', 'ts-tour-end', () => end());
+		const reminder = createReminderDismissal('ts-tour-dismiss');
+		reminderButton = reminder.button;
 		previousButton = createButton('Back', '', () => showStep(stepIndex - 1));
 		nextButton = createButton('Next', 'primary', () => stepIndex === steps.length - 1 ? finish() : showStep(stepIndex + 1));
 		endButton.id = 'ts-tour-end';
@@ -280,7 +301,9 @@
 		nextButton.id = 'ts-tour-next';
 		const navigation = createElement('div', 'ts-tour-navigation');
 		navigation.append(previousButton, nextButton);
-		actions.append(endButton, navigation);
+		const exitActions = createElement('div', 'ts-tour-exit-actions');
+		exitActions.append(endButton, reminderButton);
+		actions.append(exitActions, navigation, reminder.status);
 		dialog.append(content, actions);
 		overlay.append(maskSvg, dialog);
 		// Keep Nextcloud's click-outside handlers away from the tour's own controls.
@@ -334,7 +357,7 @@
 		if (event.key === 'Tab') {
 			event.preventDefault();
 			event.stopImmediatePropagation();
-			const buttons = [endButton, previousButton, nextButton].filter(button => !button.disabled);
+			const buttons = [endButton, reminderButton, previousButton, nextButton].filter(button => !button.hidden && !button.disabled);
 			const current = buttons.indexOf(document.activeElement);
 			const next = event.shiftKey ? (current <= 0 ? buttons.length - 1 : current - 1) : (current + 1) % buttons.length;
 			buttons[next]?.focus({ preventScroll: true });
@@ -592,9 +615,12 @@
 	}
 
 	function updateButtons() {
-		previousButton.disabled = preparing || finishing || ending || stepIndex === 0;
-		nextButton.disabled = preparing || finishing || ending;
+		const navigationBusy = preparing || finishing || savingDismissal || ending;
+		previousButton.disabled = navigationBusy || stepIndex === 0;
+		nextButton.disabled = navigationBusy;
 		endButton.disabled = ending;
+		reminderButton.hidden = !canDismissReminder();
+		reminderButton.disabled = finishing || savingDismissal || ending;
 		nextButton.textContent = translate(finishing ? 'Saving tour completion…' : stepIndex === steps.length - 1 ? 'Finish tour' : 'Next');
 		nextButton.dataset.tourAction = stepIndex === steps.length - 1 ? 'finish' : 'next';
 	}
@@ -718,46 +744,93 @@
 		return active && !ending && run === currentRun;
 	}
 
+	async function saveTourPreference(path, options, shouldContinue = () => true) {
+		for (let attempt = 0; shouldContinue(); attempt++) {
+			try {
+				return await timesheet.api(path, options);
+			} catch (error) {
+				let response;
+				try { response = JSON.parse(error.message); } catch {}
+				if (response?.code !== 'preference_busy' || attempt >= 3 || !shouldContinue()) {
+					throw error;
+				}
+				await pause(25 * (2 ** attempt));
+			}
+		}
+	}
+
+	async function dismissReminder(button, status) {
+		if (!canDismissReminder() || savingDismissal || finishing || ending) {
+			return;
+		}
+		const run = active ? currentRun : null;
+		savingDismissal = true;
+		button.disabled = true;
+		status.hidden = true;
+		if (active) {
+			updateButtons();
+		}
+		try {
+			const result = await saveTourPreference('/api/preferences/tour/dismiss', { method: 'POST' });
+			if (result?.employeeReminderDismissed !== true || result.version !== tourVersion || typeof result.employeeCompleted !== 'boolean') {
+				throw new Error('Invalid tour reminder preference response');
+			}
+			progress.employeeReminderDismissed = true;
+			progress.employeeCompleted ||= result.employeeCompleted;
+			appRoot.dataset.tourEmployeeReminderDismissed = 'true';
+			appRoot.dataset.tourEmployeeCompleted = String(progress.employeeCompleted);
+		} catch (error) {
+			console.warn('Timesheet tour reminder preference could not be saved:', error);
+			const message = translate('Could not save your tour preference. Please try again.');
+			if (status.isConnected) {
+				status.textContent = message;
+				status.hidden = false;
+				if (isCurrentRun(run)) {
+					positionStep();
+				} else {
+					positionInvitation();
+				}
+			} else {
+				timesheet.notify(message);
+			}
+			return;
+		} finally {
+			savingDismissal = false;
+			button.disabled = false;
+			if (active) {
+				updateButtons();
+			}
+		}
+		const focusInInvitation = invitation?.contains(document.activeElement);
+		hideInvitation();
+		if (isCurrentRun(run)) {
+			await end(run);
+		} else if (focusInInvitation) {
+			launcher.focus({ preventScroll: true });
+		}
+	}
+
 	async function finish() {
-		if (!active || preparing || finishing) {
+		if (!active || preparing || finishing || savingDismissal || ending) {
 			return;
 		}
 		finishing = true;
 		updateButtons();
 		const run = currentRun;
 		try {
-			for (let attempt = 0; ; attempt++) {
-				if (!isCurrentRun(run)) {
-					return;
-				}
-				try {
-					const result = await timesheet.api('/api/preferences/tour/complete', {
-						method: 'POST', body: JSON.stringify({ version: tourVersion }),
-					});
-					if (!isCurrentRun(run)) {
-						return;
-					}
-					if (!result || result.version !== tourVersion || typeof result.employeeCompleted !== 'boolean') {
-						throw new Error('Invalid tour completion response');
-					}
-					progress = { ...progress, version: result.version, employeeCompleted: result.employeeCompleted, available: true };
-					appRoot.dataset.tourEmployeeCompleted = String(result.employeeCompleted);
-					break;
-				} catch (error) {
-					if (!isCurrentRun(run)) {
-						return;
-					}
-					let response;
-					try { response = JSON.parse(error.message); } catch {}
-					if (response?.code !== 'preference_busy' || attempt >= 3) {
-						throw error;
-					}
-					await pause(25 * (2 ** attempt));
-					if (!isCurrentRun(run)) {
-						return;
-					}
-				}
+			const result = await saveTourPreference('/api/preferences/tour/complete', {
+				method: 'POST', body: JSON.stringify({ version: tourVersion }),
+			}, () => isCurrentRun(run));
+			if (!isCurrentRun(run)) {
+				return;
 			}
+			if (!result || result.version !== tourVersion || typeof result.employeeCompleted !== 'boolean') {
+				throw new Error('Invalid tour completion response');
+			}
+			progress = { ...progress, version: result.version, employeeCompleted: result.employeeCompleted, available: true };
+			progress.employeeReminderDismissed ||= result.employeeReminderDismissed === true;
+			appRoot.dataset.tourEmployeeCompleted = String(progress.employeeCompleted);
+			appRoot.dataset.tourEmployeeReminderDismissed = String(progress.employeeReminderDismissed);
 		} catch (error) {
 			if (isCurrentRun(run)) {
 				console.warn('Timesheet tour completion could not be saved:', error);
@@ -784,7 +857,7 @@
 		window.addEventListener('resize', positionInvitation);
 		if (!progress.available) {
 			timesheet.notify(translate('Tour progress could not be loaded. The tour can still be opened with the tour icon.'));
-		} else if (!progress.employeeCompleted) {
+		} else if (canDismissReminder()) {
 			showInvitation();
 		}
 	}

@@ -30,15 +30,7 @@ class TourController extends Controller {
 	/** Completion belongs to the current ordinary employee account. */
 	#[NoAdminRequired]
 	public function complete(mixed $version = null, mixed $includeHr = false): DataResponse {
-		$currentUser = $this->userSession->getUser();
-		if ($currentUser === null || $currentUser->getUID() === '') {
-			return new DataResponse(['message' => 'Not logged in'], Http::STATUS_FORBIDDEN);
-		}
-		try {
-			$userId = $currentUser->getUID();
-			if ($this->groupManager->isAdmin($userId) || $this->hrService->isHr($userId)) {
-				return new DataResponse(['code' => 'tour_unavailable'], Http::STATUS_FORBIDDEN);
-			}
+		return $this->updateEmployeeProgress(function (string $userId) use ($version, $includeHr): DataResponse {
 			// Already open employee clients may still send the obsolete false flag.
 			if (!is_int($version) || !is_bool($includeHr) || $includeHr) {
 				return new DataResponse(['message' => 'Invalid tour completion'], Http::STATUS_BAD_REQUEST);
@@ -50,10 +42,31 @@ class TourController extends Controller {
 			$progress = $this->tourProgressStore->getProgress($userId);
 			// Keep obsolete response fields for employee clients opened before this update.
 			return new DataResponse($progress + ['hrCompleted' => false, 'isHr' => false], Http::STATUS_OK);
+		}, 'Saving tour completion failed');
+	}
+
+	#[NoAdminRequired]
+	public function dismiss(): DataResponse {
+		return $this->updateEmployeeProgress(function (string $userId): DataResponse {
+			$this->tourProgressStore->dismissReminder($userId);
+			return new DataResponse($this->tourProgressStore->getProgress($userId), Http::STATUS_OK);
+		}, 'Saving tour reminder preference failed');
+	}
+
+	private function updateEmployeeProgress(callable $update, string $failureMessage): DataResponse {
+		$userId = $this->userSession->getUser()?->getUID();
+		if ($userId === null || $userId === '') {
+			return new DataResponse(['message' => 'Not logged in'], Http::STATUS_FORBIDDEN);
+		}
+		try {
+			if ($this->groupManager->isAdmin($userId) || $this->hrService->isHr($userId)) {
+				return new DataResponse(['code' => 'tour_unavailable'], Http::STATUS_FORBIDDEN);
+			}
+			return $update($userId);
 		} catch (LockedException) {
 			return new DataResponse(['code' => 'preference_busy'], Http::STATUS_CONFLICT);
 		} catch (\Throwable $saveError) {
-			return new DataResponse(['message' => 'Saving tour completion failed'], Http::STATUS_INTERNAL_SERVER_ERROR);
+			return new DataResponse(['message' => $failureMessage], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

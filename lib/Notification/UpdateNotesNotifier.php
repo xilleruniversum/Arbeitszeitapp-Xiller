@@ -7,9 +7,11 @@ namespace OCA\Timesheet\Notification;
 use OCA\Timesheet\Service\UpdateNotesService;
 use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
+use OCP\Notification\IAction;
 use OCP\Notification\IDismissableNotifier;
 use OCP\Notification\INotification;
 use OCP\Notification\IncompleteParsedNotificationException;
+use OCP\Notification\InvalidValueException;
 use OCP\Notification\UnknownNotificationException;
 use Psr\Log\LoggerInterface;
 
@@ -40,12 +42,21 @@ class UpdateNotesNotifier implements IDismissableNotifier {
 		if ($releases === []) {
 			throw new AlreadyProcessedException();
 		}
-		// The native bell shows a brief link; the popup contains the full change list.
-		return $notification
+		$link = $this->notesService->appLink();
+		$notification
 			->setParsedSubject(str_replace('{version}', $version, (string)$translator->t('Timesheet updated to {version}')))
-			->setParsedMessage((string)$translator->t('Open the update notes.'))
 			->setIcon($this->notesService->icon())
-			->setLink($this->notesService->appLink());
+			->setLink($link);
+		try {
+			// A native WEB action follows the history link without issuing an API request.
+			return $notification->addParsedAction($notification->createAction()
+				->setParsedLabel((string)$translator->t('View changes'))
+				->setLink($link, IAction::TYPE_WEB)
+				->setPrimary(true));
+		} catch (InvalidValueException) {
+			// Nextcloud accepts longer URLs on the notification itself than on an action.
+			return $notification->setParsedMessage((string)$translator->t('Open the update notes.'));
+		}
 	}
 
 	public function dismissNotification(INotification $notification): void {

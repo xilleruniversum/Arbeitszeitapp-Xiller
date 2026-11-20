@@ -9,14 +9,19 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const source = readFileSync(resolve(root, 'js/timesheet-update-notes.js'), 'utf8');
 const mainSource = readFileSync(resolve(root, 'js/timesheet-main-v2.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
-const copy = value => JSON.parse(JSON.stringify(value));
+const appUrl = 'http://localhost:8133/apps/timesheet/';
+const historyUrl = appUrl + '?update-notes=1';
 const notes = {
-	enabled: true, shouldShow: true, throughVersion: '1.3.0',
-	releases: [{ version: '1.3.0', sections: [{ title: 'New features', items: ['Freelancer mode is available.'] }] }],
+	enabled: true, shouldShow: true, throughVersion: '1.4.5',
+	releases: [
+		{ version: '1.3.0', sections: [{ title: 'New features', items: ['Freelancer mode is available.'] }] },
+		{ version: '1.4.3', sections: [{ title: 'Improvements', items: ['Second release.'] }] },
+		{ version: '1.4.5', sections: [{ title: 'Bug fixes', items: ['Most recent release.'] }] },
+	],
 };
 
 // Real module behavior runs against controlled DOM, visibility and transport boundaries.
-function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/', payload = notes, respond, hidden = false, translate = message => message, failAppend = false } = {}) {
+function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidden = false, translate = message => message, failAppend = false } = {}) {
 	const requests = [];
 	const messages = [];
 	const warnings = [];
@@ -35,7 +40,7 @@ function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/'
 		set innerHTML(_value) { throw new Error('Update content must not be parsed as HTML.'); }
 		get isConnected() { return this === document.body || !!this.parentElement?.isConnected; }
 		append(...children) {
-			if (failAppend && this === document.body && children.some(child => child.className === 'ts-update-notes-backdrop')) throw new Error('Synthetic append failure');
+			if (failAppend && this === document.body && children.some(child => child.className === 'ts-update-notes-panel')) throw new Error('Synthetic append failure');
 			for (const child of children) { this.children.push(child); child.parentElement = this; }
 		}
 		remove() { if (this.parentElement) { const parent = this.parentElement; parent.children = parent.children.filter(child => child !== this); this.parentElement = null; } }
@@ -43,10 +48,7 @@ function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/'
 		setAttribute(name, value) { this.attributes.set(name, String(value)); }
 		getAttribute(name) { return this.attributes.get(name) ?? null; }
 		addEventListener(name, callback) { this.listeners.set(name, [...(this.listeners.get(name) || []), callback]); }
-		focus() {
-			document.activeElement = this;
-			for (const callback of events.get('focusin') || []) callback({ target: this });
-		}
+		focus() { document.activeElement = this; }
 		getClientRects() { return this.isConnected ? [{}] : []; }
 	}
 	const descendants = element => element.children.flatMap(child => [child, ...descendants(child)]);
@@ -54,17 +56,16 @@ function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/'
 		visibilityState: hidden ? 'hidden' : 'visible', activeElement: null,
 		createElement: tag => new Element(tag), createElementNS: (_namespace, tag) => new Element(tag),
 		getElementById: id => [document.body, ...descendants(document.body)].find(element => element.id === id) || null,
-		querySelectorAll: selector => selector === 'textarea.commentInput' ? [] : [],
+		querySelectorAll: () => [],
 		querySelector: () => null,
 		addEventListener(name, callback) { events.set(name, [...(events.get(name) || []), callback]); },
 		removeEventListener(name, callback) { events.set(name, (events.get(name) || []).filter(listener => listener !== callback)); },
 	};
 	document.body = new Element('body'); document.body.style.overflow = 'auto';
 	const header = new Element('header');
-	const preblocked = new Element('aside'); preblocked.inert = true;
 	const app = new Element('section'); app.id = 'timesheet-app'; app.dataset.updateNotesEnabled = String(enabled);
 	const month = new Element('button'); month.id = 'month-display'; app.append(month);
-	document.body.append(header, preblocked, app); document.activeElement = month;
+	document.body.append(header, app); document.activeElement = month;
 	const location = { href: url };
 	const replacements = [];
 	const historyState = { retained: 'state' };
@@ -73,14 +74,14 @@ function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/'
 		history: { state: historyState, replaceState(state, title, href) { replacements.push({ state, title, href }); location.href = href; } },
 		requestAnimationFrame(callback) { const id = ++frameNumber; frames.set(id, callback); return id; },
 		cancelAnimationFrame(id) { frames.delete(id); },
-		t: (_app, key, parameters = {}) => Object.entries(parameters).reduce((text, [name, value]) => text.replace(`{${name}}`, value), translate(key)),
+		t: (_app, key, parameters = {}) => Object.entries(parameters).reduce((text, [name, value]) => text.replace('{' + name + '}', value), translate(key)),
 		console: { warn: (...warning) => warnings.push(warning) },
 		Timesheet: {
 			api: async (path, options) => {
 				const request = { path, method: options.method, body: JSON.parse(options.body) };
 				requests.push(request);
 				if (respond) { const response = await respond(request); if (response !== undefined) return response; }
-				return path.endsWith('/shown') ? { throughVersion: payload.throughVersion } : copy(payload);
+				return path.endsWith('/shown') ? { throughVersion: payload.throughVersion } : payload;
 			},
 			notify: message => messages.push(message),
 		},
@@ -88,225 +89,173 @@ function fixture({ enabled = true, url = 'http://localhost:8133/apps/timesheet/'
 	context.window = context;
 	vm.runInContext(source, context);
 	return {
-		context, document, header, preblocked, app, month, requests, messages, warnings, replacements,
+		context, document, header, app, month, requests, messages, warnings, replacements,
 		init: () => context.Timesheet.updateNotes.init(),
 		get: id => document.getElementById(id),
 		all: className => descendants(document.body).filter(element => element.className === className),
 		async paint() { const callbacks = [...frames.values()]; frames.clear(); for (const callback of callbacks) callback(); await flush(); },
 		click(element) { for (const callback of element.listeners.get('click') || []) callback({ target: element }); },
-		key(key, shiftKey = false) {
-			const event = { key, shiftKey, prevented: false, preventDefault() { this.prevented = true; }, stopPropagation() {} };
-			for (const callback of [...(events.get('keydown') || [])]) callback(event);
+		key(element, key) {
+			const event = { key, prevented: false, preventDefault() { this.prevented = true; }, stopPropagation() {} };
+			while (element) {
+				for (const callback of element.listeners.get('keydown') || []) callback(event);
+				if (event.prevented) break;
+				element = element.parentElement;
+			}
 			return event;
 		},
 		visibility(value) { document.visibilityState = value; for (const callback of events.get('visibilitychange') || []) callback(); },
 	};
 }
 
-test('the automatic modal is opened once, confirmed after painting and leaves the bell untouched on close', async () => {
+test('automatic initialization refreshes the bell once without rendering or acknowledging any new notes', async () => {
 	const app = fixture();
 	const complete = app.init();
 	assert.equal(app.init(), complete);
-	await flush();
-	assert.equal(app.requests.length, 1);
-	assert.equal(app.requests[0].body.mode, 'automatic');
-	assert.ok(app.get('ts-update-notes-dialog'));
-	assert.equal(app.all('ts-update-notes-close').length, 1);
-	assert.equal(app.all('ts-update-notes-action').length, 1);
-	assert.equal(app.header.inert, true);
-	assert.equal(app.app.inert, true);
-	assert.equal(app.document.body.style.overflow, 'hidden');
-	await app.paint();
-	assert.deepEqual(app.requests[1], { path: '/api/update-notes/shown', method: 'POST', body: { throughVersion: '1.3.0' } });
-	app.click(app.all('ts-update-notes-action')[0]);
 	await complete;
-	assert.equal(app.get('ts-update-notes-dialog'), null);
-	assert.equal(app.header.inert, false);
-	assert.equal(app.app.inert, false);
-	assert.equal(app.preblocked.inert, true);
-	assert.equal(app.document.body.style.overflow, 'auto');
+	await app.paint();
+	assert.deepEqual(app.requests, [{ path: '/api/update-notes', method: 'POST', body: { mode: 'automatic' } }]);
+	assert.equal(app.get('ts-update-notes-panel'), null);
 	assert.equal(app.document.activeElement, app.month);
-	assert.equal(app.requests.length, 2);
-	await app.init();
-	assert.equal(app.requests.length, 2);
+	assert.equal(app.app.inert, false);
+	assert.equal(app.document.body.style.overflow, 'auto');
+	assert.deepEqual(app.messages, []);
 });
 
-test('ordinary page visits without new notes do not show or confirm a popup', async () => {
-	const app = fixture({ payload: { ...notes, shouldShow: false } });
-	await app.init();
-	assert.equal(app.get('ts-update-notes-dialog'), null);
-	assert.equal(app.requests.length, 1);
-});
-
-test('an ineligible page never requests or renders update notes', async () => {
-	const app = fixture({ enabled: false });
+test('an ineligible page neither requests nor displays the history', async () => {
+	const app = fixture({ enabled: false, url: historyUrl });
 	await app.init();
 	assert.deepEqual(app.requests, []);
-	assert.equal(app.get('ts-update-notes-dialog'), null);
+	assert.equal(app.get('ts-update-notes-panel'), null);
 });
 
-test('manual bell navigation reopens notes and removes only its own URL parameter', async () => {
-	const app = fixture({ url: 'http://localhost:8133/apps/timesheet/?other=keep&update-notes=1#hr', payload: { ...notes, shouldShow: false } });
+test('the bell link opens all releases with the newest expanded and preserves unrelated URL state', async () => {
+	const app = fixture({ url: appUrl + '?other=keep&update-notes=1#hr', payload: { ...notes, shouldShow: false } });
 	const complete = app.init();
 	await flush();
 	assert.equal(app.requests[0].body.mode, 'manual');
-	assert.equal(app.replacements[0].href, 'http://localhost:8133/apps/timesheet/?other=keep#hr');
+	assert.equal(app.replacements[0].href, appUrl + '?other=keep#hr');
 	assert.equal(app.replacements[0].state.retained, 'state');
-	assert.ok(app.get('ts-update-notes-dialog'));
-	app.click(app.all('ts-update-notes-action')[0]);
-	await complete;
-});
-
-test('manual transport failure has a visible message and automatic failure stays nonblocking', async () => {
-	for (const manual of [false, true]) {
-		const app = fixture({ url: 'http://localhost:8133/apps/timesheet/' + (manual ? '?update-notes=1' : ''), respond: () => { throw new Error('Synthetic transport failure'); } });
-		await app.init();
-		assert.equal(app.messages.length, manual ? 1 : 0);
-		assert.equal(app.get('ts-update-notes-dialog'), null);
-		assert.equal(app.header.inert, false);
-		assert.equal(app.requests.length, 1);
-	}
-});
-
-test('malformed release data does not create a partial popup or a false display confirmation', async () => {
-	for (const payload of [null, {}, { ...notes, throughVersion: null }, { ...notes, releases: [{ version: '1.3.0', sections: [null] }] }]) {
-		const app = fixture({ payload });
-		await app.init();
-		assert.equal(app.get('ts-update-notes-dialog'), null);
-		assert.equal(app.requests.length, 1);
-	}
-});
-
-test('empty and explicitly disabled responses do not open the dialog', async () => {
-	for (const payload of [{ enabled: true, shouldShow: false, throughVersion: null, releases: [] }, { ...notes, enabled: false }]) {
-		const app = fixture({ payload });
-		await app.init();
-		assert.equal(app.get('ts-update-notes-dialog'), null);
-	}
-});
-
-test('release text is literal text and account translations cover the surrounding controls', async () => {
-	const payload = { ...notes, releases: [{ version: '1.3.0', sections: [{ title: 'Server-translated heading', items: ['<img src=x onerror=alert(1)>'] }] }] };
-	const app = fixture({ payload, translate: message => ({ "What's new in Timesheet?": 'Neues im Arbeitszeitnachweis', 'Close': 'Schließen' }[message] || message) });
-	const complete = app.init(); await flush();
-	const dialog = app.get('ts-update-notes-dialog');
-	assert.equal(app.get('ts-update-notes-title').textContent, 'Neues im Arbeitszeitnachweis');
-	assert.ok(dialog.textContent.includes('<img src=x onerror=alert(1)>'));
-	assert.ok(dialog.textContent.includes('Server-translated heading'));
-	assert.equal(app.all('ts-update-notes-action')[0].textContent, 'Schließen');
-	app.key('Escape'); await complete;
-});
-
-test('a hidden tab confirms only when the displayed dialog becomes visible', async () => {
-	const app = fixture({ hidden: true });
-	const complete = app.init(); await flush(); await app.paint();
-	assert.equal(app.requests.length, 1);
-	app.visibility('visible'); await flush();
-	assert.equal(app.requests.length, 2);
-	app.visibility('visible'); await flush();
-	assert.equal(app.requests.length, 2);
-	app.key('Escape'); await complete;
-});
-
-test('Escape before a visible render never writes a display confirmation', async () => {
-	const app = fixture(); const complete = app.init(); await flush();
-	assert.equal(app.key('Escape').prevented, true);
-	await app.paint(); await complete;
-	assert.equal(app.requests.length, 1);
+	const panel = app.get('ts-update-notes-panel');
+	assert.equal(panel.tagName, 'ASIDE');
+	assert.equal(panel.getAttribute('aria-labelledby'), 'ts-update-notes-title');
+	assert.equal(panel.getAttribute('aria-modal'), null);
+	const releases = app.all('ts-update-notes-release');
+	assert.deepEqual(releases.map(release => [release.tagName, release.children[0].tagName, release.children[0].textContent, release.open]), [
+		['DETAILS', 'SUMMARY', 'Version 1.4.5', true],
+		['DETAILS', 'SUMMARY', 'Version 1.4.3', false],
+		['DETAILS', 'SUMMARY', 'Version 1.3.0', false],
+	]);
+	assert.deepEqual(notes.releases.map(release => release.version), ['1.3.0', '1.4.3', '1.4.5']);
 	assert.equal(app.header.inert, false);
+	assert.equal(app.app.inert, false);
+	assert.equal(app.document.body.style.overflow, 'auto');
+	await app.paint();
+	assert.deepEqual(app.requests[1], { path: '/api/update-notes/shown', method: 'POST', body: { throughVersion: '1.4.5' } });
+	app.click(app.all('ts-update-notes-close')[0]);
+	await complete;
+	assert.equal(app.get('ts-update-notes-panel'), null);
+	assert.equal(app.document.activeElement, app.month);
+	assert.equal(app.requests.length, 2, 'Closing the panel does not dismiss the bell');
 });
 
-test('both close controls are reachable by Tab and Escape restores the page', async () => {
-	const app = fixture(); const complete = app.init(); await flush();
-	const headerClose = app.all('ts-update-notes-close')[0];
-	const footerClose = app.all('ts-update-notes-action')[0];
+test('history content is literal text and title and close controls use account translations', async () => {
+	const payload = { ...notes, releases: [{ version: '1.4.5', sections: [{ title: 'Server-translated heading', items: ['<img src=x onerror=alert(1)>'] }] }] };
+	const app = fixture({ url: historyUrl, payload, translate: message => ({ 'Version history': 'Versionshistorie', Close: 'Schließen' }[message] || message) });
+	const complete = app.init();
+	await flush();
+	const panel = app.get('ts-update-notes-panel');
 	const heading = app.get('ts-update-notes-title');
+	const closeButton = app.all('ts-update-notes-close')[0];
+	assert.equal(heading.textContent, 'Versionshistorie');
 	assert.equal(heading.getAttribute('tabindex'), '-1');
 	assert.equal(app.document.activeElement, heading);
-	assert.equal(app.key('Tab', true).prevented, true);
-	assert.equal(app.document.activeElement, footerClose);
-	heading.focus();
-	assert.equal(app.key('Tab').prevented, true);
-	assert.equal(app.document.activeElement, headerClose);
-	app.key('Tab');
-	assert.equal(app.document.activeElement, footerClose);
-	app.key('Tab');
-	assert.equal(app.document.activeElement, headerClose);
-	app.key('Tab', true);
-	assert.equal(app.document.activeElement, footerClose);
-	app.key('Tab', true);
-	assert.equal(app.document.activeElement, headerClose);
+	assert.ok(panel.textContent.includes('<img src=x onerror=alert(1)>'));
+	assert.ok(panel.textContent.includes('Server-translated heading'));
+	assert.equal(closeButton.type, 'button');
+	assert.equal(closeButton.textContent, '×');
+	assert.equal(closeButton.getAttribute('aria-label'), 'Schließen');
+	assert.equal(app.key(heading, 'Tab').prevented, false);
 	app.month.focus();
-	assert.equal(app.document.activeElement, headerClose);
-	app.key('Escape'); await complete;
+	assert.equal(app.key(app.month, 'Escape').prevented, false);
+	assert.equal(app.get('ts-update-notes-panel'), panel);
+	heading.focus();
+	assert.equal(app.key(heading, 'Escape').prevented, true);
+	await complete;
 	assert.equal(app.document.activeElement, app.month);
 });
 
-test('the labelled header close button closes the dialog like the footer action', async () => {
-	const app = fixture({ translate: message => message === 'Close' ? 'Schließen' : message });
-	const complete = app.init(); await flush(); await app.paint();
-	const header = app.all('ts-update-notes-header')[0];
-	const close = app.all('ts-update-notes-close')[0];
-	assert.ok(header.contains(close));
-	assert.equal(close.type, 'button');
-	assert.equal(close.textContent, '×');
-	assert.equal(close.getAttribute('aria-label'), 'Schließen');
-	app.click(close); await complete;
-	assert.equal(app.get('ts-update-notes-dialog'), null);
-	assert.equal(app.header.inert, false);
-	assert.equal(app.document.activeElement, app.month);
-	assert.equal(app.requests.length, 2, 'Closing the window does not dismiss the bell');
-});
-
-test('a failed shown write leaves the popup usable and does not attempt to dismiss the bell', async () => {
-	const app = fixture({ respond: request => { if (request.path.endsWith('/shown')) throw new Error('Synthetic save failure'); } });
-	const complete = app.init(); await flush(); await app.paint();
-	assert.ok(app.get('ts-update-notes-dialog'));
-	assert.equal(app.warnings.length, 1);
-	app.click(app.all('ts-update-notes-action')[0]); await complete;
+test('a hidden tab records viewing only once, when the history actually becomes visible', async () => {
+	const app = fixture({ hidden: true, url: historyUrl });
+	const complete = app.init();
+	await flush();
+	await app.paint();
+	assert.equal(app.requests.length, 1);
+	app.visibility('visible'); await flush();
 	assert.equal(app.requests.length, 2);
+	app.visibility('visible'); await flush();
+	assert.equal(app.requests.length, 2);
+	app.click(app.all('ts-update-notes-close')[0]); await complete;
 });
 
-test('a rendering failure restores the page without falsely recording a displayed release', async () => {
-	const app = fixture({ failAppend: true });
-	await app.init();
-	assert.equal(app.get('ts-update-notes-dialog'), null);
-	assert.equal(app.header.inert, false);
-	assert.equal(app.document.body.style.overflow, 'auto');
+test('Escape before the first paint does not record a view', async () => {
+	const app = fixture({ url: historyUrl });
+	const complete = app.init();
+	await flush();
+	assert.equal(app.key(app.get('ts-update-notes-title'), 'Escape').prevented, true);
+	await app.paint();
+	await complete;
 	assert.equal(app.requests.length, 1);
 });
 
-test('automatic and manually reopened notes show the newest release first without changing progress', async () => {
-	for (const mode of ['automatic', 'manual']) {
-		const payload = copy(notes);
-		payload.releases.push(
-			{ version: '1.3.1', sections: [{ title: 'Improvements', items: ['Second release.'] }] },
-			{ version: '1.4.0', sections: [{ title: 'Bug fixes', items: ['Third release.'] }] },
-		);
-		payload.throughVersion = '1.4.0';
-		const app = fixture({ payload,
-			url: 'http://localhost:8133/apps/timesheet/' + (mode === 'manual' ? '?update-notes=1' : ''),
-			respond: request => request.path === '/api/update-notes' ? payload : undefined,
-		});
-		const complete = app.init(); await flush(); await app.paint();
-		assert.deepEqual(app.all('ts-update-notes-release').map(section => section.children[0].textContent), ['Version 1.4.0', 'Version 1.3.1', 'Version 1.3.0']);
-		assert.deepEqual(payload.releases.map(release => release.version), ['1.3.0', '1.3.1', '1.4.0']);
-		assert.equal(app.requests[0].body.mode, mode);
-		assert.equal(app.requests[1].body.throughVersion, '1.4.0');
-		app.key('Escape'); await complete;
+test('manual transport failure is visible while automatic transport failure stays quiet', async () => {
+	for (const manual of [false, true]) {
+		const app = fixture({ url: manual ? historyUrl : appUrl, respond: () => { throw new Error('Synthetic transport failure'); } });
+		await app.init();
+		await flush();
+		assert.equal(app.messages.length, manual ? 1 : 0);
+		assert.equal(app.get('ts-update-notes-panel'), null);
+		assert.equal(app.requests.length, 1);
 	}
 });
 
-test('real application startup finishes update notes before offering the tour', async () => {
-	const app = fixture();
+test('malformed, empty and disabled history never open a partial panel', async () => {
+	for (const payload of [null, {}, { ...notes, throughVersion: null }, { ...notes, releases: [null] }, { enabled: true, releases: [] }, { ...notes, enabled: false }]) {
+		const app = fixture({ payload, url: historyUrl });
+		await app.init();
+		assert.equal(app.get('ts-update-notes-panel'), null);
+		assert.equal(app.requests.length, 1);
+	}
+});
+
+test('a failed view acknowledgement leaves the history usable', async () => {
+	const app = fixture({ url: historyUrl, respond: request => { if (request.path.endsWith('/shown')) throw new Error('Synthetic save failure'); } });
+	const complete = app.init();
+	await flush();
+	await app.paint();
+	assert.ok(app.get('ts-update-notes-panel'));
+	assert.equal(app.warnings.length, 1);
+	app.click(app.all('ts-update-notes-close')[0]); await complete;
+	assert.equal(app.requests.length, 2);
+});
+
+test('a rendering failure reports the error without recording a viewed release', async () => {
+	const app = fixture({ failAppend: true, url: historyUrl });
+	await app.init();
+	assert.equal(app.get('ts-update-notes-panel'), null);
+	assert.equal(app.messages.length, 1);
+	assert.equal(app.requests.length, 1);
+});
+
+test('application startup offers the tour while a slow bell refresh still runs in the background', async () => {
+	let resolveBell;
+	const app = fixture({ respond: () => new Promise(resolve => { resolveBell = resolve; }) });
 	const context = app.context;
 	const sequence = [];
 	context.document.readyState = 'complete';
-	context.document.querySelectorAll = () => [];
 	context.Element = class {}; context.HTMLElement = context.Element;
 	context.addEventListener = () => {};
-	const timesheet = context.Timesheet;
-	Object.assign(timesheet, {
+	Object.assign(context.Timesheet, {
 		state: { currentUserId: 'employee', currentMonth: new Date(), hrCurrentMonth: new Date() },
 		util: { monthLabel: () => 'Current month' }, $: () => null, $$: () => [],
 		dom: { refresh() {} }, copy: { init() {} }, hr: { init() {} },
@@ -316,10 +265,10 @@ test('real application startup finishes update notes before offering the tour', 
 	});
 	vm.runInContext(mainSource, context);
 	await flush();
-	assert.deepEqual(sequence, ['entries']);
-	assert.ok(app.get('ts-update-notes-dialog'));
-	assert.ok(app.all('ts-update-notes-backdrop').length === 1);
-	app.click(app.all('ts-update-notes-action')[0]);
-	await flush();
 	assert.deepEqual(sequence, ['entries', 'tour']);
+	assert.equal(app.requests[0].body.mode, 'automatic');
+	assert.equal(app.get('ts-update-notes-panel'), null);
+	resolveBell(notes);
+	await flush();
+	assert.equal(app.get('ts-update-notes-panel'), null);
 });

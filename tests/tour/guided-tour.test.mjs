@@ -8,11 +8,11 @@ import vm from 'node:vm';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const mailHelpSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-mail-help-v2.js'), 'utf8');
 const headerSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-tour-launcher.js'), 'utf8');
-const tourSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-guided-tour-v5.js'), 'utf8');
+const tourSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-guided-tour-v6.js'), 'utf8');
 const flush = () => new Promise(setImmediate);
 
 // Exercise the real tour with a small DOM and read-only application fixtures.
-function createFixture({ hr = false, hrDom = false, enabled = true, employeeCompleted = false, available = true, headerPresent = true, nestedSearch = false, helpPresent = true, freelancerControl = true, freelancerEnabled = false, viewportWidth = 1000, viewportHeight = 800, translate = message => message, respond = null, scheduleTimeout = callback => { setImmediate(callback); return 1; } } = {}) {
+function createFixture({ hr = false, hrDom = false, enabled = true, employeeCompleted = false, employeeReminderDismissed = false, available = true, headerPresent = true, nestedSearch = false, helpPresent = true, freelancerControl = true, freelancerEnabled = false, viewportWidth = 1000, viewportHeight = 800, translate = message => message, respond = null, scheduleTimeout = callback => { setImmediate(callback); return 1; } } = {}) {
 	const events = new Map();
 	const windowEvents = new Map();
 	const requests = [];
@@ -160,7 +160,7 @@ function createFixture({ hr = false, hrDom = false, enabled = true, employeeComp
 	app.scrollWidth = viewportWidth + 700;
 	app.getBoundingClientRect = () => ({ left: 8, top: 50, right: viewportWidth - 8, bottom: viewportHeight, width: viewportWidth - 16, height: viewportHeight - 50 });
 	// The page exposes only the resolved eligibility, never a separate HR tour state.
-	Object.assign(app.dataset, { tourEnabled: String(enabled && !hr), tourVersion: '1', tourEmployeeCompleted: String(employeeCompleted), tourStateAvailable: String(available) });
+	Object.assign(app.dataset, { tourEnabled: String(enabled && !hr), tourVersion: '1', tourEmployeeCompleted: String(employeeCompleted), tourEmployeeReminderDismissed: String(employeeReminderDismissed), tourStateAvailable: String(available) });
 	if (enabled && !hr) {
 		const body = [translate('Hello Timesheet team,'), '', '', translate('Best regards,'), translate('Your name')].join('\r\n');
 		const draft = subject => `mailto:karriere@xiller.com?subject=${encodeURIComponent(translate(subject))}&body=${encodeURIComponent(body)}`;
@@ -256,13 +256,14 @@ function createFixture({ hr = false, hrDom = false, enabled = true, employeeComp
 			requests.push(request);
 			if (respond) { const response = await respond(request, requests.length); if (response !== undefined) return response; }
 			if (path === '/api/preferences/tour/complete') return { version: 1, employeeCompleted: true, hrCompleted: false, isHr: false };
+			if (path === '/api/preferences/tour/dismiss') return { version: 1, employeeCompleted: false, employeeReminderDismissed: true };
 			throw new Error('Unexpected request: ' + path);
 		},
 		export: { handleExportClick(view) { copyCounts.exportChoices++; const id = `export-${view}-xlsx-choice-ui`; let choices = document.getElementById(id); if (!choices) choices = element('span', id, '', mine); choices.classList.toggle('is-visible'); } },
 	};
 	vm.runInContext(mailHelpSource, context, { filename: 'timesheet-mail-help-v2.js' });
 	vm.runInContext(headerSource, context, { filename: 'timesheet-tour-launcher.js' });
-	vm.runInContext(tourSource, context, { filename: 'timesheet-guided-tour-v5.js' });
+	vm.runInContext(tourSource, context, { filename: 'timesheet-guided-tour-v6.js' });
 	context.Timesheet.tour.init();
 	return {
 		context, document, app, requests, messages, copyCounts, element, dispatch, event: makeEvent, tour: context.Timesheet.tour,
@@ -519,9 +520,11 @@ test('the help menu supports keyboard navigation, Escape, Tab, outside clicks an
 	assert.equal(fixture.requests.length, 0);
 });
 
-test('the first-visit Tutorial still starts the tour directly while Later remains visit-local', async () => {
+test('the first-visit invitation shows only the close, opt-out and Tutorial actions', async () => {
 	const fixture = createFixture();
 	const menu = fixture.document.getElementById('ts-tour-help-menu');
+	const invitation = fixture.document.getElementById('ts-tour-invitation');
+	assert.deepEqual(invitation.querySelectorAll('button').map(button => button.dataset.tourAction), ['close', 'dismiss', 'start']);
 	assert.equal(menu.hidden, true);
 	fixture.document.getElementById('ts-tour-start').click();
 	await flush(); await flush();
@@ -881,8 +884,9 @@ test('header placement and invitation follow the app account state without dupli
 	assert.ok(fixture.document.getElementById('ts-tour-invitation'));
 	fixture.tour.init();
 	assert.equal(fixture.document.querySelectorAll('#ts-tour-launcher').length, 1);
-	fixture.document.getElementById('ts-tour-invitation')?.querySelectorAll('button').find(button => button.dataset.tourAction === 'later').click();
+	fixture.document.getElementById('ts-tour-invitation').querySelectorAll('button').find(button => button.dataset.tourAction === 'close').click();
 	assert.equal(fixture.document.getElementById('ts-tour-invitation'), null);
+	assert.equal(fixture.document.activeElement.id, 'ts-tour-launcher');
 	assert.equal(fixture.requests.length, 0);
 	assert.ok(createFixture().document.getElementById('ts-tour-invitation'));
 });
@@ -893,13 +897,80 @@ test('completed accounts retain manual access; unavailable progress never auto-s
 	await completed.tour.start();
 	assert.equal(completed.tour.getState().step, 'export');
 	assert.equal(completed.tour.getState().total, 8);
+	assert.equal(completed.document.getElementById('ts-tour-dismiss').hidden, true);
 	await completed.tour.end();
 	const unavailable = createFixture({ available: false });
 	assert.equal(unavailable.document.getElementById('ts-tour-invitation'), null);
 	assert.equal(unavailable.messages.length, 1);
 	await unavailable.tour.start();
 	assert.equal(unavailable.tour.getState().active, true);
+	assert.equal(unavailable.document.getElementById('ts-tour-dismiss').hidden, true);
 	await unavailable.tour.end();
+});
+
+test('the initial invitation can opt out without completing the tour; a returning account retains the manual launcher', async () => {
+	const fixture = createFixture({ translate: message => message === "Don't remind me again" ? 'Nicht mehr erinnern' : message });
+	const button = fixture.document.getElementById('ts-tour-invitation-dismiss');
+	assert.equal(button.textContent, 'Nicht mehr erinnern');
+	button.focus();
+	button.click();
+	await flush();
+	assert.deepEqual(fixture.requests, [{ path: '/api/preferences/tour/dismiss', method: 'POST', body: null }]);
+	assert.equal(fixture.document.getElementById('ts-tour-invitation'), null);
+	assert.equal(fixture.document.activeElement.id, 'ts-tour-launcher');
+	assert.equal(fixture.tour.getState().employeeCompleted, false);
+	assert.equal(fixture.app.dataset.tourEmployeeReminderDismissed, 'true');
+	const returning = createFixture({ employeeReminderDismissed: fixture.tour.getState().employeeReminderDismissed });
+	assert.equal(returning.document.getElementById('ts-tour-invitation'), null);
+	returning.document.getElementById('ts-tour-launcher').click();
+	returning.document.getElementById('ts-tour-menu-guide').click();
+	await flush();
+	assert.equal(returning.tour.getState().active, true);
+	assert.equal(returning.document.getElementById('ts-tour-dismiss').hidden, true);
+	await returning.tour.end();
+});
+
+test('opting out during an active step closes the tour, restores the view and only saves once', async () => {
+	let complete;
+	const pending = new Promise(resolve => { complete = resolve; });
+	const fixture = createFixture({ respond: () => pending });
+	const field = fixture.document.getElementById('config-daily-min-mine');
+	field.value = '07:15';
+	field.focus();
+	await fixture.tour.start();
+	const end = fixture.document.getElementById('ts-tour-end');
+	end.focus();
+	fixture.dispatch(fixture.event('keydown', end, { key: 'Tab' }));
+	const button = fixture.document.getElementById('ts-tour-dismiss');
+	assert.equal(fixture.document.activeElement, button);
+	button.click();
+	button.click();
+	assert.equal(button.disabled, true);
+	assert.equal(fixture.requests.length, 1);
+	complete({ version: 1, employeeCompleted: false, employeeReminderDismissed: true });
+	await flush(); await flush();
+	assert.equal(fixture.tour.getState().active, false);
+	assert.equal(fixture.tour.getState().employeeCompleted, false);
+	assert.equal(fixture.tour.getState().employeeReminderDismissed, true);
+	assert.equal(fixture.app.inert, false);
+	assert.equal(fixture.document.activeElement, field);
+	assert.equal(field.value, '07:15');
+});
+
+test('a failed opt-out keeps the current tour open and announces a retryable error', async () => {
+	const fixture = createFixture({ respond() { throw new Error('Synthetic preference failure'); } });
+	await fixture.tour.start();
+	const button = fixture.document.getElementById('ts-tour-dismiss');
+	button.click();
+	await flush();
+	assert.equal(fixture.tour.getState().active, true);
+	assert.equal(fixture.tour.getState().employeeReminderDismissed, false);
+	assert.equal(button.disabled, false);
+	const error = fixture.document.querySelector('#ts-tour-dialog .ts-tour-preference-error');
+	assert.equal(error.getAttribute('role'), 'alert');
+	assert.equal(error.hidden, false);
+	assert.equal(error.textContent, 'Could not save your tour preference. Please try again.');
+	await fixture.tour.end();
 });
 
 test('nested Nextcloud search wrappers still place the launcher between search and notifications', () => {

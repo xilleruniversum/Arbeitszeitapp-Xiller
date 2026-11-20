@@ -52,6 +52,7 @@ namespace OCP\AppFramework\Http\Attribute {
 	#[\Attribute(\Attribute::TARGET_METHOD)] class NoCSRFRequired { }
 }
 namespace OCP\Notification {
+	interface IAction { public const TYPE_WEB = 'WEB'; }
 	interface INotification { }
 	interface IManager {
 		public function createNotification(): INotification;
@@ -70,6 +71,7 @@ namespace OCP\Notification {
 	class UnknownNotificationException extends \RuntimeException { }
 	class AlreadyProcessedException extends \RuntimeException { }
 	class IncompleteParsedNotificationException extends \RuntimeException { }
+	class InvalidValueException extends \InvalidArgumentException { }
 }
 namespace OCP\L10N { interface IFactory { public function get(string $app, ?string $language = null); } }
 namespace Psr\Log { interface LoggerInterface { public function warning(string $message, array $context = []): void; } }
@@ -170,7 +172,8 @@ namespace {
 		public function get(string $app, ?string $language = null): NotesTranslator { return new NotesTranslator($language ?? 'en'); }
 	}
 	class NotesUrl implements \OCP\IURLGenerator {
-		public function getAbsoluteURL(string $url): string { return 'https://example.test' . $url; }
+		public string $origin = 'https://example.test';
+		public function getAbsoluteURL(string $url): string { return $this->origin . $url; }
 		public function linkToRoute(string $route): string { return '/apps/timesheet/'; }
 		public function imagePath(string $app, string $file): string { return '/custom_apps/' . $app . '/img/' . $file; }
 	}
@@ -182,6 +185,18 @@ namespace {
 		public function warning(string $message, array $context = []): void { $this->warnings[] = $message; }
 	}
 	class NotesRequest implements \OCP\IRequest { }
+	class NotesAction implements \OCP\Notification\IAction {
+		public string $label = '';
+		public string $link = '';
+		public string $type = '';
+		public bool $primary = false;
+		public function setParsedLabel(string $label): self { $this->label = $label; return $this; }
+		public function setLink(string $link, string $type): self {
+			if (isset($link[256])) throw new \OCP\Notification\InvalidValueException('link');
+			$this->link = $link; $this->type = $type; return $this;
+		}
+		public function setPrimary(bool $primary): self { $this->primary = $primary; return $this; }
+	}
 	class NotesNotification implements INotification {
 		private string $app = '';
 		private string $user = '';
@@ -192,6 +207,7 @@ namespace {
 		public string $parsedMessage = '';
 		public string $link = '';
 		public string $icon = '';
+		public array $parsedActions = [];
 		public function setApp(string $value): self { $this->app = $value; return $this; }
 		public function getApp(): string { return $this->app; }
 		public function setUser(string $value): self { $this->user = $value; return $this; }
@@ -206,6 +222,8 @@ namespace {
 		public function setIcon(string $value): self { $this->icon = $value; return $this; }
 		public function setParsedSubject(string $value): self { $this->parsedSubject = $value; return $this; }
 		public function setParsedMessage(string $value): self { $this->parsedMessage = $value; return $this; }
+		public function createAction(): NotesAction { return new NotesAction(); }
+		public function addParsedAction(NotesAction $action): self { $this->parsedActions[] = $action; return $this; }
 	}
 	class NotesManager implements \OCP\Notification\IManager {
 		public array $records = [];
@@ -267,10 +285,11 @@ namespace {
 		$appConfig = new NotesAppConfig(); $manager = new NotesManager($locks); $translator = new NotesTranslator(); $logger = new NotesLogger();
 		$catalog = new UpdateNotesCatalog(__DIR__ . '/fixtures/release-notes.json');
 		$store = new UpdateNotesStore($config, $locks); $eligibility = new UpdateNotesEligibility($users, $apps);
-		$service = new UpdateNotesService($catalog, $store, $eligibility, $appConfig, $manager, new NotesUrl(), new NotesClock(), $logger);
+		$url = new NotesUrl();
+		$service = new UpdateNotesService($catalog, $store, $eligibility, $appConfig, $manager, $url, new NotesClock(), $logger);
 		$notifier = new UpdateNotesNotifier($service, new NotesTranslationFactory(), $logger); $manager->notifier = $notifier;
 		$controller = new UpdateNotesController('timesheet', new NotesRequest(), $users, $service, $translator, $logger);
-		return compact('config', 'locks', 'users', 'groups', 'apps', 'appConfig', 'manager', 'translator', 'logger', 'catalog', 'store', 'service', 'notifier', 'controller');
+		return compact('config', 'locks', 'users', 'groups', 'apps', 'appConfig', 'manager', 'translator', 'logger', 'catalog', 'store', 'service', 'notifier', 'controller', 'url');
 	}
 	$checks = 0; $failures = 0;
 	function checkNotes(string $description, callable $callback): void {
@@ -283,10 +302,14 @@ namespace {
 		throw new \RuntimeException('Expected ' . $class);
 	}
 	function versionsNotes(array $result): array { return array_column($result['releases'], 'version'); }
+	function bellVersionsNotes(array $fixture, string $userId = 'employee'): array {
+		return array_column($fixture['service']->notificationReleases($userId, $fixture['appConfig']->version, $fixture['translator']), 'version');
+	}
 
-	checkNotes('First app visit creates one note and offers the current release', function (): void {
+	checkNotes('First app visit creates one native note without returning history to display', function (): void {
 		$f = notesFixture(); $result = $f['controller']->load()->getData();
-		sameNotes(['1.3.0'], versionsNotes($result)); sameNotes(true, $result['shouldShow']); sameNotes(1, $f['manager']->sends);
+		sameNotes(['enabled' => true, 'throughVersion' => null, 'shouldShow' => false, 'releases' => []], $result);
+		sameNotes(1, $f['manager']->sends); sameNotes(null, $f['store']->read('employee')['shownVersion']);
 		$f['controller']->load(); sameNotes(1, $f['manager']->sends); sameNotes([], $f['locks']->held);
 	});
 	checkNotes('Brief contention from a second tab retries and leaves only one notification', function (): void {
@@ -303,30 +326,33 @@ namespace {
 	checkNotes('Deferred device delivery runs only after the account lock is released', function (): void {
 		$f = notesFixture(); sameNotes(200, $f['controller']->load()->getStatus()); sameNotes(1, $f['manager']->flushes); sameNotes([], $f['logger']->warnings);
 	});
-	foreach (['deferral', 'flush'] as $failure) checkNotes('A native ' . $failure . ' failure leaves popup data usable', function () use ($failure): void {
+	foreach (['deferral', 'flush'] as $failure) checkNotes('A native ' . $failure . ' failure leaves version history usable', function () use ($failure): void {
 		$f = notesFixture();
 		if ($failure === 'deferral') $f['manager']->failDeferral = true;
 		else $f['manager']->failFlush = true;
-		sameNotes(200, $f['controller']->load()->getStatus()); sameNotes([], $f['locks']->held);
+		$result = $f['controller']->load('manual');
+		sameNotes(200, $result->getStatus()); sameNotes(['1.3.0'], versionsNotes($result->getData())); sameNotes([], $f['locks']->held);
 		sameNotes(null, $f['store']->read('employee')['shownVersion']);
 	});
-	checkNotes('Shown acknowledgement suppresses repeat popups while preserving the bell', function (): void {
+	checkNotes('Viewing version history preserves the native bell entry', function (): void {
 		$f = notesFixture(); $f['controller']->load(); sameNotes(200, $f['controller']->shown('1.3.0')->getStatus());
 		sameNotes(false, $f['controller']->load()->getData()['shouldShow']); sameNotes(1, count($f['manager']->records));
 		sameNotes(['1.3.0'], versionsNotes($f['controller']->load('manual')->getData()));
 	});
-	checkNotes('New account on a later version sees only that current version', function (): void {
+	checkNotes('A new account receives a bell entry for the current release and can browse earlier history', function (): void {
 		$f = notesFixture(); $f['store']->markNewAccount('employee'); $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['controller']->load();
+		sameNotes(['1.5.0'], bellVersionsNotes($f));
+		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load('manual')->getData()));
 	});
 	checkNotes('A returning legacy account receives releases missed before its first feature visit', function (): void {
 		$f = notesFixture(); $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['controller']->load(); sameNotes(['1.3.0', '1.4.0', '1.5.0'], bellVersionsNotes($f));
 		sameNotes('1.3.0', $f['store']->read('employee')['floorVersion']); sameNotes([], $f['config']->markerWrites);
 	});
 	checkNotes('The new-account marker never rewrites an already initialized release baseline', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['store']->markNewAccount('employee'); $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['controller']->load(); sameNotes(['1.3.0', '1.4.0', '1.5.0'], bellVersionsNotes($f));
 	});
 	checkNotes('The creation listener marks only its new account and sends no notifications', function (): void {
 		$f = notesFixture(); $listener = new UpdateNotesUserCreatedListener($f['store'], $f['logger']);
@@ -345,13 +371,15 @@ namespace {
 		$listener->handle(new \OCP\User\Events\UserCreatedEvent($f['users']->get('admin'))); $f['users']->current = 'admin';
 		$f['appConfig']->version = '1.5.0';
 		$result = $f['controller']->load();
-		sameNotes(200, $result->getStatus()); sameNotes(['1.5.0'], versionsNotes($result->getData()));
+		sameNotes(200, $result->getStatus()); sameNotes([], versionsNotes($result->getData()));
+		sameNotes(['1.5.0'], bellVersionsNotes($f, 'admin'));
 		sameNotes('1.5.0', $f['store']->read('admin')['floorVersion']); sameNotes(1, $f['manager']->sends);
 		sameNotes(['admin/1.5.0'], array_keys($f['manager']->records));
 	});
 	checkNotes('Skipped releases accumulate but technical replacement never acknowledges them', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		sameNotes([], versionsNotes($f['controller']->load()->getData()));
+		sameNotes(['1.3.0', '1.4.0', '1.5.0'], bellVersionsNotes($f));
 		sameNotes(null, $f['store']->read('employee')['dismissedVersion']); sameNotes(['employee/1.5.0'], array_keys($f['manager']->records));
 	});
 	checkNotes('Technical cleanup is shared across independently resolved native notifier services', function (): void {
@@ -360,16 +388,19 @@ namespace {
 		$f['appConfig']->version = '1.4.0'; $f['controller']->load();
 		sameNotes(['employee/1.4.0'], array_keys($f['manager']->records)); sameNotes(null, $f['store']->read('employee')['dismissedVersion']);
 	});
-	checkNotes('Automatic notes exclude previously shown versions but bell retains them', function (): void {
+	checkNotes('Automatic loads stay silent even when multiple releases are pending', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['controller']->shown('1.3.0'); $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		sameNotes([], versionsNotes($f['controller']->load()->getData()));
+		sameNotes(['1.3.0', '1.4.0', '1.5.0'], bellVersionsNotes($f));
 		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load('manual')->getData()));
 	});
 	foreach (['individual', 'clearAll'] as $action) checkNotes('Native ' . $action . ' dismissal persists without muting future releases', function () use ($action): void {
 		$f = notesFixture(); $f['controller']->load();
 		$action === 'individual' ? $f['manager']->userDismiss('employee', '1.3.0') : $f['manager']->clearAll('employee');
 		sameNotes(false, $f['controller']->load()->getData()['shouldShow']); sameNotes([], $f['manager']->records);
-		$f['appConfig']->version = '1.4.0'; sameNotes(['1.4.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['appConfig']->version = '1.4.0'; $f['controller']->load();
+		sameNotes(['1.4.0'], bellVersionsNotes($f));
+		sameNotes(['1.3.0', '1.4.0'], versionsNotes($f['controller']->load('manual')->getData()));
 	});
 	checkNotes('Manual reopening after dismissal never recreates the removed bell notice', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['manager']->userDismiss('employee', '1.3.0');
@@ -379,7 +410,7 @@ namespace {
 		$f = notesFixture(); $f['controller']->load(); $old = clone $f['manager']->records['employee/1.3.0'];
 		$f['appConfig']->version = '1.5.0'; $f['controller']->load(); $f['notifier']->dismissNotification($old);
 		sameNotes('1.3.0', $f['store']->read('employee')['dismissedVersion']); sameNotes(['employee/1.5.0'], array_keys($f['manager']->records));
-		sameNotes(['1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['controller']->load(); sameNotes(['1.4.0', '1.5.0'], bellVersionsNotes($f));
 	});
 	checkNotes('A stale displayed acknowledgement cannot move progress backwards', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['appConfig']->version = '1.5.0'; $f['controller']->load();
@@ -387,7 +418,7 @@ namespace {
 	});
 	checkNotes('Account states and bell records stay separate', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['controller']->shown('1.3.0'); $f['users']->current = 'other';
-		sameNotes(true, $f['controller']->load()->getData()['shouldShow']); sameNotes(2, count($f['manager']->records));
+		sameNotes(false, $f['controller']->load()->getData()['shouldShow']); sameNotes(2, count($f['manager']->records));
 	});
 	foreach ([null, 'disabled', 'blocked', 'unknown'] as $actor) checkNotes('Ineligible account has no update access or preference side effects: ' . ($actor ?? 'anonymous'), function () use ($actor): void {
 		$f = notesFixture(); $f['users']->current = $actor;
@@ -399,8 +430,8 @@ namespace {
 	});
 	foreach (['admin', 'hr-admin'] as $actor) checkNotes('Administrator update progress and native dismissal work independently: ' . $actor, function () use ($actor): void {
 		$f = notesFixture(); $f['users']->current = $actor;
-		$result = $f['controller']->load(); sameNotes(200, $result->getStatus()); sameNotes(true, $result->getData()['shouldShow']);
-		sameNotes(['1.3.0'], versionsNotes($result->getData())); sameNotes([$actor . '/1.3.0'], array_keys($f['manager']->records));
+		$result = $f['controller']->load(); sameNotes(200, $result->getStatus()); sameNotes(false, $result->getData()['shouldShow']);
+		sameNotes([], versionsNotes($result->getData())); sameNotes([$actor . '/1.3.0'], array_keys($f['manager']->records));
 		$f['controller']->load(); sameNotes(1, $f['manager']->sends);
 		sameNotes(200, $f['controller']->shown('1.3.0')->getStatus()); sameNotes(false, $f['controller']->load()->getData()['shouldShow']);
 		sameNotes(['1.3.0'], versionsNotes($f['controller']->load('manual')->getData())); sameNotes(1, count($f['manager']->records));
@@ -408,13 +439,13 @@ namespace {
 		sameNotes('de:Timesheet updated to 1.3.0', $note->parsedSubject);
 		$f['manager']->clearAll($actor); sameNotes([], $f['manager']->records);
 		sameNotes('1.3.0', $f['store']->read($actor)['dismissedVersion']);
-		$f['appConfig']->version = '1.4.0'; sameNotes(['1.4.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['appConfig']->version = '1.4.0'; $f['controller']->load(); sameNotes(['1.4.0'], bellVersionsNotes($f, $actor));
 		sameNotes([$actor . '/1.4.0'], array_keys($f['manager']->records));
 		sameNotes(null, $f['store']->read('employee'));
 	});
 	checkNotes('An existing administrator without prior progress receives missed catalog releases', function (): void {
 		$f = notesFixture(); $f['users']->current = 'admin'; $f['appConfig']->version = '1.5.0';
-		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load()->getData()));
+		$f['controller']->load(); sameNotes(['1.3.0', '1.4.0', '1.5.0'], bellVersionsNotes($f, 'admin'));
 		sameNotes('1.3.0', $f['store']->read('admin')['floorVersion']); sameNotes([], $f['config']->markerWrites);
 	});
 	foreach (['admin', 'hr-admin'] as $actor) foreach (['disabled', 'blocked'] as $restriction) checkNotes('Administrator privileges do not bypass ' . $restriction . ' accounts: ' . $actor, function () use ($actor, $restriction): void {
@@ -432,26 +463,41 @@ namespace {
 		sameNotes(null, $f['store']->read('employee')['dismissedVersion']);
 		$f['manager']->userDismiss('employee', '1.3.0'); sameNotes('1.3.0', $f['store']->read('employee')['dismissedVersion']);
 	});
-	checkNotes('The native bell stays concise while the linked popup keeps all pending releases', function (): void {
+	checkNotes('The native bell presents a translated WEB action that opens the complete version history', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['appConfig']->version = '1.4.0'; $f['controller']->load();
-		$popup = $f['controller']->load('manual')->getData();
-		sameNotes(['1.3.0', '1.4.0'], versionsNotes($popup));
-		sameNotes('First release feature.', $popup['releases'][0]['sections'][0]['items'][0]);
-		sameNotes('Second release improvement.', $popup['releases'][1]['sections'][0]['items'][0]);
+		$history = $f['controller']->load('manual')->getData();
+		sameNotes(['1.3.0', '1.4.0'], versionsNotes($history));
+		sameNotes('First release feature.', $history['releases'][0]['sections'][0]['items'][0]);
+		sameNotes('Second release improvement.', $history['releases'][1]['sections'][0]['items'][0]);
 		$note = $f['notifier']->prepare(clone $f['manager']->records['employee/1.4.0'], 'ja');
 		sameNotes('ja:Timesheet updated to 1.4.0', $note->parsedSubject);
-		sameNotes('ja:Open the update notes.', $note->parsedMessage);
+		sameNotes('', $note->parsedMessage);
 		sameNotes('https://example.test/apps/timesheet/?update-notes=1', $note->link);
 		sameNotes('https://example.test/custom_apps/timesheet/img/app_dark.svg', $note->icon);
+		sameNotes(1, count($note->parsedActions));
+		$action = $note->parsedActions[0];
+		sameNotes('ja:View changes', $action->label);
+		sameNotes($note->link, $action->link);
+		sameNotes(\OCP\Notification\IAction::TYPE_WEB, $action->type);
+		sameNotes(true, $action->primary);
+	});
+	checkNotes('A history URL too long for a native action stays clickable on the notification subject', function (): void {
+		$f = notesFixture();
+		$f['url']->origin .= '/' . str_repeat('directory/', 24);
+		$f['controller']->load();
+		$note = $f['notifier']->prepare(clone $f['manager']->records['employee/1.3.0'], 'de');
+		sameNotes($f['service']->appLink(), $note->link);
+		sameNotes([], $note->parsedActions);
+		sameNotes('de:Open the update notes.', $note->parsedMessage);
 	});
 	checkNotes('The notifier leaves unrelated application notifications untouched', function (): void {
 		$f = notesFixture(); $note = new NotesNotification(); $note->setApp('calendar');
 		throwsNotes(\OCP\Notification\UnknownNotificationException::class, fn() => $f['notifier']->prepare($note, 'en'));
 		throwsNotes(\OCP\Notification\UnknownNotificationException::class, fn() => $f['notifier']->dismissNotification($note));
 	});
-	checkNotes('Notification delivery failure does not prevent popup data or consume display progress', function (): void {
-		$f = notesFixture(); $f['manager']->failSend = true; $result = $f['controller']->load();
-		sameNotes(200, $result->getStatus()); sameNotes(true, $result->getData()['shouldShow']); sameNotes(null, $f['store']->read('employee')['shownVersion']);
+	checkNotes('Notification delivery failure does not prevent opening version history', function (): void {
+		$f = notesFixture(); $f['manager']->failSend = true; $result = $f['controller']->load('manual');
+		sameNotes(200, $result->getStatus()); sameNotes(['1.3.0'], versionsNotes($result->getData())); sameNotes(null, $f['store']->read('employee')['shownVersion']);
 		$f['manager']->failSend = false; $f['controller']->load(); sameNotes(1, $f['manager']->sends);
 	});
 	foreach (['read', 'write', 'malformed'] as $failure) checkNotes('Storage failure never becomes a successful display: ' . $failure, function () use ($failure): void {
@@ -485,11 +531,20 @@ namespace {
 	checkNotes('No matching release never publishes an empty or future notice', function (): void {
 		$f = notesFixture(); $f['appConfig']->version = '1.2.0'; sameNotes([], versionsNotes($f['controller']->load()->getData())); sameNotes(0, $f['manager']->sends);
 	});
+	checkNotes('An unannounced installed release can still browse available version history', function (): void {
+		$f = notesFixture(); $f['appConfig']->version = '1.6.0';
+		sameNotes([], versionsNotes($f['controller']->load()->getData()));
+		sameNotes(['1.3.0', '1.4.0', '1.5.0'], versionsNotes($f['controller']->load('manual')->getData()));
+		sameNotes(200, $f['controller']->shown('1.5.0')->getStatus());
+		sameNotes(0, $f['manager']->sends);
+	});
 	checkNotes('A downgrade does not replay releases or erase account history', function (): void {
 		$f = notesFixture(); $f['controller']->load(); $f['appConfig']->version = '1.5.0'; $f['controller']->load(); $f['controller']->shown('1.5.0');
 		$before = $f['config']->values; $f['appConfig']->version = '1.3.0'; sameNotes(false, $f['controller']->load()->getData()['shouldShow']);
 		sameNotes('1.5.0', $f['store']->read('employee')['shownVersion']); sameNotes($before, $f['config']->values);
 		sameNotes(['employee/1.5.0'], array_keys($f['manager']->records)); sameNotes(2, $f['manager']->sends);
+		sameNotes(['1.3.0'], versionsNotes($f['controller']->load('manual')->getData()));
+		sameNotes('1.5.0', $f['controller']->shown('1.3.0')->getData()['throughVersion']);
 	});
 	checkNotes('Native X can remove a now-unavailable release after rollback without acknowledging it', function (): void {
 		$f = notesFixture(); $f['appConfig']->version = '1.5.0'; $f['controller']->load(); $note = clone $f['manager']->records['employee/1.5.0'];

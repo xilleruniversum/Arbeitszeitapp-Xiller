@@ -56,7 +56,7 @@ for (const [locale, pluralForm] of Object.entries(coverage.locales)) {
 		assert.ok(absenceTerms[locale], 'The displayed absence terms are available for this account language');
 		if (!locale.startsWith('en')) {
 			assert.notEqual(server.translations['A short tour explains the main features.'], 'A short tour explains the main features.', 'An English copy is not a translated tour');
-			for (const message of [federalStateExplanation, commentsExplanation, commentColumnHelp, groupNotificationHelp, changeHistoryHelp, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages]) {
+			for (const message of [federalStateExplanation, commentsExplanation, commentColumnHelp, groupNotificationHelp, changeHistoryHelp, generalHelpExplanation, 'Help and tour', 'Tour guide', 'Questions for HR', 'Suggestions for improvement', restartExplanation, 'Time entry warnings', warningsExplanation, 'Freelancer mode', freelancerExplanation, ...Object.keys(emailHelpMessages), ...contactDraftMessages, "Don't remind me again", "Could not save your tour preference. Please try again."]) {
 				assert.notEqual(server.translations[message], message, 'New explanations are translated into the account language');
 			}
 		}
@@ -100,6 +100,8 @@ test('German employee guidance uses the shortened copy without approval promises
 	for (const locale of ['de', 'de_DE']) {
 		const translations = JSON.parse(readFileSync(resolve(root, `l10n/${locale}.json`), 'utf8')).translations;
 		assert.equal(translations['Explore Timesheet?'], 'Arbeitszeitnachweis kennenlernen?');
+		assert.equal(translations["Don't remind me again"], "Nicht mehr erinnern");
+		assert.equal(translations["Could not save your tour preference. Please try again."], "Die Tour-Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen.");
 		assert.equal(translations['Federal state'], 'Bundesland');
 		assert.equal(translations[federalStateExplanation], 'Die Feiertage in der Spalte „Status“ richten sich nach dem gewählten Bundesland.');
 		assert.equal(translations[commentsExplanation], 'Die Kommentarspalte kann genutzt werden, um eigenen Informationen zum Tagesablauf festzuhalten oder Fehlzeiten zu entschuldigen. Fehlen Start- und/oder Endzeit, verhindert nur ein dementsprechender Hinweis in der Kommentarspalte eine Benachrichtigung. Einträge mit keiner oder nur einer Zeitangabe, die nicht durch einen Kommentar ausgewiesen sind, werden andernfalls als unvollständig gekennzeichnet.');

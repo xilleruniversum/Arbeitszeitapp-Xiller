@@ -427,7 +427,7 @@
 		if (initialRow) {
 			timesheet.entries.updateWorkedHours(initialRow);
 		}
-		// Release notes close before the employee introduction is offered.
+		// An explicitly opened history closes before the employee introduction is offered.
 		await timesheet.updateNotes?.init();
 		await timesheet.tour?.init();
 	}

@@ -41,6 +41,7 @@ if ($tourEnabled) {
 	<?php endif; ?>
 	data-tour-version="<?php p($_['tourProgress']['version'] ?? 1); ?>"
 	data-tour-employee-completed="<?php p(($_['tourProgress']['employeeCompleted'] ?? false) ? 'true' : 'false'); ?>"
+	data-tour-employee-reminder-dismissed="<?php p(($_['tourProgress']['employeeReminderDismissed'] ?? false) ? 'true' : 'false'); ?>"
 	data-tour-state-available="<?php p(($_['tourStateAvailable'] ?? false) ? 'true' : 'false'); ?>">
 	<div class="ts-app-toolbar">
 		<?php if ($_['isHR']): ?>

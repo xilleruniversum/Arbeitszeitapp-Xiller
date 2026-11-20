@@ -75,7 +75,7 @@ class PageController extends Controller {
 		}
 		if ($tourEnabled) {
 			Util::addScript('timesheet', 'timesheet-tour-launcher');
-			Util::addScript('timesheet', 'timesheet-guided-tour-v5');
+			Util::addScript('timesheet', 'timesheet-guided-tour-v6');
 		}
 		Util::addScript('timesheet', 'timesheet-main-v2');
 
@@ -128,6 +128,7 @@ class PageController extends Controller {
 		$tourProgress = [
 			'version' => TourProgressStore::VERSION,
 			'employeeCompleted' => false,
+			'employeeReminderDismissed' => false,
 		];
 		$tourStateAvailable = false;
 		if ($tourEnabled) {

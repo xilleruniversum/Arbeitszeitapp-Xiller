@@ -40,6 +40,8 @@
     "This section is not available in the current view. The tour can continue with the next step.",
     "The tour could not be started. Please try again.",
     "The tour is finished, but its completion could not be saved. Please try again.",
+    "Don't remind me again",
+    "Could not save your tour preference. Please try again.",
     "Tour progress could not be loaded. The tour can still be opened with the tour icon.",
     "Opening the default mail app…",
     "No mail app opened?",

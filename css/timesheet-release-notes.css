@@ -1,25 +1,18 @@
-/* Release notes use Nextcloud's neutral surfaces and account text direction. */
-.ts-update-notes-backdrop {
+/* The history sits below the Nextcloud header without covering the rest of the page. */
+.ts-update-notes-panel {
 	position: fixed;
-	inset: 0;
-	z-index: 10000;
+	inset-block-start: calc(var(--header-height, 50px) + 12px);
+	inset-inline-end: 12px;
+	z-index: 900;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	flex-direction: column;
 	box-sizing: border-box;
-	padding: 24px;
-	background: rgb(0 0 0 / 55%);
-}
-
-.ts-update-notes-dialog {
-	box-sizing: border-box;
-	width: min(640px, 100%);
-	max-block-size: calc(100dvh - 48px);
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding: 20px;
+	inline-size: min(460px, calc(100% - 24px));
+	max-block-size: calc(100dvh - var(--header-height, 50px) - 24px);
+	overflow: hidden;
 	border: 1px solid var(--color-border, #ccc);
 	border-radius: var(--border-radius-large, 12px);
+	box-shadow: 0 4px 16px var(--color-box-shadow, rgb(0 0 0 / 18%));
 	background: var(--color-main-background, #fff);
 	color: var(--color-main-text, #222);
 	text-align: start;
@@ -28,10 +21,12 @@
 
 .ts-update-notes-header {
 	display: flex;
+	flex: none;
 	align-items: center;
 	justify-content: space-between;
-	gap: 16px;
-	margin-block-end: 20px;
+	gap: 12px;
+	padding: 12px 16px;
+	border-block-end: 1px solid var(--color-border, #ccc);
 }
 
 .ts-update-notes-header h2 {
@@ -41,91 +36,83 @@
 	line-height: 1.4;
 }
 
-/* The static heading anchors focus at the start of the notes. */
+.ts-update-notes-header p {
+	margin: 2px 0 0;
+	color: var(--color-text-maxcontrast, #666);
+	font-size: .875rem;
+}
+
+/* The static heading announces the history when it opens. */
 #ts-update-notes-title:focus {
 	outline: none;
 }
 
-#ts-update-notes-dialog button {
-	border: 1px solid var(--color-border-dark, #aaa);
-	background-color: var(--color-background-dark, #ededed);
-	color: var(--color-main-text, #222);
-}
-
-#ts-update-notes-dialog button:hover,
-#ts-update-notes-dialog button:focus,
-#ts-update-notes-dialog button:active {
-	background-color: var(--color-background-hover, #ddd);
-	color: var(--color-main-text, #222);
-}
-
-#ts-update-notes-dialog button:focus-visible {
-	outline: 2px solid var(--color-main-text, #222);
-	outline-offset: 2px;
-}
-
-.ts-update-notes-release + .ts-update-notes-release {
-	margin-block-start: 24px;
-	padding-block-start: 16px;
-	border-block-start: 1px solid var(--color-border, #ccc);
-}
-
-.ts-update-notes-release h3 {
-	margin: 0 0 12px;
-	font-size: 1.1rem;
-	font-weight: 600;
-}
-
-.ts-update-notes-release h4 {
-	margin: 16px 0 6px;
-	font-size: 1rem;
-	font-weight: 600;
-}
-
-.ts-update-notes-release ul {
-	margin: 0;
-	padding-inline-start: 24px;
-	list-style: disc;
-}
-
-.ts-update-notes-release li {
-	margin-block: 6px;
-	line-height: 1.5;
-}
-
-.ts-update-notes-footer {
-	display: flex;
-	justify-content: flex-end;
-	margin-block-start: 24px;
-}
-
-#ts-update-notes-dialog .ts-update-notes-close {
+.ts-update-notes-panel .ts-update-notes-close {
 	display: grid;
 	place-items: center;
 	flex: none;
-	inline-size: 36px;
-	block-size: 36px;
-	min-inline-size: 36px;
-	min-block-size: 36px;
+	min-inline-size: 44px;
+	min-block-size: 44px;
 	margin: 0;
 	padding: 0;
+	border: 0;
+	border-radius: var(--border-radius, 8px);
+	background: transparent;
+	color: var(--color-main-text, #222);
 	font-size: 1.375rem;
 	line-height: 1;
 }
 
-.ts-update-notes-action {
-	min-height: 40px;
-	margin: 0;
-	padding: 8px 16px;
+.ts-update-notes-panel .ts-update-notes-close:hover,
+.ts-update-notes-release summary:hover {
+	background: var(--color-background-hover, #ededed);
 }
 
-@media (max-width: 480px) {
-	.ts-update-notes-backdrop {
-		padding: 12px;
-	}
+.ts-update-notes-panel .ts-update-notes-close:focus-visible,
+.ts-update-notes-release summary:focus-visible {
+	outline: 2px solid var(--color-main-text, #222);
+	outline-offset: -2px;
+}
 
-	.ts-update-notes-dialog {
-		max-block-size: calc(100dvh - 24px);
-		padding: 16px;
-	}
+.ts-update-notes-content {
+	min-block-size: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.ts-update-notes-release + .ts-update-notes-release {
+	border-block-start: 1px solid var(--color-border, #ccc);
+}
+
+.ts-update-notes-release summary {
+	box-sizing: border-box;
+	min-block-size: 44px;
+	padding: 11px 16px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.ts-update-notes-release-content {
+	padding: 0 16px 14px;
+}
+
+.ts-update-notes-release-content h3 {
+	margin: 12px 0 4px;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.ts-update-notes-release-content h3:first-child {
+	margin-block-start: 4px;
+}
+
+.ts-update-notes-release-content ul {
+	margin: 0;
+	padding-inline-start: 22px;
+	list-style: disc;
+}
+
+.ts-update-notes-release-content li {
+	margin-block: 5px;
+	line-height: 1.5;
 }

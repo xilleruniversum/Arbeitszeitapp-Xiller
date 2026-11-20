@@ -103,32 +103,38 @@ $users->createUser($createdId,getenv('UPDATE_TEST_PASSWORD'));
 verifyUpdate($store->isNewAccount($createdId),true,'Native account creation marks only the new account for current-release onboarding');
 
 $first = $service->open('update-employee','automatic',$de);
-verifyUpdate($first['shouldShow'],true,'First employee visit displays notes');
-verifyUpdate(array_column($first['releases'],'version'),['1.3.0'],'A first visit contains the current release only');
+verifyUpdate($first['shouldShow'],false,'First employee visit does not open version history');
+verifyUpdate($first['releases'],[],'A first visit returns no release notes to display');
 verifyUpdate(count($notesFor('update-employee')),1,'First visit creates one native bell notification');
 $service->open('update-employee','automatic',$de);
 verifyUpdate(count($notesFor('update-employee')),1,'Repeated visits do not duplicate the native notification');
+verifyUpdate(array_column($service->open('update-employee','manual',$de)['releases'],'version'),['1.3.0'],'Explicit opening returns the available version history');
 $service->markShown('update-employee','1.3.0');
-verifyUpdate($service->open('update-employee','automatic',$de)['shouldShow'],false,'A displayed popup does not reopen automatically');
-verifyUpdate(count($notesFor('update-employee')),1,'Popup acknowledgment leaves the bell entry available');
-verifyUpdate($store->read('update-employee')['dismissedVersion'],null,'Popup acknowledgment is not a bell dismissal');
-verifyUpdate($service->open('update-employee','manual',$de)['shouldShow'],true,'The bell link reopens the pending notes');
+verifyUpdate($service->open('update-employee','automatic',$de)['shouldShow'],false,'Version history remains closed on ordinary app visits');
+verifyUpdate(count($notesFor('update-employee')),1,'Opening the history leaves the bell entry available');
+verifyUpdate($store->read('update-employee')['dismissedVersion'],null,'Only explicit native dismissal updates the dismissal state');
+verifyUpdate($service->open('update-employee','manual',$de)['shouldShow'],true,'The bell link reopens version history');
 $record=$notesFor('update-employee')[0];
 $notification=$handler->getById((int)$record['notification_id'],'update-employee');
 $prepared=$manager->prepare($notification,'de');
 verifyUpdate(str_contains($prepared->getParsedSubject(),'Arbeitszeitnachweis'),true,'Native German subject uses the account language');
 verifyUpdate(str_contains($prepared->getParsedSubject(),'1.3.0'),true,'Native subject substitutes the release version');
-verifyUpdate($prepared->getParsedMessage(),'Änderungsliste öffnen.','Native notification keeps only a concise translated link');
-verifyUpdate(str_contains($prepared->getLink(),'update-notes=1'),true,'Native link opens the update popup');
+verifyUpdate($prepared->getParsedMessage(),'','Native notification leaves the full changes in the version history');
+verifyUpdate(str_contains($prepared->getLink(),'update-notes=1'),true,'Native link opens version history');
+$actions=$prepared->getParsedActions();
+verifyUpdate(count($actions),1,'The native notification has one action');
+verifyUpdate($actions[0]->getParsedLabel(),'Änderungen ansehen','The native action uses the account language');
+verifyUpdate($actions[0]->getRequestType(),\OCP\Notification\IAction::TYPE_WEB,'The native action navigates to the history');
+verifyUpdate($actions[0]->getLink(),$prepared->getLink(),'The native action opens the same history URL');
 verifyUpdate($handler->deleteById((int)$record['notification_id'],'update-employee'),true,'The actual native X path deletes the note');
 verifyUpdate($store->read('update-employee')['dismissedVersion'],'1.3.0','The native X persists dismissal for this account');
 verifyUpdate($service->open('update-employee','automatic',$de)['shouldShow'],false,'A dismissed release does not reopen');
 verifyUpdate(count($notesFor('update-employee')),0,'A dismissed release is not republished');
-$service->open('update-employee','manual',$de);
+verifyUpdate(array_column($service->open('update-employee','manual',$de)['releases'],'version'),['1.3.0'],'Dismissed release notes remain in the history');
 verifyUpdate(count($notesFor('update-employee')),0,'Manually reading dismissed notes does not resurrect the bell');
 
 $hr=$service->open('update-hr','automatic',$en);
-verifyUpdate($hr['shouldShow'],true,'HR receives release notes');
+verifyUpdate($hr['shouldShow'],false,'HR receives release notes only on explicit opening');
 $hrRecord=$notesFor('update-hr')[0];
 verifyUpdate(str_contains($manager->prepare($handler->getById((int)$hrRecord['notification_id'],'update-hr'),'en')->getParsedSubject(),'updated'),true,'English notification uses its own language');
 $service->open('update-other','automatic',$de);
@@ -143,9 +149,9 @@ foreach (['admin','hr-admin'] as $suffix) {
 	verifyUpdate($controller->load()->getStatus(),200,'Administrator can load notes: '.$suffix);
 	verifyUpdate(count($notesFor($accounts[$suffix]->getUID())),1,'Administrator receives a native note: '.$suffix);
 	verifyUpdate($controller->shown('1.3.0')->getStatus(),200,'Administrator can mark notes as shown: '.$suffix);
-	verifyUpdate($controller->load()->getData()['shouldShow'],false,'Administrator acknowledgement prevents repeat popups: '.$suffix);
+	verifyUpdate($controller->load()->getData()['shouldShow'],false,'Administrator app visits leave version history closed: '.$suffix);
 	verifyUpdate($controller->load('manual')->getData()['shouldShow'],true,'Administrator can reopen the current release: '.$suffix);
-	verifyUpdate(count($notesFor($accounts[$suffix]->getUID())),1,'Popup acknowledgement leaves the administrator bell note available: '.$suffix);
+	verifyUpdate(count($notesFor($accounts[$suffix]->getUID())),1,'Opening the history leaves the administrator bell note available: '.$suffix);
 }
 $session->setUser($accounts['disabled']);
 $controller=$container->get(\OCA\Timesheet\Controller\UpdateNotesController::class);
@@ -160,14 +166,14 @@ $preparedPromoted=$manager->prepare($handler->getById((int)$promoted['notificati
 verifyUpdate($preparedPromoted->getParsedSubject() !== '',true,'A newly promoted administrator retains the native note');
 verifyUpdate(count($notesFor('update-promoted')),1,'Native preparation preserves the administrator note');
 verifyUpdate($store->read('update-promoted')['dismissedVersion'],null,'Role promotion does not acknowledge unread changes');
-verifyUpdate($service->open('update-promoted','automatic',$de)['shouldShow'],true,'Role promotion preserves unread popup access');
+verifyUpdate($service->open('update-promoted','manual',$de)['shouldShow'],true,'Role promotion preserves access to version history');
 $adminGroup->removeUser($accounts['promoted']);
 
 $installedVersion=$appConfig->getAppValueString('installed_version');
 try {
 	$appConfig->setAppValueString('installed_version','1.2.0');
 	$missing=$service->open('update-unreleased','automatic',$de);
-	verifyUpdate($missing['shouldShow'],false,'An installed version without bundled notes has no empty popup');
+	verifyUpdate($missing['shouldShow'],false,'An installed version without bundled notes opens no history panel on arrival');
 	verifyUpdate(count($notesFor('update-unreleased')),0,'Missing release notes create no bell entry');
 } finally {
 	$appConfig->setAppValueString('installed_version',$installedVersion);

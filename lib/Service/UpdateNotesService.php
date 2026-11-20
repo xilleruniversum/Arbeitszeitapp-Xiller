@@ -13,7 +13,7 @@ use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 use Psr\Log\LoggerInterface;
 
-/** Coordinates account progress and the native bell while keeping popup display independent. */
+/** Coordinates account progress, the native bell and the on-demand version history. */
 class UpdateNotesService {
 	public const OBJECT_TYPE = 'update_notes';
 	public const SUBJECT = 'update_notes';
@@ -39,9 +39,12 @@ class UpdateNotesService {
 	public function open(string $userId, string $mode, IL10N $translator): array {
 		$this->requireEligible($userId);
 		$version = $this->installedVersion();
-		if (!$this->catalog->contains($version)) {
+		$hasCurrentRelease = $this->catalog->contains($version);
+		if (!$hasCurrentRelease) {
 			$this->logger->warning('No update notes are bundled for the installed Timesheet version.', ['version' => $version]);
-			return ['enabled' => true, 'throughVersion' => null, 'shouldShow' => false, 'releases' => []];
+			if ($mode !== 'manual') {
+				return ['enabled' => true, 'throughVersion' => null, 'shouldShow' => false, 'releases' => []];
+			}
 		}
 		$shouldFlush = false;
 		try {
@@ -50,7 +53,7 @@ class UpdateNotesService {
 			$this->logger->warning('Update notification delivery could not be deferred.', ['exception' => $deferralError]);
 		}
 		try {
-			return $this->openWithAccountLock($userId, $mode, $translator, $version);
+			return $this->openWithAccountLock($userId, $mode, $translator, $version, $hasCurrentRelease);
 		} finally {
 			if ($shouldFlush) {
 				try {
@@ -63,8 +66,8 @@ class UpdateNotesService {
 		}
 	}
 
-	private function openWithAccountLock(string $userId, string $mode, IL10N $translator, string $version): array {
-		return $this->store->update($userId, function (?array $state) use ($userId, $mode, $translator, $version): array {
+	private function openWithAccountLock(string $userId, string $mode, IL10N $translator, string $version, bool $hasCurrentRelease): array {
+		return $this->store->update($userId, function (?array $state) use ($userId, $mode, $translator, $version, $hasCurrentRelease): array {
 			$state ??= $this->initialStateForUser($userId, $version);
 			$pending = $this->catalog->between($state['floorVersion'], $state['dismissedVersion'], $version);
 			$knownVersion = $state['floorVersion'];
@@ -74,20 +77,14 @@ class UpdateNotesService {
 			$isDowngrade = version_compare($version, $knownVersion, '<');
 			// Native delivery may fail independently of an otherwise usable change list.
 			try {
-				if (!$isDowngrade) {
+				if ($hasCurrentRelease && !$isDowngrade) {
 					$this->synchronizeBell($userId, $version, $state, $pending !== []);
 				}
 			} catch (\Throwable $deliveryError) {
 				$this->logger->warning('The update notes bell notification could not be refreshed.', ['userId' => $userId, 'exception' => $deliveryError]);
 			}
-			$afterVersion = $this->laterVersion($state['shownVersion'], $state['dismissedVersion']);
-			$releases = $mode === 'manual' ? $pending : $this->catalog->between($state['floorVersion'], $afterVersion, $version);
-			if ($mode === 'automatic' && $isDowngrade) {
-				$releases = [];
-			}
-			if ($mode === 'manual' && $releases === []) {
-				$releases = $this->catalog->between($version, null, $version);
-			}
+			// The bell tracks unread notifications separately from the complete version history.
+			$releases = $mode === 'manual' ? $this->catalog->between('0.0.0', null, $version) : [];
 			$throughVersion = $releases === [] ? null : $releases[array_key_last($releases)]['version'];
 			return ['state' => $state, 'result' => [
 				'enabled' => true,
@@ -102,7 +99,7 @@ class UpdateNotesService {
 		$this->requireEligible($userId);
 		$this->requireAvailableVersion($throughVersion);
 		return $this->store->update($userId, function (?array $state) use ($throughVersion): array {
-			if ($state === null || version_compare($throughVersion, $state['floorVersion'], '<')) {
+			if ($state === null) {
 				throw new \InvalidArgumentException('The update notes were not opened for this account.');
 			}
 			$state['shownVersion'] = $this->laterVersion($state['shownVersion'], $throughVersion);
@@ -110,7 +107,7 @@ class UpdateNotesService {
 		});
 	}
 
-	/** Called by native X and clear-all actions, never by the popup close button. */
+	/** Records native dismissal separately from viewing the version history. */
 	public function dismiss(string $userId, string $throughVersion): void {
 		$key = $userId . ':' . $throughVersion;
 		if (isset(self::$technicalDismissals[$key]) || !$this->canReceive($userId)) {
