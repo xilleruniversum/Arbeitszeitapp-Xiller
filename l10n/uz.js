@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "Yopish",
   "The update notes could not be loaded. Please try again.": "Yangilanish qaydlarini yuklab bo‘lmadi. Qayta urinib ko‘ring.",
   "Timesheet updated to {version}": "Ish vaqtini hisobga olish {version} versiyasiga yangilandi",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratorlar har bir kadrlar qoidasida faol va nofaol xodimlar uchun mavjud Nextcloud guruhlarini tanlashi mumkin.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Xodimlar bo‘limi umumiy ko‘rinishi va O‘zgarishlar tarixi har ikki turdagi guruhga a’zo xodimlarni faol deb ko‘rsatadi va «Barcha xodimlar» ro‘yxatida har bir xodimni bir marta chiqaradi.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Mavjud kadrlar qoidalari xodimlar guruhlari tanlovi o‘zgarmaguncha holatni avvalgidek belgilaydi.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Yangilanish bildirishnomalari Nextcloud bildirishnoma qo‘ng‘irog‘ida qoladi. «O‘zgarishlarni ko‘rish» bandi yoyiladigan bo‘limlardan iborat versiyalar tarixini ochadi.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Qo‘llanmani doimiy yashirish va istalgan vaqtda qayta ishga tushirish mumkin.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "O‘zgarishlar tarixi jadvalida o‘zgartirganlar ismlari uchun ko‘proq joy ajratilgan. Xodimlar bo‘limi yordami tanaffus qoidalari qayerda sozlanishini tushuntiradi.",
   "New features": "Yangi imkoniyatlar",
   "Improvements": "Yaxshilanishlar",
   "Bug fixes": "Xatolarni tuzatish",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "Yangilanish qaydlarini ochish.",
   "Version history": "Versiyalar tarixi",
   "View changes": "O‘zgarishlarni ko‘rish",
+  "Employee groups - Active": "Faol xodimlar guruhlari",
+  "Employee groups - Inactive": "Nofaol xodimlar guruhlari",
   "Individual HR accounts": "Alohida HR hisoblari",
   "Assigned groups and people receive HR access to these employee groups.": "Biriktirilgan guruhlar va shaxslar ushbu xodimlar guruhlariga HR kirish huquqini oladi.",
   "Search by name or account ID": "Ism yoki hisob identifikatori bo‘yicha qidirish",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Izoh ustunidan ish kuni haqidagi qaydlaringizni yozish yoki ishga kelmaganlik sababini tushuntirish uchun foydalaning. Boshlanish vaqti, tugash vaqti yoki ikkalasi ham kiritilmagan bo‘lsa, faqat tegishli izoh bildirishnoma yuborilishining oldini oladi. Vaqt umuman yoki faqat bitta vaqt kiritilgan va izoh yozilmagan yozuvlar to‘liq emas deb belgilanadi.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Eslatma qoidalari o‘zgardi. Avvalgi sabablar ro‘yxati o‘rniga endi matni bor istalgan izoh yetishmayotgan yoki to‘liq bo‘lmagan vaqt yozuvlari uchun elektron pochta eslatmasini to‘xtatadi. Faqat boshlanish yoki tugash vaqti yetishmasa, vaqt yozuvi to‘liq emasligi haqidagi ogohlantirish Izoh ustuni bo‘sh bo‘lgandagina ko‘rsatiladi.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Kadrlar bo‘limi sharhi va o‘zgarishlar tarixi Zeitnachweis va Zeitnachweis-Archiv guruhlari asosida faol va faol bo‘lmagan xodimlarni ko‘rsatadi. Ikkala ko‘rinishda ham Barchasi, Faol va Faol emas variantlari bo‘yicha filtrlash mumkin. Qaysi xodimlar ko‘rinishi ularning kadrlar bo‘limidagi mas’ul xodimga biriktirilishiga bog‘liq.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud foydalanuvchi boshqaruvi bir vaqtning o‘zida ikkala guruhga a’zo bo‘lishga yo‘l qo‘ymaydi. Ogohlantirishda guruhni almashtirish uchun avval qaysi guruhdan chiqish kerakligi aytiladi.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud hisoblari bir vaqtning o‘zida Zeitnachweis va Zeitnachweis-Archiv guruhlariga a’zo bo‘lishi mumkin. Hisoblar Zeitnachweis guruhiga a’zo ekan, faol hisoblanadi. Bu guruhdan chiqarilganda ular arxiv guruhida qoladi.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Izohlar bo‘yicha yordam, yo‘l-yo‘riqli tanishtiruv va guruh qoidalaridagi misol yangi eslatma qoidasini tushuntiradi.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Kadrlar bo‘limi uchun yordam bo‘limida chegaraviy qiymatlar har bir kadrlar hisobi uchun belgilanib, haftalik xulosa elektron pochta orqali o‘sha hisobga yuborilishi tushuntirilgan.",
-  "The update window can also be closed using the × in the top right corner.": "Yangilanish oynasini yuqori o‘ng burchakdagi × tugmasi bilan ham yopish mumkin."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Reliz izohlarini Nextcloud bildirishnoma qo‘ng‘irog‘i orqali oching. Yoyiladigan bo‘limlardan iborat versiyalar tarixini ochish uchun «O‘zgarishlarni ko‘rish» bandini tanlang."
 },
   "nplurals=1; plural=0;"
 );

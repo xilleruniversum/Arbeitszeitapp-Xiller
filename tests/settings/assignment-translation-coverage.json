@@ -1,5 +1,7 @@
 {
   "messages": [
+    "Employee groups - Active",
+    "Employee groups - Inactive",
     "Individual HR accounts",
     "Assigned groups and people receive HR access to these employee groups.",
     "Search by name or account ID",

@@ -40,14 +40,14 @@ Timesheet gives employees a simple way to record their working hours. The app ha
 
 ## Settings and responsibilities
 
-- **Use existing Nextcloud groups:** Assign HR groups to the relevant employee groups.
+- **Use existing Nextcloud groups:** Assign HR responsibility and choose active and inactive employee groups for each rule.
 - **Manage time rules:** Set rules and priorities for different groups.
 - **Show public holidays:** Display public holidays for the selected German federal state.
 - **Balance notifications for HR:** Enable additional email notifications when positive or negative balances exceed their thresholds.
 
 ## Getting started and languages
 
-- **Guided introduction:** A tour explains the features available to employees. It is offered on the first visit and can be restarted at any time.
+- **Guided introduction:** A tour explains the features available to employees. Employees can dismiss the invitation permanently and open the tour manually at any time.
 - **German and English:** The app provides a German and an English interface.
 	]]></description>
 	<description lang="de"><![CDATA[
@@ -81,21 +81,21 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 
 ## Einstellungen und Zuständigkeiten
 
-- **Bestehende Nextcloud-Gruppen nutzen:** HR-Gruppen den jeweiligen Mitarbeitergruppen zuordnen.
+- **Bestehende Nextcloud-Gruppen nutzen:** HR-Zuständigkeiten festlegen und je Regel aktive und inaktive Mitarbeitergruppen auswählen.
 - **Zeitregeln verwalten:** Vorgaben und Prioritäten für unterschiedliche Gruppen einstellen.
 - **Feiertage anzeigen:** Gesetzliche Feiertage anhand des ausgewählten deutschen Bundeslands berücksichtigen.
 - **Saldo-Hinweise für HR:** Zusätzliche E-Mail-Benachrichtigungen bei überschrittenen Plus- oder Minusstunden aktivieren.
 
 ## Einstieg und Sprache
 
-- **Geführte Einführung:** Eine Tour erklärt Mitarbeitenden die jeweils verfügbaren Funktionen. Sie wird beim ersten Besuch angeboten und lässt sich jederzeit neu starten.
+- **Geführte Einführung:** Eine Tour erklärt Mitarbeitenden die jeweils verfügbaren Funktionen. Die Einladung lässt sich dauerhaft ausblenden. Die Tour kann jederzeit manuell gestartet werden.
 - **Deutsch und Englisch:** Die App bietet eine deutsche und englische Oberfläche.
 	]]></description>
 	<screenshot small-thumbnail="https://nextcloud-agentur.de/timesheet/timesheet_userlist_small.png">https://nextcloud-agentur.de/timesheet/timesheet_userlist.png</screenshot>
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_hrOverview.png</screenshot>
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_englishSupport.png</screenshot>
 
-	<version>1.4.5</version>
+	<version>1.4.6</version>
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="dgu@xiller.com">David Gun (www.xiller-academy.de)</author>
 	<category>tools</category>

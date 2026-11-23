@@ -106,7 +106,7 @@ const placeholders = value => [...value.matchAll(/\{\w+\}|%\d+\$[ds]/g)].map(mat
 test('HR assignment and notification translations cover all existing account languages', () => {
 	assert.deepEqual(coverage.locales, accountLanguages);
 	assert.equal(coverage.messages.length, messages.size);
-	assert.equal(messages.size, 39);
+	assert.equal(messages.size, 41);
 	assert.equal(notificationMessages.length, new Set(notificationMessages).size);
 	for (const message of notificationMessages) assert.ok(!messages.has(message), message);
 });
@@ -149,6 +149,8 @@ test('both German variants use concise, neutral assignment and delivery wording'
 		for (const catalog of german) assert.equal(catalog[message], translated);
 	}
 	assert.equal(german[0]['Individual HR accounts'], 'Einzelne HR-Konten');
+	assert.equal(german[0]['Employee groups - Active'], 'Mitarbeitergruppen - Aktiv');
+	assert.equal(german[0]['Employee groups - Inactive'], 'Mitarbeitergruppen - Inaktiv');
 	assert.equal(german[0]['Email recipients'], 'E-Mail-Empfänger');
 	assert.equal(german[0]['All responsible HR accounts'], 'Alle zuständigen HR-Konten');
 	assert.equal(german[0]['Selected HR accounts'], 'Ausgewählte HR-Konten');

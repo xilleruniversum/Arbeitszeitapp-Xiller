@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Itxi",
   "The update notes could not be loaded. Please try again.": "Ezin izan dira eguneratzearen oharrak kargatu. Saiatu berriro.",
   "Timesheet updated to {version}": "Lanordu-erregistroa {version} bertsiora eguneratu da",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratzaileek Nextclouden lehendik dauden taldeak hauta ditzakete langile aktiboentzat eta inaktiboentzat, giza baliabideen arau bakoitzean.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Giza baliabideen ikuspegi orokorrean eta aldaketen historian, bi talde motetako kide diren langileak aktibo gisa agertzen dira. Langile bakoitza behin agertzen da «Langile guztiak» aukeran.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Giza baliabideen lehendik dauden arauek egoera orain arte bezala zehazten jarraitzen dute, langile-taldeen hautaketa aldatu arte.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Eguneratze-oharrak Nextcloudeko kanpaiaren menuan geratzen dira. «Ikusi aldaketak» aukerak bertsioen historia irekitzen du, eta bertsio bakoitzaren xehetasunak zabal daitezke.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Bisita gidatuaren gonbita behin betiko bazter daiteke, eta bisita edozein unetan has daiteke berriro.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Aldaketen historiako taulak leku gehiago uzten du aldaketak egin dituztenen izenetarako. Giza baliabideen laguntzak atsedenaldien arauak non konfiguratzen diren azaltzen du.",
   "New features": "Eginbide berriak",
   "Improvements": "Hobekuntzak",
   "Bug fixes": "Akatsen zuzenketak",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Ireki eguneratzearen oharrak.",
   "Version history": "Bertsioen historia",
   "View changes": "Ikusi aldaketak",
+  "Employee groups - Active": "Langile aktiboen taldeak",
+  "Employee groups - Inactive": "Langile inaktiboen taldeak",
   "Individual HR accounts": "Banakako HR kontuak",
   "Assigned groups and people receive HR access to these employee groups.": "Esleitutako taldeek eta pertsonek HR sarbidea dute langile talde hauetara.",
   "Search by name or account ID": "Bilatu izenaren edo kontuaren IDaren arabera",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Erabili «Iruzkina» zutabea zure lanegunari buruzko informazioa jasotzeko edo absentziak azaltzeko. Hasierako ordua, amaierako ordua edo biak falta badira, dagokion iruzkin batek baino ez du jakinarazpena saihesten. Iruzkinik gabeko sarrerak osatu gabekotzat markatzen dira ordurik ez badute edo ordu bakarra badute.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Oroigarrien arauak aldatu dira. Edukia duen edozein iruzkinek eragozten du falta diren edo osatu gabe dauden denbora-sarreren oroigarria posta elektronikoz bidaltzea, aurreko arrazoi-zerrenda ordezkatuz. Hasiera- edo amaiera-ordua bakarrik falta bada, sarrera osatu gabearen oharra «Iruzkina» zutabea hutsik dagoenean baino ez da agertzen.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Giza baliabideen ikuspegi orokorrak eta aldaketen historiak langile aktiboak eta inaktiboak erakusten dituzte, Zeitnachweis eta Zeitnachweis-Archiv taldeen arabera. Bi ikuspegiak «Guztiak», «Aktiboak» eta «Inaktiboak» aukerekin iragaz daitezke. Ikusgaitasuna langile bakoitzari esleitutako giza baliabideen arduradunaren araberakoa da.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud-eko erabiltzaileen kudeaketak ez du uzten bi taldeetako kide aldi berean izaten. Aldaketa egitean, ohar batek azaltzen du zein talde utzi behar den lehenik.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-eko kontuak Zeitnachweis eta Zeitnachweis-Archiv taldeetan egon daitezke aldi berean. Kontuek aktibo jarraitzen dute Zeitnachweis taldean dauden bitartean. Talde horretatik kentzean, artxiboan geratzen dira.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Iruzkinen laguntzak, bisita gidatuak eta talde-arauen adibideak oroigarrien arau berria azaltzen dute.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Giza baliabideen laguntzak azaltzen du mugak giza baliabideen kontu bakoitzerako ezartzen direla eta asteko laburpena kontu horretara posta elektronikoz bidaltzen dela.",
-  "The update window can also be closed using the × in the top right corner.": "Eguneratze-leihoa goiko eskuineko izkinako × sakatuta ere itxi daiteke."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Ireki bertsio-oharrak Nextcloud-eko jakinarazpenen kanpaitik. Hautatu «Ikusi aldaketak» bertsioen historia zabalgarria irekitzeko."
 },
   "nplurals=2; plural=(n != 1);"
 );

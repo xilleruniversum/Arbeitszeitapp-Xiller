@@ -11,14 +11,13 @@ use OCP\Group\Events\UserAddedEvent;
 use OCP\Group\Events\UserRemovedEvent;
 use Psr\Log\LoggerInterface;
 
-/** Records activity transitions when membership of the active employee group changes. */
+/** Records activity transitions when employee group membership changes. */
 class EmployeeActivityListener implements IEventListener {
 	public function __construct(private EmploymentStatusStore $statusStore, private LoggerInterface $logger) {
 	}
 
 	public function handle(Event $event): void {
-		if ((!$event instanceof UserAddedEvent && !$event instanceof UserRemovedEvent)
-			|| $event->getGroup()->getGID() !== EmploymentStatusStore::ACTIVE_GROUP_ID) {
+		if (!$event instanceof UserAddedEvent && !$event instanceof UserRemovedEvent) {
 			return;
 		}
 		$userId = $event->getUser()->getUID();

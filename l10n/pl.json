@@ -77,6 +77,12 @@
     "Close": "Zamknij",
     "The update notes could not be loaded. Please try again.": "Nie udało się wczytać informacji o aktualizacji. Spróbuj ponownie.",
     "Timesheet updated to {version}": "Ewidencja czasu pracy zaktualizowana do wersji {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratorzy mogą w każdej regule kadrowej wybrać istniejące grupy Nextcloud dla aktywnych i nieaktywnych pracowników.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Przegląd kadr i historia zmian pokazują pracowników należących do obu rodzajów grup jako aktywnych. W widoku „Wszyscy pracownicy” każdy pracownik jest wyświetlany raz.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Dotychczasowe reguły kadrowe określają status tak jak wcześniej, dopóki nie zmieni się w nich wyboru grup pracowników.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Powiadomienia o aktualizacjach pozostają w menu dzwonka Nextcloud. „Zobacz zmiany” otwiera historię wersji, w której można rozwijać poszczególne pozycje.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Przypomnienie o prezentacji można wyłączyć na stałe, a samą prezentację uruchomić ponownie w dowolnym momencie.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tabela historii zmian zapewnia więcej miejsca na imiona i nazwiska osób wprowadzających zmiany. Pomoc dla kadr wyjaśnia, gdzie ustawia się zasady przerw.",
     "New features": "Nowe funkcje",
     "Improvements": "Ulepszenia",
     "Bug fixes": "Poprawki błędów",
@@ -92,6 +98,8 @@
     "Open the update notes.": "Otwórz informacje o aktualizacji.",
     "Version history": "Historia wersji",
     "View changes": "Zobacz zmiany",
+    "Employee groups - Active": "Grupy aktywnych pracowników",
+    "Employee groups - Inactive": "Grupy nieaktywnych pracowników",
     "Individual HR accounts": "Indywidualne konta HR",
     "Assigned groups and people receive HR access to these employee groups.": "Przypisane grupy i osoby otrzymują dostęp HR do tych grup pracowników.",
     "Search by name or account ID": "Szukaj według nazwy lub identyfikatora konta",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Użyj kolumny „Komentarz”, aby zapisać własne informacje o dniu pracy lub wyjaśnić nieobecność. Jeśli brakuje godziny rozpoczęcia, zakończenia lub obu, tylko odpowiedni komentarz zapobiega wysłaniu powiadomienia. Wpisy bez komentarza, w których brakuje obu godzin lub wpisano tylko jedną, są oznaczane jako niepełne.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Zmieniono reguły przypomnień. Dotychczasową listę powodów zastąpiono zasadą, zgodnie z którą każdy niepusty komentarz wstrzymuje wysłanie przypomnienia e-mail o brakujących lub niepełnych wpisach czasu pracy. Jeśli brakuje tylko godziny rozpoczęcia albo zakończenia, ostrzeżenie o niepełnym wpisie pojawia się wyłącznie wtedy, gdy kolumna „Komentarz” jest pusta.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "W przeglądzie kadrowym i historii zmian aktywni i nieaktywni pracownicy są wyświetlani na podstawie przynależności do grup Zeitnachweis i Zeitnachweis-Archiv. W obu widokach można filtrować listę za pomocą opcji „Wszyscy”, „Aktywni” i „Nieaktywni”. Widoczność zależy od przypisania pracownika do opiekuna HR.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Zarządzanie użytkownikami w Nextcloud blokuje jednoczesną przynależność do obu grup. Podczas zmiany grupy ostrzeżenie wskazuje, z której grupy należy najpierw usunąć użytkownika.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Konta Nextcloud mogą należeć jednocześnie do grup Zeitnachweis i Zeitnachweis-Archiv. Konta pozostają aktywne, dopóki należą do grupy Zeitnachweis. Po usunięciu ich z tej grupy pozostają w grupie archiwalnej.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Pomoc dotycząca komentarzy, przewodnik po aplikacji oraz przykład reguł grupowych wyjaśniają nową zasadę przypomnień.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "W pomocy dla HR wyjaśniono, że wartości progowe ustawia się osobno dla każdego konta HR, a tygodniowe podsumowanie jest wysyłane e-mailem na to samo konto.",
-    "The update window can also be closed using the × in the top right corner.": "Okno aktualizacji można zamknąć także przyciskiem × w prawym górnym rogu."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Otwórz informacje o wydaniu za pomocą dzwonka powiadomień w Nextcloud. Wybierz „Zobacz zmiany”, aby otworzyć historię wersji, w której można rozwinąć listę zmian każdej wersji."
   },
   "pluralForm": "nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);"
 }

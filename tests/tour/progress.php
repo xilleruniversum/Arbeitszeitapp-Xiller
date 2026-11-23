@@ -148,6 +148,7 @@ namespace {
 	require_once __DIR__ . '/../../lib/Db/UserPreferencesStore.php';
 	require_once __DIR__ . '/../../lib/Service/EmploymentStatus.php';
 	require_once __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
+	require_once __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 	require_once __DIR__ . '/../../lib/Service/AbsenceCommentCatalog.php';
 	require_once __DIR__ . '/../../lib/Service/MissingEntryReminderMailer.php';
 	require_once __DIR__ . '/../../lib/Service/NotificationMailTemplates.php';
@@ -192,6 +193,7 @@ namespace {
 		public bool $rejectWrites = false;
 		public function __construct(private TourLockFixture $locks) {
 		}
+		public function getAppValue($appName, $key, $default = '') { return $default; }
 		public function getUserValueForUsers($appName, $key, $userIds) {
 			$this->reads[] = $key;
 			if ($this->rejectReads && str_starts_with($key, 'tour_')) {
@@ -339,7 +341,7 @@ namespace {
 			$expectSame(true, in_array('timesheet-main-v2', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
 			$expectedStyles = ['timesheet-layout-v8'];
-			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v5', 'timesheet-hr-settings-v7']);
+			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v5', 'timesheet-hr-settings-v8']);
 			$expectedStyles[] = 'timesheet-release-notes';
 			$expectedStyles[] = 'timesheet-help-panels-v3';
 			$expectSame($expectedStyles, \OCP\Util::$styles);

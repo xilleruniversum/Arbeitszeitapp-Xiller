@@ -193,4 +193,20 @@ $suite->test('Activity has no caller-selected setter and the public response sta
 	$suite->same('2025-12-31', $status->getMissingEntryReferenceDate('2025-12-31'));
 	$suite->same(['isActive', 'freelancerMode', 'statusRevision'], array_keys($status->toPublicArray()));
 });
+$suite->test('A mixed configuration keeps legacy classification scoped to its assigned groups', static function () use ($suite, $fixture): void {
+	[$store, $config, , , $groups] = $fixture();
+	$config->rules = [
+		['id' => 'legacy', 'userGroups' => ['old-team']],
+		['id' => 'configured', 'userGroups' => ['staff'], 'inactiveUserGroups' => ['alumni']],
+	];
+	$groups->addMember('alice', 'old-team');
+	$groups->addMember('bob', 'alumni');
+	$groups->addMember('carol', 'staff');
+
+	$statuses = $store->getStatusesForUsers(['alice', 'bob', 'carol']);
+	$suite->same(true, $statuses['alice']->isActive);
+	$suite->same(false, $statuses['bob']->isActive);
+	$suite->same(true, $statuses['carol']->isActive);
+});
+
 $suite->finish('Group-derived employment status/store');

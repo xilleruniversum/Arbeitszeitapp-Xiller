@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "Serra",
   "The update notes could not be loaded. Please try again.": "Impossìbile a carrigare sas notas de s'agiornamentu. Torra a proare.",
   "Timesheet updated to {version}": "Registru de oras agiornadu a sa versione {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Is amministradores podent seberare grupos de Nextcloud chi esistint giai pro su personale ativu e inativu in cada règula de su personale.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Su resumu de su personale e s’istòria de sas modìficas ammostrant comente ativas sas persones in grupos de ambos tipos e ammostrant cada persone una borta isceti in «Totu is traballadores».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Sas règulas de su personale chi esistint giai sighint a determinare s’istadu a manera matessi finas a cando càmbiat sa seletzione de is grupos de traballadores.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Is avisos de agiornamentu abarrant in sa campanedda de sas notìficas de Nextcloud. «Bidere sas modìficas» aberit s’istòria de sas versiones cun setziones chi si podent ispainare.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Sa ghia si podet serrare pro semper e torrare a abèrrere in cale si siat momentu.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Sa tabella de s’istòria de sas modìficas dat prus ispàtziu a is nùmenes de is autores. S’agiudu pro su personale isplicat in ue si cunfigurant sas règulas de sas pàusas.",
   "New features": "Funtziones noas",
   "Improvements": "Mejorias",
   "Bug fixes": "Curretziones de errores",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "Aberi sas notas de s'agiornamentu.",
   "Version history": "Istòria de sas versiones",
   "View changes": "Bidere sas modìficas",
+  "Employee groups - Active": "Grupos de personale ativu",
+  "Employee groups - Inactive": "Grupos de personale inativu",
   "Individual HR accounts": "Contos individuales de su personale",
   "Assigned groups and people receive HR access to these employee groups.": "Sos grupos e sas persones assignadas retzint atzessu de su personale a custos grupos de traballadores.",
   "Search by name or account ID": "Chirca pro nòmine o identificadore de su contu",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Imprea sa colunna «Cummentu» pro anotare informatziones subra sa die de traballu o pro giustificare sas assèntzias. Si mancat s’ora de comintzu, s’ora de fine o totu e duas, isceti unu cummentu currispondente impedit sa notìfica. Sas registratziones chentza oràriu o cun un’ora ebbia e chentza cummentu sunt marcadas comente incompletas.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Is règulas de is promemòria sunt cambiadas. Unu cummentu cun cuntènnidu impedit immoe s'imbìu de su promemòria pro posta eletrònica pro is oràrios chi mancant o sunt incumpletos, in logu de s'elencu pretzedente de resones. Si mancat isceti s'ora de incumentzu o de fine, s'avisu de oràriu incumpletu si mustrat isceti si sa colunna Cummentu est bòida.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Sa panoràmica de resursas umanas e sa cronologia de is modìficas mustrant is traballadores ativos e inativos segundu is grupos Zeitnachweis e Zeitnachweis-Archiv. In totu e duas is vistas podes filtrare pro Totus, Ativos e Inativos. Sa visibilidade dipendet dae s'assignatzione a su responsàbile de resursas umanas.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "S'amministratzione de is utentes de Nextcloud impedit s'apartenèntzia a totu e duos is grupos a su matessi tempus. Unu avisamentu inditat dae cale grupu depes essire prima pro cambiare.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Sos contos de Nextcloud podent fàghere parte a su matessi tempus de sos grupos Zeitnachweis e Zeitnachweis-Archiv. Abarrant ativos fintzas chi sunt in Zeitnachweis. Cando sunt bogados dae custu grupu, abarrant in su grupu de archìviu.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "S'agiudu pro is cummentos, sa vìsita ghida e s'esempru de is règulas de grupu isplicant sa règula noa de is promemòria.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "S'agiudu pro is resursas umanas isplicat chi is lìmites si cunfigurant pro cada contu de resursas umanas e chi su resumu chedomadàriu s'imbìat a su matessi contu pro posta eletrònica.",
-  "The update window can also be closed using the × in the top right corner.": "Podes serrare sa bentana de agiornamentu fintzas cun su × in s'àngulu a susu a dereta."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Abri sas notas de sa versione dae sa campanedda de sas notìficas de Nextcloud. Seletziona «Bidere sas modìficas» pro abèrrere s’istòria de sas versiones cun setziones chi si podent ispainare."
 },
   "nplurals=2; plural=(n != 1);"
 );

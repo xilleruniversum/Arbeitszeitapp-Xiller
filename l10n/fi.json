@@ -77,6 +77,12 @@
     "Close": "Sulje",
     "The update notes could not be loaded. Please try again.": "Päivitystietoja ei voitu ladata. Yritä uudelleen.",
     "Timesheet updated to {version}": "Työajanseuranta päivitetty versioon {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Ylläpitäjät voivat valita olemassa olevat Nextcloud-ryhmät aktiivisille ja ei-aktiivisille työntekijöille kussakin henkilöstöhallinnon säännössä.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Henkilöstöhallinnon yleiskuva ja muutoshistoria näyttävät molempiin ryhmätyyppeihin kuuluvat työntekijät aktiivisina. Jokainen työntekijä näkyy kerran kohdassa ”Kaikki työntekijät”.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Nykyiset henkilöstöhallinnon säännöt määrittävät tilan entiseen tapaan, kunnes niiden työntekijäryhmien valintaa muutetaan.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Päivitysilmoitukset säilyvät Nextcloudin kellovalikossa. ”Näytä muutokset” avaa versiohistorian, jossa kunkin version tiedot voi laajentaa näkyviin.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Opastetun kierroksen ehdotuksen voi poistaa pysyvästi, ja kierroksen voi käynnistää uudelleen milloin tahansa.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Muutoshistorian taulukossa on enemmän tilaa muokkaajien nimille. Henkilöstöhallinnon ohje kertoo, mistä taukosäännöt määritetään.",
     "New features": "Uudet ominaisuudet",
     "Improvements": "Parannukset",
     "Bug fixes": "Virhekorjaukset",
@@ -92,6 +98,8 @@
     "Open the update notes.": "Avaa päivitystiedot.",
     "Version history": "Versiohistoria",
     "View changes": "Näytä muutokset",
+    "Employee groups - Active": "Aktiivisten työntekijöiden ryhmät",
+    "Employee groups - Inactive": "Ei-aktiivisten työntekijöiden ryhmät",
     "Individual HR accounts": "Yksittäiset HR-tilit",
     "Assigned groups and people receive HR access to these employee groups.": "Määritetyt ryhmät ja henkilöt saavat HR-oikeudet näihin työntekijäryhmiin.",
     "Search by name or account ID": "Hae nimellä tai tilin tunnisteella",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Kirjaa työpäivääsi koskevia tietoja tai poissaolojen syitä Kommentti-sarakkeeseen. Jos alkamis- tai päättymisaika tai molemmat puuttuvat, vain asiaa koskeva kommentti estää ilmoituksen. Kommentittomat merkinnät, joissa on vain yksi kellonaika tai ei yhtään, merkitään puutteellisiksi.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Muistutussäännöt ovat muuttuneet. Mikä tahansa sisältöä sisältävä kommentti estää nyt sähköpostimuistutuksen puuttuvista tai puutteellisista työaikamerkinnöistä ja korvaa aiemman syyluettelon. Jos vain aloitus- tai lopetusaika puuttuu, puutteellisen merkinnän varoitus näkyy vain, kun Kommentti-sarake on tyhjä.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "HR-yleiskatsaus ja muutoshistoria näyttävät aktiiviset ja ei-aktiiviset työntekijät ryhmien Zeitnachweis ja Zeitnachweis-Archiv perusteella. Molemmissa näkymissä voi suodattaa valinnoilla Kaikki, Aktiiviset ja Ei-aktiiviset. Näkyvyys määräytyy työntekijän HR-vastuuhenkilön mukaan.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloudin käyttäjähallinta estää kuulumisen molempiin ryhmiin samanaikaisesti. Varoitus kertoo, mistä ryhmästä on poistuttava ensin ryhmää vaihdettaessa.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-tilit voivat kuulua samanaikaisesti ryhmiin Zeitnachweis ja Zeitnachweis-Archiv. Tilit pysyvät aktiivisina niin kauan kuin ne kuuluvat ryhmään Zeitnachweis. Kun jäsenyys kyseisessä ryhmässä poistetaan, tilit jäävät arkistoon.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Kommenttiohje, opastettu kierros ja ryhmäsääntöjen esimerkki selittävät uuden muistutussäännön.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "HR-ohje selittää, että raja-arvot määritetään kullekin HR-tilille ja että viikkoyhteenveto lähetetään sähköpostitse kyseiselle tilille.",
-    "The update window can also be closed using the × in the top right corner.": "Päivitysikkunan voi sulkea myös oikean yläkulman ×-painikkeella."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Avaa julkaisutiedot Nextcloudin ilmoituskellosta. Valitsemalla ”Näytä muutokset” avaat versiohistorian, jonka kohdat voi laajentaa."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

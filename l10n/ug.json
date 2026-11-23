@@ -152,6 +152,12 @@
     "Close": "تاقاش",
     "The update notes could not be loaded. Please try again.": "يېڭىلاش ئىزاھلىرىنى يۈكلىگىلى بولمىدى. قايتا سىناڭ.",
     "Timesheet updated to {version}": "خىزمەت ۋاقتى خاتىرىسى {version} نەشرىگە يېڭىلاندى",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "باشقۇرغۇچىلار ھەر بىر خادىملار قائىدىسىدە ئاكتىپ ۋە ئاكتىپ بولمىغان خىزمەتچىلەر ئۈچۈن مەۋجۇت Nextcloud گۇرۇپپىلىرىنى تاللىيالايدۇ.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "خادىملار باشقۇرۇش ئومۇمىي كۆرۈنۈشى ۋە ئۆزگەرتىش تارىخى ھەر ئىككى خىل گۇرۇپپىغا ئەزا خىزمەتچىلەرنى ئاكتىپ كۆرسىتىدۇ ۋە «بارلىق خىزمەتچىلەر» تىزىمىدا ھەر بىر خىزمەتچىنى بىر قېتىملا كۆرسىتىدۇ.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "مەۋجۇت خادىملار قائىدىلىرى خىزمەتچى گۇرۇپپىلىرىنىڭ تاللىنىشى ئۆزگەرگۈچە ھالەتنى بۇرۇنقىدەك بەلگىلەيدۇ.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "يېڭىلاش ئۇقتۇرۇشلىرى Nextcloud نىڭ ئۇقتۇرۇش قوڭغۇرىقىدا قالىدۇ. «ئۆزگەرتىشلەرنى كۆرۈش» يېيىپ كۆرگىلى بولىدىغان نەشر تارىخىنى ئاچىدۇ.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "دەرسلىكنى مەڭگۈلۈك يوشۇرۇش ۋە خالىغان ۋاقىتتا قايتا باشلاشقا بولىدۇ.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "ئۆزگەرتىش تارىخى جەدۋىلىدە ئۆزگەرتكۈچىلەرنىڭ ئىسمى ئۈچۈن تېخىمۇ كۆپ ئورۇن بار. خادىملار ياردىمىدە دەم ئېلىش قائىدىلىرىنى قەيەردە تەڭشەش چۈشەندۈرۈلىدۇ.",
     "New features": "يېڭى ئىقتىدارلار",
     "Improvements": "ياخشىلىنىشلار",
     "Bug fixes": "خاتالىق تۈزىتىشلىرى",
@@ -167,6 +173,8 @@
     "Open the update notes.": "يېڭىلاش ئىزاھلىرىنى ئېچىش.",
     "Version history": "نەشر تارىخى",
     "View changes": "ئۆزگەرتىشلەرنى كۆرۈش",
+    "Employee groups - Active": "ئاكتىپ خىزمەتچىلەر گۇرۇپپىلىرى",
+    "Employee groups - Inactive": "ئاكتىپ بولمىغان خىزمەتچىلەر گۇرۇپپىلىرى",
     "Individual HR accounts": "يەككە HR ھېساباتلىرى",
     "Assigned groups and people receive HR access to these employee groups.": "تەقسىملەنگەن گۇرۇپپا ۋە كىشىلەر بۇ خىزمەتچىلەر گۇرۇپپىلىرىغا HR زىيارەت ھوقۇقىغا ئېرىشىدۇ.",
     "Search by name or account ID": "ئىسىم ياكى ھېسابات كىملىكى بويىچە ئىزدەش",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "خىزمەت كۈنىگە ئائىت خاتىرىلەرنى يېزىش ياكى خىزمەتكە كەلمىگەنلىك سەۋەبىنى چۈشەندۈرۈش ئۈچۈن ئىزاھات ستونىنى ئىشلىتىڭ. باشلىنىش ۋاقتى، ئاخىرلىشىش ۋاقتى ياكى ھەر ئىككىسى كەم بولسا، پەقەت مۇناسىۋەتلىك ئىزاھاتلا ئۇقتۇرۇشنى توسىدۇ. ۋاقىت كىرگۈزۈلمىگەن ياكى بىرلا ۋاقىت كىرگۈزۈلگەن ئىزاھاتسىز خاتىرىلەر تولۇق ئەمەس دەپ بەلگىلىنىدۇ.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "ئەسكەرتىش قائىدىسى ئۆزگەردى. ئىلگىرىكى سەۋەبلەر تىزىملىكىنىڭ ئورنىغا، ھازىر مەزمۇنى بار ھەرقانداق ئىزاھات ۋاقىت خاتىرىسى كەم ياكى تولۇق بولمىغاندا ئېلخەت ئەسكەرتىشىنى توختىتىدۇ. پەقەت باشلاش ياكى ئاخىرلىشىش ۋاقتى كەم بولسا، ۋاقىت خاتىرىسى تولۇق ئەمەس دېگەن ئاگاھلاندۇرۇش ئىزاھات ئىستونى بوش بولغاندىلا كۆرۈنىدۇ.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "خادىم ئىشلىرى ئومۇمىي كۆرۈنۈشى ۋە ئۆزگىرىش تارىخى Zeitnachweis ۋە Zeitnachweis-Archiv گۇرۇپپىلىرىغا ئاساسەن ئاكتىپ ۋە ئاكتىپ ئەمەس خادىملارنى كۆرسىتىدۇ. ھەر ئىككى كۆرۈنۈشتە ھەممىسى، ئاكتىپ ۋە ئاكتىپ ئەمەس بويىچە سۈزگىلى بولىدۇ. قايسى خادىملارنىڭ كۆرۈنىدىغانلىقى ئۇلارغا تەقسىملەنگەن خادىم ئىشلىرى مەسئۇلىغا باغلىق.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud ئىشلەتكۈچى باشقۇرۇشىدا بىرلا ۋاقىتتا ھەر ئىككى گۇرۇپپىغا ئەزا بولۇشقا بولمايدۇ. ئاگاھلاندۇرۇش گۇرۇپپا ئالماشتۇرغاندا ئاۋۋال قايسى گۇرۇپپىدىن چىقىش كېرەكلىكىنى كۆرسىتىدۇ.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud ھېساباتلىرى بىرلا ۋاقىتتا Zeitnachweis ۋە Zeitnachweis-Archiv گۇرۇپپىلىرىغا ئەزا بولالايدۇ. ھېساباتلار Zeitnachweis گۇرۇپپىسىدا تۇرغاندا ئاكتىپ ھېسابلىنىدۇ. بۇ گۇرۇپپىدىن چىقىرىلسا، ئارخىپ گۇرۇپپىسىدا قالىدۇ.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "ئىزاھات ياردىمى، قەدەممۇ قەدەم يېتەكچى ۋە گۇرۇپپا قائىدىسىدىكى مىسال يېڭى ئەسكەرتىش قائىدىسىنى چۈشەندۈرىدۇ.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "خادىم ئىشلىرى ياردىمىدە چەك قىممەتلىرىنىڭ ھەر بىر خادىم ئىشلىرى ھېساباتى ئۈچۈن تەڭشىلىدىغانلىقى ۋە ھەپتىلىك خۇلاسە ئېلخېتىنىڭ شۇ ھېساباتقا ئەۋەتىلىدىغانلىقى چۈشەندۈرۈلىدۇ.",
-    "The update window can also be closed using the × in the top right corner.": "يېڭىلاش كۆزنىكىنى ئۈستىدىكى × كۇنۇپكىسى بىلەنمۇ ياپقىلى بولىدۇ."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "نەشر ئىزاھاتلىرىنى Nextcloud نىڭ ئۇقتۇرۇش قوڭغۇرىقىدىن ئېچىڭ. يېيىپ كۆرگىلى بولىدىغان نەشر تارىخىنى ئېچىش ئۈچۈن «ئۆزگەرتىشلەرنى كۆرۈش» نى تاللاڭ."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

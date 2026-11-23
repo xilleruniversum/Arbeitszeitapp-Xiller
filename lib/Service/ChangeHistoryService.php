@@ -8,9 +8,7 @@ use OC\ForbiddenException;
 use OCA\Timesheet\Db\ChangeHistoryStore;
 use OCA\Timesheet\Db\ChangeHistoryAccountQueue;
 use OCA\Timesheet\Db\ChangeHistoryRecordingStore;
-use OCA\Timesheet\Db\EmploymentStatusStore;
 use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\IGroupManager;
 use OCP\IUserSession;
 
 /** Resolves current HR scope before interpreting filters or returning any historical data. */
@@ -21,7 +19,6 @@ class ChangeHistoryService {
 		private ChangeHistoryStore $history,
 		private HrService $hrService,
 		private IUserSession $userSession,
-		private IGroupManager $groupManager,
 		private ITimeFactory $timeFactory,
 		private ChangeHistoryAccountQueue $accountQueue,
 		private ChangeHistoryRecordingStore $recording,
@@ -37,8 +34,8 @@ class ChangeHistoryService {
 		$employees = $this->hrService->getEmployeesForOverview($userId);
 		$allEmployeeIds = array_column($employees, 'id');
 		if (!in_array($userId, $allEmployeeIds, true)) {
-			$isActive = $this->groupManager->isInGroup($userId, EmploymentStatusStore::ACTIVE_GROUP_ID);
-			if ($isActive || $this->groupManager->isInGroup($userId, EmploymentStatusStore::ARCHIVE_GROUP_ID)) {
+			$isActive = $this->hrService->getEmploymentGroupStatus($userId);
+			if ($isActive !== null) {
 				array_unshift($employees, ['id' => $userId, 'name' => $user->getDisplayName(), 'isActive' => $isActive]);
 				array_unshift($allEmployeeIds, $userId);
 			}

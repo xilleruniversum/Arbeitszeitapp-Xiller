@@ -77,6 +77,12 @@
     "Close": "Tampar",
     "The update notes could not be loaded. Please try again.": "Impossible de cargar las nòtas de mesa a jorn. Tornatz ensajar.",
     "Timesheet updated to {version}": "Seguiment del temps de trabalh mes a jorn a la version {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Los administrators pòdon causir de grops Nextcloud existents per lo personal actiu e inactiu dins cada règla RH.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "La vista d’ensemble RH e l’istoric de las modificacions afichan coma actiu lo personal que fa partida dels dos tipes de grops. Dins « Totes los collaborators », cada persona apareis un sol còp.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Las règlas RH existentas determinan l’estat coma abans fins que la seleccion dels grops de personal siá modificada.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Las notificacions de mesa a jorn demòran dins lo menú de la campaneta de Nextcloud. « Veire las modificacions » dobrís l’istoric de las versions, ont se pòt desplegar cada entrada.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Se pòt desactivar definitivament lo rapèl de la visita guidada e tornar aviar la visita a quin moment que siá.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Lo tablèu de l’istoric de las modificacions daissa mai de plaça als noms de las personas qu’an fach las modificacions. L’ajuda RH explica ont se configuran las règlas de pausa.",
     "New features": "Foncionalitats novèlas",
     "Improvements": "Melhoraments",
     "Bug fixes": "Correccions d'errors",
@@ -92,6 +98,8 @@
     "Open the update notes.": "Dobrir las nòtas de mesa a jorn.",
     "Version history": "Istoric de las versions",
     "View changes": "Veire las modificacions",
+    "Employee groups - Active": "Grops de personal actiu",
+    "Employee groups - Inactive": "Grops de personal inactiu",
     "Individual HR accounts": "Comptes individuals de RH",
     "Assigned groups and people receive HR access to these employee groups.": "Los grops e las personas assignats recebon un accès RH a aqueles grops d'emplegats.",
     "Search by name or account ID": "Cercar per nom o identificant del compte",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Utilizatz la colomna «Comentari» per notar vòstras pròprias informacions sul vòstre jorn de trabalh o explicar las abséncias. Se manca l’ora de començament, l’ora de fin o totas doas, sol un comentari al subjècte empacha la notificacion. Las entradas sens comentari son marcadas coma incompletas s’i a cap d’ora o una sola ora.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Las règlas de remembret an cambiat. La lista precedenta de motius es remplaçada per una règla segon la quala tot comentari amb de contengut empacha lo mandadís d’un corrièl de remembret per las entradas de temps mancantas o incompletas. Se manca sonque l’ora de començament o de fin, l’avertiment d’entrada incompleta apareis sonque quand la colomna « Comentari » es voida.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "La vista d’ensemble RH e l’istoric de las modificacions afichan los emplegats actius e inactius segon los grops Zeitnachweis e Zeitnachweis-Archiv. Las doas vistas se pòdon filtrar amb las opcions « Totes », « Actius » e « Inactius ». La visibilitat depend del responsable RH assignat a cada emplegat.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "La gestion dels utilizaires de Nextcloud empacha l’apartenéncia simultanèa als dos grops. En cas de cambiament, un avertiment indica de quin grop cal d’en primièr levar l’utilizaire.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Los comptes Nextcloud pòdon èsser membres dels grops Zeitnachweis e Zeitnachweis-Archiv al meteis temps. Demòran actius tant que fan partida del grop Zeitnachweis. Quand son retirats d’aquel grop, demòran dins lo grop d’archiu.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "L’ajuda dels comentaris, la visita guidada e l’exemple de las règlas de grop explican la nòva règla de remembret.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "L’ajuda RH explica que los lindals se definisson per cada compte RH e que lo resumit setmanièr s’envia per corrièl a aquel meteis compte.",
-    "The update window can also be closed using the × in the top right corner.": "La fenèstra de mesa a jorn se pòt tanben tampar amb lo boton × en naut a drecha."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Dobrissètz las nòtas de version amb la campaneta de notificacions de Nextcloud. Seleccionatz « Veire las modificacions » per dobrir l’istoric de las versions, ont podètz desplegar la lista de modificacions de cada version."
   },
   "pluralForm": "nplurals=2; plural=(n > 1);"
 }

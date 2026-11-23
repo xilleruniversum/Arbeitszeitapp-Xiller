@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "關閉",
   "The update notes could not be loaded. Please try again.": "無法載入更新說明。請重試。",
   "Timesheet updated to {version}": "工時記錄已更新至版本 {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "管理員可以在每條人事規則中選擇現有的 Nextcloud 群組，分別用於在職與非在職員工。",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "人事總覽和變更歷程會將同時屬於兩類群組的員工顯示為在職，每位員工在「所有員工」中只會列出一次。",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "現有的人事規則會保留原有的狀態判定方式，直到所選的員工群組有變更。",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "更新通知會保留在 Nextcloud 的通知鈴鐺中。選取「檢視變更」可開啟版本歷程，並展開各版本的詳細資訊。",
+  "The guided tour can be dismissed permanently and restarted at any time.": "可以永久關閉教學提示，也可以隨時重新啟動教學。",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "變更歷程的表格為變更者姓名保留了更多空間。人事說明會指出可以在哪裡設定休息規則。",
   "New features": "新功能",
   "Improvements": "改進",
   "Bug fixes": "錯誤修正",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "開啟更新說明。",
   "Version history": "版本歷程",
   "View changes": "檢視變更",
+  "Employee groups - Active": "在職員工群組",
+  "Employee groups - Inactive": "非在職員工群組",
   "Individual HR accounts": "個別人事帳號",
   "Assigned groups and people receive HR access to these employee groups.": "指定的群組和人員將取得這些員工群組的人事存取權限。",
   "Search by name or account ID": "依姓名或帳號識別碼搜尋",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "可在「備註」欄記錄工作日的個人事項或說明缺勤原因。若缺少開始時間、結束時間或兩者，只有填寫相關備註才能免除通知。未填寫時間或只填寫一項時間且沒有備註的紀錄，會標記為不完整。",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "提醒規則已變更。現在只要備註有內容，就會停止寄送工時記錄缺漏或不完整的電子郵件提醒，取代原本的原因清單。若僅缺少開始或結束時間，則只有備註欄為空白時才會顯示工時不完整的提示。",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "人資總覽和變更記錄會依照 Zeitnachweis 和 Zeitnachweis-Archiv 群組顯示啟用和停用的員工。兩個檢視畫面都可以按「全部」、「啟用」和「停用」篩選。可見範圍取決於人資負責人的分派。",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud 使用者管理不允許使用者同時加入這兩個群組。切換群組時，警告會說明應先退出哪個群組。",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud 帳號可以同時屬於 Zeitnachweis 和 Zeitnachweis-Archiv 兩個群組。帳號只要仍屬於 Zeitnachweis，就會視為啟用。從 Zeitnachweis 移除帳號後，帳號仍會保留在封存群組中。",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "備註說明、操作導覽和群組規則範例都會說明新的提醒規則。",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "人資說明指出，門檻值是按個別人資帳號設定的，每週摘要電子郵件也會寄送到該帳號。",
-  "The update window can also be closed using the × in the top right corner.": "也可以點選右上角的 × 關閉更新視窗。"
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "透過 Nextcloud 的通知鈴鐺開啟版本資訊。選擇「檢視變更」即可開啟版本歷程，並展開各版本的詳細資訊。"
 },
   "nplurals=1; plural=0;"
 );

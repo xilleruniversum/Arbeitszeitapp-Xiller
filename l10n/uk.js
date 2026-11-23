@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "Закрити",
   "The update notes could not be loaded. Please try again.": "Не вдалося завантажити відомості про оновлення. Повторіть спробу.",
   "Timesheet updated to {version}": "Облік робочого часу оновлено до версії {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Адміністратори можуть у кожному кадровому правилі вибирати наявні групи Nextcloud для активних і неактивних працівників.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "В огляді відділу кадрів та історії змін працівники, які належать до обох типів груп, відображаються як активні. У списку «Усі співробітники» кожен працівник відображається один раз.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Чинні кадрові правила визначають статус так само, як і раніше, доки не зміниться вибір груп працівників.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Сповіщення про оновлення залишаються доступними під значком дзвіночка в Nextcloud. Кнопка «Переглянути зміни» відкриває історію версій із розгортними розділами.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Пропозицію пройти навчання можна вимкнути назавжди, а саме навчання можна будь-коли запустити знову.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "У таблиці історії змін більше місця для імен авторів змін. Довідка для відділу кадрів пояснює, де налаштовувати правила перерв.",
   "New features": "Нові функції",
   "Improvements": "Покращення",
   "Bug fixes": "Виправлення помилок",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "Відкрити відомості про оновлення.",
   "Version history": "Історія версій",
   "View changes": "Переглянути зміни",
+  "Employee groups - Active": "Групи активних працівників",
+  "Employee groups - Inactive": "Групи неактивних працівників",
   "Individual HR accounts": "Окремі облікові записи відділу кадрів",
   "Assigned groups and people receive HR access to these employee groups.": "Призначені групи й особи отримують кадровий доступ до цих груп працівників.",
   "Search by name or account ID": "Пошук за ім'ям або ідентифікатором облікового запису",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Стовпець «Коментар» можна використовувати для власних нотаток про робочий день або пояснення відсутності. Якщо немає часу початку, завершення або обох значень, лише відповідний коментар запобігає сповіщенню. Записи без часу або лише з одним часом і без коментаря позначаються як неповні.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Правила нагадувань змінилися. Тепер будь-який непорожній коментар скасовує нагадування електронною поштою про відсутні або неповні записи робочого часу. Це замінює попередній перелік причин. Якщо відсутній лише час початку або завершення роботи, попередження про неповні дані відображається лише тоді, коли стовпець «Коментар» порожній.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Огляд HR та історія змін показують активних і неактивних співробітників за групами Zeitnachweis та Zeitnachweis-Archiv. В обох поданнях доступні фільтри «Усі», «Активні» й «Неактивні». Видимість залежить від того, за яким фахівцем HR закріплено співробітника.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Керування користувачами в Nextcloud не дозволяє одночасно належати до обох груп. Попередження пояснює, яку групу потрібно залишити першою під час переходу.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Облікові записи Nextcloud можуть одночасно належати до груп Zeitnachweis і Zeitnachweis-Archiv. Облікові записи залишаються активними, доки належать до Zeitnachweis. Після вилучення з цієї групи вони залишаються в архівній групі.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Довідка щодо коментарів, покроковий огляд і приклад у правилах груп пояснюють нове правило нагадувань.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "У довідці для HR зазначено, що порогові значення налаштовуються для кожного облікового запису HR, а щотижневий підсумок надсилається електронною поштою на адресу цього облікового запису.",
-  "The update window can also be closed using the × in the top right corner.": "Вікно оновлення також можна закрити кнопкою × у верхньому правому куті."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Відкрийте примітки до випуску через значок дзвіночка в Nextcloud. Виберіть «Переглянути зміни», щоб відкрити історію версій із розгортними розділами."
 },
   "nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);"
 );

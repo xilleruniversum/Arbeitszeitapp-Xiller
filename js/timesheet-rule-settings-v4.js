@@ -81,6 +81,7 @@
 		breakLongHours: 9,
 		maxHours: 10
 	};
+	const employeeGroupFields = ['userGroups', 'inactiveUserGroups'];
 	const ruleValueRanges = {
 		priority: [0, 9999],
 		breakShortMinutes: [0, 600],
@@ -176,6 +177,9 @@
 			missingEntryReminders: normalizeReminderSettings(inputRule.missingEntryReminders),
 			employeeBalanceNotifications: normalizeEmployeeBalanceNotifications(inputRule.employeeBalanceNotifications)
 		};
+		if (managesAssignments || Array.isArray(inputRule.inactiveUserGroups)) {
+			normalizedRule.inactiveUserGroups = Array.isArray(inputRule.inactiveUserGroups) ? inputRule.inactiveUserGroups : [];
+		}
 		Object.entries(defaultRuleSettings).forEach(([settingKey, defaultValue]) => {
 			const [minimumValue, maximumValue] = ruleValueRanges[settingKey];
 			normalizedRule[settingKey] = clampNumericValue(inputRule[settingKey], minimumValue, maximumValue, defaultValue);
@@ -217,7 +221,8 @@
 				...rule,
 				id,
 				hrGroups: normalizeGroupIds(hrGroups),
-				userGroups: normalizeGroupIds(userGroups)
+				userGroups: normalizeGroupIds(userGroups),
+				inactiveUserGroups: Array.isArray(rule.inactiveUserGroups) ? normalizeGroupIds(rule.inactiveUserGroups) : undefined
 			});
 			normalizedRules.push(normalizedRule);
 		});
@@ -229,16 +234,17 @@
 		const assignedGroupIds = new Set();
 		const removedGroupIds = [];
 		accessRules.forEach(rule => {
-			const uniqueGroupIds = [];
-			(Array.isArray(rule.userGroups) ? rule.userGroups : []).forEach(groupId => {
-				if (assignedGroupIds.has(groupId)) {
-					removedGroupIds.push(groupId);
-					return;
-				}
-				assignedGroupIds.add(groupId);
-				uniqueGroupIds.push(groupId);
-			});
-			rule.userGroups = uniqueGroupIds;
+			for (const groupField of employeeGroupFields) {
+				if (!Array.isArray(rule[groupField])) continue;
+				rule[groupField] = rule[groupField].filter(groupId => {
+					if (assignedGroupIds.has(groupId)) {
+						removedGroupIds.push(groupId);
+						return false;
+					}
+					assignedGroupIds.add(groupId);
+					return true;
+				});
+			}
 		});
 		return {
 			rules: accessRules,
@@ -251,7 +257,7 @@
 			if (rule.id === ruleId) {
 				return false;
 			}
-			return Array.isArray(rule.userGroups) && rule.userGroups.includes(groupId);
+			return employeeGroupFields.some(field => rule[field]?.includes(groupId));
 		});
 	}
 
@@ -263,6 +269,7 @@
 		const formData = new FormData();
 		formData.append('rules', JSON.stringify(nextRules));
 		formData.append('rulesRevision', savedRulesRevision);
+		if (managesAssignments) formData.append('separateEmployeeGroups', '1');
 		if (managesPolicy && policySection) formData.append('policySection', policySection);
 		const response = await fetch(url, {
 			method: 'POST',
@@ -328,10 +335,9 @@
 			.join('');
 	}
 
-	function renderEmployeeGroupOptions(rule, assignedEmployeeGroups) {
-		const currentEmployeeGroups = new Set(Array.isArray(rule.userGroups) ? rule.userGroups : []);
+	function renderEmployeeGroupOptions(assignedEmployeeGroups) {
 		return ['<option value="">' + escapeHtml(t('timesheet', 'Add group...')) + '</option>'].concat(allGroups.map(groupId => {
-			const disabled = assignedEmployeeGroups.has(groupId) && !currentEmployeeGroups.has(groupId);
+			const disabled = assignedEmployeeGroups.has(groupId);
 			return `<option value="${escapeHtml(groupId)}"${disabled ? ' disabled' : ''}>${escapeHtml(groupId)}</option>`;
 		})).join('');
 	}
@@ -623,10 +629,20 @@
 		search.timer = setTimeout(runSearch, 250);
 	}
 
+	function renderEmployeeGroupPicker(rule, groupField, label, options) {
+		const id = `ts-employee-groups-${encodeURIComponent(rule.id)}-${groupField}`;
+		return `
+			<div class="ts-employee-group-picker">
+				<label for="${id}">${escapeHtml(label)}</label>
+				<div class="ts-chips" data-kind="${groupField}">${renderGroupChips(rule[groupField], groupField)}</div>
+				<select id="${id}" class="ts-rule-select" data-kind="${groupField}">${options}</select>
+			</div>`;
+	}
+
 	// Administrators edit responsibility; HR edits the corresponding time and mail policy.
 	function renderAssignmentControls(rule, assignedEmployeeGroups) {
 		const hrGroupOptions = renderHrGroupOptions();
-		const employeeGroupOptions = renderEmployeeGroupOptions(rule, assignedEmployeeGroups);
+		const employeeGroupOptions = renderEmployeeGroupOptions(assignedEmployeeGroups);
 		return `
         <div class="ts-rule-grid">
           <div class="ts-rule-col">
@@ -638,9 +654,8 @@
           </div>
 
           <div class="ts-rule-col">
-            <label>${escapeHtml(t("timesheet", "Employee groups"))}</label>
-            <div class="ts-chips" data-kind="userGroups">${renderGroupChips(rule.userGroups, "userGroups")}</div>
-            <select class="ts-rule-select" data-kind="userGroups">${employeeGroupOptions}</select>
+            ${renderEmployeeGroupPicker(rule, 'userGroups', t('timesheet', 'Employee groups - Active'), employeeGroupOptions)}
+            ${renderEmployeeGroupPicker(rule, 'inactiveUserGroups', t('timesheet', 'Employee groups - Inactive'), employeeGroupOptions)}
           </div>
         </div>`;
 	}
@@ -746,10 +761,8 @@
 			rulesContainer.appendChild(emptyMessage);
 			return;
 		}
-		const assignedEmployeeGroups = new Set();
-		accessRules.forEach(rule => {
-			(Array.isArray(rule.userGroups) ? rule.userGroups : []).forEach(groupId => assignedEmployeeGroups.add(groupId));
-		});
+		const assignedEmployeeGroups = new Set(accessRules.flatMap(rule =>
+			employeeGroupFields.flatMap(field => rule[field] ?? [])));
 		accessRules.forEach((rule, index) => {
 			if (!selectsNotificationRule || rule.id === selectedRuleId) {
 				rulesContainer.appendChild(createRuleCard(rule, index, assignedEmployeeGroups));
@@ -1184,9 +1197,13 @@
 		if (!ruleId || !groupField || !groupId) {
 			return;
 		}
-		if (groupField === 'userGroups' && isEmployeeGroupAssignedElsewhere(accessRules, ruleId, groupId)) {
-			notify(t('timesheet', 'Group already assigned to another rule.'));
-			return;
+		if (employeeGroupFields.includes(groupField)) {
+			const rule = accessRules.find(rule => rule.id === ruleId);
+			if (!rule || employeeGroupFields.some(field => rule[field].includes(groupId))) return;
+			if (isEmployeeGroupAssignedElsewhere(accessRules, ruleId, groupId)) {
+				notify(t('timesheet', 'Group already assigned to another rule.'));
+				return;
+			}
 		}
 		updateRule(ruleId, rule => {
 			const groupIds = Array.isArray(rule[groupField]) ? rule[groupField] : [];

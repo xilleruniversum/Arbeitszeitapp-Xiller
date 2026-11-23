@@ -117,6 +117,7 @@ namespace {
 	use OCA\Timesheet\Service\MissingEntryReminderService;
 
 	require __DIR__ . '/../../lib/Service/EmploymentStatus.php';
+	require __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 	require __DIR__ . '/../../lib/Service/MissingEntryDetector.php';
 	require __DIR__ . '/../../lib/Service/NotificationMailTemplates.php';
 	require __DIR__ . '/../../lib/Service/MissingEntryReminderSettings.php';

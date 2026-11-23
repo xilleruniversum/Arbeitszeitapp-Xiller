@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Loka",
   "The update notes could not be loaded. Please try again.": "Ekki tókst að hlaða útgáfuupplýsingum. Reynið aftur.",
   "Timesheet updated to {version}": "Tímaskráning uppfærð í útgáfu {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Kerfisstjórar geta valið fyrirliggjandi Nextcloud-hópa fyrir virkt og óvirkt starfsfólk í hverri mannauðsreglu.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Mannauðsyfirlitið og breytingasagan sýna starfsfólk sem er í báðum gerðum hópa sem virkt. Hver starfsmaður birtist aðeins einu sinni undir „Allir starfsmenn“.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Fyrirliggjandi mannauðsreglur ákvarða stöðu á sama hátt og áður þar til vali á starfsmannahópum þeirra er breytt.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Uppfærslutilkynningar eru áfram í bjölluvalmynd Nextcloud. „Skoða breytingar“ opnar útgáfusöguna þar sem hægt er að fella út einstakar útgáfur.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Hægt er að slökkva varanlega á áminningu um leiðsögnina og hefja hana aftur hvenær sem er.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Taflan í breytingasögunni gefur nöfnum þeirra sem gerðu breytingar meira pláss. Mannauðshjálpin útskýrir hvar reglur um hlé eru stilltar.",
   "New features": "Nýir eiginleikar",
   "Improvements": "Endurbætur",
   "Bug fixes": "Villuleiðréttingar",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Opna útgáfuupplýsingar.",
   "Version history": "Útgáfusaga",
   "View changes": "Skoða breytingar",
+  "Employee groups - Active": "Hópar virks starfsfólks",
+  "Employee groups - Inactive": "Hópar óvirks starfsfólks",
   "Individual HR accounts": "Einstakir mannauðsreikningar",
   "Assigned groups and people receive HR access to these employee groups.": "Úthlutaðir hópar og einstaklingar fá mannauðsaðgang að þessum starfsmannahópum.",
   "Search by name or account ID": "Leita eftir nafni eða auðkenni reiknings",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Notaðu dálkinn „Athugasemd“ til að skrá eigin upplýsingar um vinnudaginn eða útskýra fjarvistir. Ef upphafstíma, lokatíma eða báða vantar kemur aðeins viðeigandi athugasemd í veg fyrir tilkynningu. Skráningar án athugasemdar þar sem hvorugur tíminn eða aðeins annar er skráður eru merktar ófullnægjandi.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Reglunum um áminningar hefur verið breytt. Hvaða athugasemd sem er með texta kemur nú í veg fyrir að áminning um vantaðar eða ófullkomnar tímaskráningar sé send í tölvupósti. Þetta kemur í stað fyrri lista yfir ástæður. Ef aðeins upphafs- eða lokatíma vantar birtist viðvörun um ófullkomna tímaskráningu aðeins ef dálkurinn Athugasemd er auður.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Mannauðsyfirlitið og breytingasagan sýna virka og óvirka starfsmenn eftir hópunum Zeitnachweis og Zeitnachweis-Archiv. Í báðum sýnum má sía eftir valkostunum Allir, Virkir og Óvirkir. Hvaða starfsmenn birtast fer eftir því hvaða mannauðsfulltrúa þeir eru tengdir.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Notendastjórnun Nextcloud kemur í veg fyrir að notandi sé í báðum hópum samtímis. Við flutning milli hópa kemur fram viðvörun um úr hvorum hópnum þarf að fjarlægja notandann fyrst.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-reikningar geta verið í hópunum Zeitnachweis og Zeitnachweis-Archiv á sama tíma. Reikningarnir teljast virkir svo lengi sem þeir eru í Zeitnachweis. Þegar þeir eru fjarlægðir úr þeim hópi eru þeir áfram í geymsluhópnum.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Hjálpin við athugasemdir, leiðsögnin og dæmið um hópareglur útskýra nýju áminningarregluna.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Hjálpin fyrir mannauðsfulltrúa útskýrir að viðmiðunarmörk séu stillt fyrir hvern mannauðsreikning fyrir sig og að vikulegt yfirlit sé sent í tölvupósti á þann reikning.",
-  "The update window can also be closed using the × in the top right corner.": "Einnig má loka uppfærsluglugganum með × efst í hægra horninu."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Opnaðu útgáfuupplýsingar með tilkynningabjöllunni í Nextcloud. Veldu „Skoða breytingar“ til að opna útgáfusöguna, þar sem hægt er að fella út breytingalista hverrar útgáfu."
 },
   "nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);"
 );

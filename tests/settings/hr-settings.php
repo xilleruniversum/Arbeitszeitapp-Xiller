@@ -162,6 +162,8 @@ namespace {
 	use OCA\Timesheet\Service\MonthlyBalanceService;
 
 	require_once __DIR__ . '/../../lib/Service/HrRuleAssignments.php';
+	require_once __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
+	require_once __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 	require_once __DIR__ . '/../../lib/Service/HrService.php';
 	require_once __DIR__ . '/../../lib/Service/NotificationMailTemplates.php';
 	require_once __DIR__ . '/../../lib/Service/MissingEntryReminderSettings.php';
@@ -382,8 +384,8 @@ namespace {
 					$expectSame($scope, $form->getParams()['settingsScope']);
 					$expectSame(hash('sha256', $state['config']->values['hr_access_rules']), $form->getParams()['rulesRevision']);
 					$expectSame('rule-a', $form->getParams()['hrAccessRules'][0]['id']);
-					$expectSame([['timesheet', 'timesheet-rule-settings-v3']], \OCP\Util::$scripts);
-					$expectSame([['timesheet', 'timesheet-hr-settings-v7']], \OCP\Util::$styles);
+					$expectSame([['timesheet', 'timesheet-rule-settings-v4']], \OCP\Util::$scripts);
+					$expectSame([['timesheet', 'timesheet-hr-settings-v8']], \OCP\Util::$styles);
 					$expectSame($scope === 'policy' ? 'timeRules' : null, $form->getParams()['policySection']);
 				} else {
 					$expectSame([], $form->getParams());
@@ -459,6 +461,113 @@ namespace {
 		$expectSame([], (new \OCA\Timesheet\Service\HrRuleAssignments($state['groups'], $state['users']))->getMailRecipientUserIds($saved));
 		$expectSame(hash('sha256', $state['config']->values['hr_access_rules']), $response->getData()['rulesRevision']);
 	});
+	$test('Admin snapshots project legacy archive groups and unrelated autosaves retain legacy classification', static function () use ($fixture, $save, $storedRules, $defaultRule, $expectSame): void {
+		$legacy = [...$defaultRule, 'userGroups' => ['Zeitnachweis', 'Zeitnachweis-Archiv', 'staff']];
+		$state = $fixture('admin', [$legacy]);
+		array_push($state['groups']->groups, 'Zeitnachweis', 'Zeitnachweis-Archiv');
+		$rule = $state['adminProvider']->getForm()->getParams()['hrAccessRules'][0];
+		$expectSame(['Zeitnachweis', 'staff'], $rule['userGroups']);
+		$expectSame(['Zeitnachweis-Archiv'], $rule['inactiveUserGroups']);
+		$conflict = $save($state, [$rule], 'assignments', str_repeat('0', 64));
+		$expectSame(409, $conflict->getStatus());
+		$expectSame($rule, $conflict->getData()['rules'][0]);
+		$expectSame([], $state['config']->writes);
+
+		$submissions = [[...$rule, 'userGroups' => array_reverse($rule['userGroups']), 'hrUsers' => ['anton']]];
+		$response = $save($state, $submissions, 'assignments');
+		$expectSame(200, $response->getStatus());
+		$saved = $storedRules($state)[0];
+		$expectSame(false, array_key_exists('inactiveUserGroups', $saved));
+		$expectSame($legacy['userGroups'], $saved['userGroups']);
+		$expectSame(['anton'], $saved['hrUsers']);
+
+		array_push($state['groups']->groups, 'Eligible', 'Former staff');
+		$response = $save($state, [[...$rule, 'userGroups' => ['Eligible'], 'inactiveUserGroups' => ['Former staff']]], 'assignments');
+		$expectSame(200, $response->getStatus());
+		$saved = $storedRules($state)[0];
+		$expectSame(['Eligible'], $saved['userGroups']);
+		$expectSame(['Former staff'], $saved['inactiveUserGroups']);
+		$expectSame($saved['userGroups'], $response->getData()['rules'][0]['userGroups']);
+		$expectSame($saved['inactiveUserGroups'], $response->getData()['rules'][0]['inactiveUserGroups']);
+	});
+
+	$test('Older admin response shapes keep the legacy archive assigned across successive saves', static function () use ($fixture, $save, $storedRules, $defaultRule, $expectSame): void {
+		$legacy = [...$defaultRule, 'userGroups' => ['staff', 'Zeitnachweis-Archiv']];
+		$state = $fixture('admin', [$legacy]);
+		$state['groups']->groups[] = 'Zeitnachweis-Archiv';
+		$conflict = $save($state, [$legacy], 'assignments', str_repeat('0', 64));
+		$expectSame(409, $conflict->getStatus());
+		$expectSame($legacy['userGroups'], $conflict->getData()['rules'][0]['userGroups']);
+		$expectSame(false, array_key_exists('inactiveUserGroups', $conflict->getData()['rules'][0]));
+
+		$response = $save($state, $conflict->getData()['rules'], 'assignments');
+		$expectSame(200, $response->getStatus());
+		$expectSame($legacy['userGroups'], $response->getData()['rules'][0]['userGroups']);
+		$expectSame(false, array_key_exists('inactiveUserGroups', $response->getData()['rules'][0]));
+		$expectSame(200, $save($state, $response->getData()['rules'], 'assignments')->getStatus());
+		$expectSame($legacy['userGroups'], $storedRules($state)[0]['userGroups']);
+	});
+
+	$test('Busy saves without any submitted rules return the respective admin editor shape', static function () use ($fixture, $defaultRule, $expectSame): void {
+		$legacy = [...$defaultRule, 'userGroups' => ['staff', 'Zeitnachweis-Archiv']];
+		$state = $fixture('admin', [$legacy]);
+		$state['groups']->groups[] = 'Zeitnachweis-Archiv';
+		$lock = hash('sha256', 'timesheet:hr-access-rules');
+		$state['locks']->acquireLock($lock, \OCP\Lock\ILockingProvider::LOCK_EXCLUSIVE);
+		$state['request']->parameters = ['rules' => '[]', 'rulesRevision' => hash('sha256', $state['config']->values['hr_access_rules'])];
+
+		$older = $state['controller']->saveHrAccessRules();
+		$expectSame(409, $older->getStatus());
+		$expectSame($legacy['userGroups'], $older->getData()['rules'][0]['userGroups']);
+		$expectSame(false, array_key_exists('inactiveUserGroups', $older->getData()['rules'][0]));
+
+		$state['request']->parameters['separateEmployeeGroups'] = '1';
+		$current = $state['controller']->saveHrAccessRules();
+		$expectSame(409, $current->getStatus());
+		$expectSame(['staff'], $current->getData()['rules'][0]['userGroups']);
+		$expectSame(['Zeitnachweis-Archiv'], $current->getData()['rules'][0]['inactiveUserGroups']);
+		$expectSame([], $state['config']->writes);
+		$state['locks']->releaseLock($lock, \OCP\Lock\ILockingProvider::LOCK_EXCLUSIVE);
+	});
+
+	$test('Policy saves and older admin requests preserve configured inactive groups', static function () use ($fixture, $save, $storedRules, $defaultRule, $expectSame): void {
+		$rule = [...$defaultRule, 'inactiveUserGroups' => ['Former staff']];
+		$state = $fixture('hr-admin', [$rule]);
+		$state['groups']->groups[] = 'Former staff';
+		$response = $save($state, [[...$rule, 'userGroups' => ['admin'], 'inactiveUserGroups' => [], 'maxHours' => 8]], 'policy', null, 'timeRules');
+		$expectSame(200, $response->getStatus());
+		$expectSame(['staff'], $storedRules($state)[0]['userGroups']);
+		$expectSame(['Former staff'], $storedRules($state)[0]['inactiveUserGroups']);
+		$expectSame(8, $storedRules($state)[0]['maxHours']);
+
+		$response = $save($state, [$defaultRule], 'assignments');
+		$expectSame(200, $response->getStatus());
+		$expectSame(['Former staff'], $storedRules($state)[0]['inactiveUserGroups']);
+	});
+
+	$test('Malformed status selections cannot clear an existing assignment', static function () use ($fixture, $save, $defaultRule, $expectSame): void {
+		$state = $fixture('admin');
+		foreach ([['inactiveUserGroups' => 'staff'], ['inactiveUserGroups' => ['staff'], 'userGroups' => null]] as $invalid) {
+			$response = $save($state, [[...$defaultRule, ...$invalid]], 'assignments');
+			$expectSame(400, $response->getStatus());
+			$expectSame(['message' => 'Invalid rules'], $response->getData());
+		}
+		$expectSame([], $state['config']->writes);
+	});
+
+	$test('The same group cannot be configured in both statuses within or across rules', static function () use ($fixture, $save, $expectSame): void {
+		$state = $fixture('admin');
+		foreach ([
+			[['id' => 'a', 'userGroups' => ['staff'], 'inactiveUserGroups' => ['staff']]],
+			[['id' => 'a', 'userGroups' => ['staff'], 'inactiveUserGroups' => []], ['id' => 'b', 'userGroups' => [], 'inactiveUserGroups' => ['staff']]],
+		] as $rules) {
+			$response = $save($state, $rules, 'assignments');
+			$expectSame(400, $response->getStatus());
+			$expectSame(['message' => 'Duplicate employee groups in rules', 'groups' => ['staff']], $response->getData());
+		}
+		$expectSame([], $state['config']->writes);
+	});
+
 	$test('HR ignores assignment, priority and ordering tampering while saving policy values', static function () use ($fixture, $save, $defaultRule, $expectSame): void {
 		$second = ['id' => 'rule-b', 'hrGroups' => ['HR backup'], 'userGroups' => []];
 		$state = $fixture('hr', [$defaultRule, $second]);

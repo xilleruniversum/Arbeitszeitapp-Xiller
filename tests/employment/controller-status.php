@@ -297,11 +297,11 @@ foreach ([null, 'alice', 'hr', 'admin', 'hr-admin'] as $actor) {
 		$isHr = in_array($actor, ['hr', 'hr-admin'], true);
 		$suite->same($isHr ? ['notifications'] : [], $state['ruleForm']->scopes);
 		$suite->same($isHr, is_array($parameters['notificationRuleSettings']));
-		$suite->same($isHr, in_array('timesheet-rule-settings-v3', \OCP\Util::$scripts, true));
-		$suite->same($isHr, in_array('timesheet-hr-settings-v7', \OCP\Util::$styles, true));
+		$suite->same($isHr, in_array('timesheet-rule-settings-v4', \OCP\Util::$scripts, true));
+		$suite->same($isHr, in_array('timesheet-hr-settings-v8', \OCP\Util::$styles, true));
 		if ($isHr) {
 			$suite->same('notifications', $parameters['notificationRuleSettings']['policySection']);
-			$suite->same(true, array_search('timesheet-rule-settings-v3', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
+			$suite->same(true, array_search('timesheet-rule-settings-v4', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
 		}
 	});
 }

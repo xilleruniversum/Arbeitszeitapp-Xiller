@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const hrSettingsSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-rule-settings-v3.js'), 'utf8');
+const hrSettingsSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-rule-settings-v4.js'), 'utf8');
 const copy = value => JSON.parse(JSON.stringify(value));
 const rulesRevision = value => String(value).padStart(64, '0');
 
@@ -106,7 +106,7 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 		element('timesheet-notification-rule', 'select');
 		element('hr-notification-save-error', 'p');
 	}
-	element('timesheet-all-groups-data').textContent = JSON.stringify(['HR', 'Staff']);
+	element('timesheet-all-groups-data').textContent = JSON.stringify(peopleOptions.groups ?? ['HR', 'Staff']);
 	element('timesheet-hr-rules-data').textContent = JSON.stringify(initialRules);
 	element('timesheet-hr-people-data').textContent = JSON.stringify(peopleOptions.labels || []);
 	class FixedDate extends Date {
@@ -164,7 +164,7 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 	if (language === 'de' || language === 'de_DE') {
 		vm.runInContext(readFileSync(resolve(repositoryRoot, `l10n/${language}.js`), 'utf8'), context, { filename: `${language}.js` });
 	}
-	vm.runInContext(hrSettingsSource, context, { filename: 'timesheet-rule-settings-v3.js' });
+	vm.runInContext(hrSettingsSource, context, { filename: 'timesheet-rule-settings-v4.js' });
 	await new Promise(setImmediate);
 
 	return {
@@ -778,11 +778,43 @@ for (const message of ['At least one HR group or enabled HR account must remain 
 	});
 }
 
+test('admin saves active and inactive groups independently and reserves each group once', async () => {
+	const admin = await openAdminSettings([
+		assignmentRule({ userGroups: ['Team'], inactiveUserGroups: ['Alumni'] }),
+		assignmentRule({ id: 'second', userGroups: [], inactiveUserGroups: ['Former'] }),
+	], null, 'en', { groups: ['HR', 'Team', 'Alumni', 'Former', 'Seasonal'] });
+	const dropdown = kind => admin.card().querySelectorAll('.ts-rule-select').find(select => select.dataset.kind === kind);
+	const active = dropdown('userGroups');
+	const inactive = dropdown('inactiveUserGroups');
+	assert.equal(active.parentElement.querySelector('label').getAttribute('for'), active.id);
+	assert.equal(inactive.parentElement.querySelector('label').getAttribute('for'), inactive.id);
+	assert.ok(active.children.find(option => option.value === 'Alumni').disabled);
+	assert.ok(inactive.children.find(option => option.value === 'Team').disabled);
+	assert.ok(inactive.children.find(option => option.value === 'Former').disabled);
+
+	inactive.value = 'Team';
+	await admin.change(inactive);
+	assert.equal(admin.requests.length, 0);
+	inactive.value = 'Seasonal';
+	await admin.change(inactive);
+	assert.deepEqual(admin.requests[0].rules[0].userGroups, ['Team']);
+	assert.deepEqual(admin.requests[0].rules[0].inactiveUserGroups, ['Alumni', 'Seasonal']);
+
+	const archiveChip = admin.card().querySelectorAll('.ts-chip-remove')
+		.find(chip => chip.dataset.kind === 'inactiveUserGroups' && chip.dataset.group === 'Alumni');
+	await admin.click(archiveChip);
+	assert.deepEqual(admin.requests[1].rules[0].userGroups, ['Team']);
+	assert.deepEqual(admin.requests[1].rules[0].inactiveUserGroups, ['Seasonal']);
+	assert.equal(dropdown('userGroups').children.find(option => option.value === 'Alumni').disabled, false);
+});
+
 test('administrator and HR forms expose only their own controls and never save on load', async () => {
 	const admin = await openAdminSettings();
-	assert.equal(admin.card().querySelectorAll('.ts-rule-select').length, 2);
-	assert.ok(admin.card().textContent.includes('Employee groups'));
+	assert.equal(admin.card().querySelectorAll('.ts-rule-select').length, 3);
+	assert.ok(admin.card().textContent.includes('Employee groups - Active'));
+	assert.ok(admin.card().textContent.includes('Employee groups - Inactive'));
 	assert.ok(admin.card().querySelector('[data-kind="userGroups"]'));
+	assert.ok(admin.card().querySelector('[data-kind="inactiveUserGroups"]'));
 	assert.ok(admin.card().querySelector('.ts-rule-priority'));
 	assert.ok(admin.card().querySelector('[data-person-picker="responsible"]'));
 	assert.equal(admin.card().querySelector('.ts-mail-recipient-mode'), null);

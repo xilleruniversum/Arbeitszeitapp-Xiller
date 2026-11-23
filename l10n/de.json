@@ -223,6 +223,12 @@
     "Close": "Schließen",
     "The update notes could not be loaded. Please try again.": "Die Update-Hinweise konnten nicht geladen werden. Bitte erneut versuchen.",
     "Timesheet updated to {version}": "Arbeitszeitnachweis auf Version {version} aktualisiert",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administrierende können je HR-Regel bestehende Nextcloud-Gruppen für aktive und inaktive Mitarbeitende auswählen.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Die HR-Übersicht und der Änderungsverlauf stufen Mitarbeitende mit beiden Mitgliedschaften als aktiv ein. Unter „Alle“ erscheint jedes Konto einmal.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Bestehende HR-Regeln behalten ihr bisheriges Statusverhalten, bis ihre Mitarbeitergruppenauswahl geändert wird.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Update-Hinweise erscheinen in der Nextcloud-Glocke. „Änderungen ansehen“ öffnet die Versionshistorie mit aufklappbaren Einträgen.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Die Einladung zum Tourguide lässt sich dauerhaft ausblenden. Die Tour kann jederzeit manuell gestartet werden.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Die Tabelle im Änderungsverlauf bietet mehr Platz für die Namen der Bearbeiter. Die HR-Hilfe erklärt, wo die Pausenregeln eingestellt werden.",
     "New features": "Neue Funktionen",
     "Improvements": "Verbesserungen",
     "Bug fixes": "Fehlerbehebungen",
@@ -238,6 +244,8 @@
     "Open the update notes.": "Änderungsliste öffnen.",
     "Version history": "Versionshistorie",
     "View changes": "Änderungen ansehen",
+    "Employee groups - Active": "Mitarbeitergruppen - Aktiv",
+    "Employee groups - Inactive": "Mitarbeitergruppen - Inaktiv",
     "Individual HR accounts": "Einzelne HR-Konten",
     "Assigned groups and people receive HR access to these employee groups.": "Zugeordnete Gruppen und Personen erhalten HR-Zugriff auf diese Mitarbeitergruppen.",
     "Search by name or account ID": "Nach Name oder Benutzerkennung suchen",
@@ -437,10 +445,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Die Kommentarspalte kann genutzt werden, um eigenen Informationen zum Tagesablauf festzuhalten oder Fehlzeiten zu entschuldigen. Fehlen Start- und/oder Endzeit, verhindert nur ein dementsprechender Hinweis in der Kommentarspalte eine Benachrichtigung. Einträge mit keiner oder nur einer Zeitangabe, die nicht durch einen Kommentar ausgewiesen sind, werden andernfalls als unvollständig gekennzeichnet.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Die Erinnerungsregeln wurden geändert. Statt vorgegebenen Gründen setzt nun jeder Kommentar mit Inhalt die E-Mail-Erinnerung für fehlende oder unvollständige Zeiteinträge aus. Fehlt nur die Start- oder Endzeit, erscheint „Zeitangaben unvollständig“ nur bei leerer Kommentarspalte.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Die HR-Übersicht und der Änderungsverlauf zeigen aktive und inaktive Mitarbeitende anhand der Gruppen Zeitnachweis und Zeitnachweis-Archiv. In beiden Ansichten lässt sich nach Alle, Aktiv und Inaktiv filtern. Die Sichtbarkeit richtet sich nach der jeweiligen HR-Zuordnung.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Die Nextcloud-Benutzerverwaltung weist eine gleichzeitige Mitgliedschaft in beiden Gruppen ab. Ein Warnhinweis erklärt, welche Gruppe für den Wechsel entfernt werden muss.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-Konten können gleichzeitig Mitglied in Zeitnachweis und Zeitnachweis-Archiv sein. Solange ein Konto zu Zeitnachweis gehört, gilt es als aktiv. Wird es daraus entfernt, bleibt es in der Archivgruppe.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Die Kommentarhilfe, der Tourguide und das Beispiel bei den Gruppenregeln erklären die neue Erinnerungsregel.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Die Hinweise für HR erklären, dass die Grenzwerte je HR-Konto festgelegt werden und die wöchentliche Übersichtsmail an das eigene HR-Konto geht.",
-    "The update window can also be closed using the × in the top right corner.": "Das Update-Fenster lässt sich zusätzlich über das × oben rechts schließen."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Update-Hinweise sind über die Nextcloud-Glocke erreichbar. Änderungen ansehen öffnet die Versionshistorie, in der sich die Änderungen je Version aufklappen lassen."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

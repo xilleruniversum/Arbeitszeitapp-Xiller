@@ -2,7 +2,6 @@
 
 namespace OCA\Timesheet\Service;
 
-use OCA\Timesheet\Db\EmploymentStatusStore;
 use OCP\AppFramework\Services\IAppConfig;
 use OCP\IGroupManager;
 use OCP\IUserManager;
@@ -12,6 +11,7 @@ use OCP\IUserSession;
 class HrService {
 	private array $rules;
 	private HrRuleAssignments $assignments;
+	private EmployeeGroupRules $employeeGroupRules;
 
 	public function __construct(
 		private IAppConfig $appConfig,
@@ -89,12 +89,16 @@ class HrService {
 		$employees = [];
 		foreach ($this->getAccessibleUsers($hrUid) as $employee) {
 			$userId = $employee['id'];
-			$isActive = $this->groupManager->isInGroup($userId, EmploymentStatusStore::ACTIVE_GROUP_ID);
-			if ($isActive || $this->groupManager->isInGroup($userId, EmploymentStatusStore::ARCHIVE_GROUP_ID)) {
+			$isActive = $this->getEmploymentGroupStatus($userId);
+			if ($isActive !== null) {
 				$employees[] = [...$employee, 'isActive' => $isActive];
 			}
 		}
 		return $employees;
+	}
+
+	public function getEmploymentGroupStatus(string $userId): ?bool {
+		return $this->employeeGroupRules->status($userId);
 	}
 
 	/** Email lists exclude rules whose mail selection omits this otherwise responsible HR user. */
@@ -156,9 +160,8 @@ class HrService {
 
 	private function loadRules(): array {
 		$decoded = json_decode((string)$this->appConfig->getAppValueString('hr_access_rules'), true);
-		if (!is_array($decoded)) {
-			return [];
-		}
+		$decoded = is_array($decoded) ? $decoded : [];
+		$this->employeeGroupRules = new EmployeeGroupRules($decoded, $this->groupManager);
 		$rules = [];
 		foreach ($decoded as $rule) {
 			if (!is_array($rule) || !is_scalar($rule['id'] ?? null)) {
@@ -172,11 +175,7 @@ class HrService {
 			if ($assignments['hrGroups'] === [] && $assignments['hrUsers'] === []) {
 				continue;
 			}
-			$employeeGroups = $rule['userGroups'] ?? $rule['user_groups'] ?? [];
-			$employeeGroups = is_array($employeeGroups) ? $employeeGroups : [];
-			$employeeGroups = array_values(array_unique(array_filter(array_map(
-				static fn(mixed $groupId): string => is_string($groupId) ? trim($groupId) : '', $employeeGroups
-			), fn(string $groupId): bool => $groupId !== '' && $this->groupManager->groupExists($groupId))));
+			$employeeGroups = array_values(array_filter(EmployeeGroupRules::assignedGroups($rule), $this->groupManager->groupExists(...)));
 			$rules[] = ['id' => $ruleId, 'userGroups' => $employeeGroups, ...$assignments];
 		}
 		return $rules;

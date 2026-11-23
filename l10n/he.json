@@ -77,6 +77,12 @@
     "Close": "סגירה",
     "The update notes could not be loaded. Please try again.": "לא ניתן לטעון את הערות העדכון. נא לנסות שוב.",
     "Timesheet updated to {version}": "רישום שעות העבודה עודכן לגרסה {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "מנהלי מערכת יכולים לבחור קבוצות קיימות ב־Nextcloud לעובדים פעילים ולעובדים לא פעילים בכל כלל של משאבי אנוש.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "סקירת משאבי אנוש והיסטוריית השינויים מציגות עובדים החברים בשני סוגי הקבוצות כפעילים. כל עובד מופיע פעם אחת תחת „כל העובדים”.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "כללים קיימים של משאבי אנוש ממשיכים לקבוע את המצב כפי שקבעו עד כה, עד לשינוי קבוצות העובדים שנבחרו בהם.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "הודעות על עדכונים נשארות בתפריט הפעמון של Nextcloud. „הצגת שינויים” פותחת את היסטוריית הגרסאות, שבה ניתן להרחיב כל גרסה.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "אפשר לבטל לצמיתות את ההצעה לסיור המודרך ולהפעיל את הסיור מחדש בכל עת.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "טבלת היסטוריית השינויים מקצה יותר מקום לשמות המשתמשים שביצעו עריכות. העזרה למשאבי אנוש מסבירה היכן מגדירים את כללי ההפסקות.",
     "New features": "תכונות חדשות",
     "Improvements": "שיפורים",
     "Bug fixes": "תיקוני תקלות",
@@ -92,6 +98,8 @@
     "Open the update notes.": "פתיחת הערות העדכון.",
     "Version history": "היסטוריית גרסאות",
     "View changes": "הצגת שינויים",
+    "Employee groups - Active": "קבוצות עובדים פעילים",
+    "Employee groups - Inactive": "קבוצות עובדים לא פעילים",
     "Individual HR accounts": "חשבונות משאבי אנוש אישיים",
     "Assigned groups and people receive HR access to these employee groups.": "לקבוצות ולאנשים שהוקצו ניתנת גישת משאבי אנוש לקבוצות העובדים האלה.",
     "Search by name or account ID": "חיפוש לפי שם או מזהה חשבון",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "בעמודה „הערה” אפשר לתעד מידע על יום העבודה או להסביר היעדרויות. אם שעת ההתחלה, שעת הסיום או שתיהן חסרות, רק הערה מתאימה מונעת את שליחת ההתראה. דיווחים בלי הערה ועם שעה אחת בלבד או בלי שעות כלל מסומנים כלא שלמים.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "חוקי התזכורות השתנו. במקום רשימת הסיבות הקודמת, כעת כל הערה עם תוכן מונעת שליחת תזכורת בדוא״ל על רישומי שעות חסרים או חלקיים. אם חסרה רק שעת ההתחלה או שעת הסיום, האזהרה על רישום שעות חלקי מופיעה רק כשהעמודה „הערה” ריקה.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "סקירת משאבי האנוש והיסטוריית השינויים מציגות עובדים פעילים ולא פעילים לפי הקבוצות Zeitnachweis ו־Zeitnachweis-Archiv. בשתי התצוגות אפשר לסנן לפי הכול, פעילים ולא פעילים. העובדים מוצגים בהתאם לשיוך לאחראי משאבי האנוש.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "ניהול המשתמשים של Nextcloud מונע חברות בשתי הקבוצות בו־זמנית. בעת מעבר בין הקבוצות, אזהרה מסבירה איזו קבוצה יש לעזוב תחילה.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "חשבונות Nextcloud יכולים להשתייך לקבוצות Zeitnachweis ו־Zeitnachweis-Archiv בו־זמנית. החשבונות נשארים פעילים כל עוד הם חברים ב־Zeitnachweis. הסרת החברות בקבוצה זו משאירה אותם בקבוצת הארכיון.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "העזרה בעמודת ההערות, הסיור המודרך והדוגמה בכללי הקבוצות מסבירים את כלל התזכורת החדש.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "העזרה לאחראי משאבי האנוש מסבירה שערכי הסף נקבעים לכל חשבון משאבי אנוש בנפרד ושסיכום השבוע נשלח בדוא״ל לאותו חשבון.",
-    "The update window can also be closed using the × in the top right corner.": "אפשר לסגור את חלון העדכון גם באמצעות הסימן × בפינה העליונה."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "אפשר לפתוח את הערות הגרסה דרך פעמון ההתראות של Nextcloud. בחרו ב״הצגת שינויים״ כדי לפתוח את היסטוריית הגרסאות, שבה אפשר להרחיב את פירוט השינויים של כל גרסה."
   },
   "pluralForm": "nplurals=3; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: 2;"
 }

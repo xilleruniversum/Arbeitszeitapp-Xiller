@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Close",
   "The update notes could not be loaded. Please try again.": "The update notes could not be loaded. Please try again.",
   "Timesheet updated to {version}": "Timesheet updated to {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "The HR overview and change history show employees with both memberships as active and list each employee once under All.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Existing HR rules keep their current status behaviour until their employee group selection changes.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "The guided tour can be dismissed permanently and restarted at any time.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "The change history table gives editor names more space. The HR help explains where break rules are configured.",
   "New features": "New features",
   "Improvements": "Improvements",
   "Bug fixes": "Bug fixes",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Open the update notes.",
   "Version history": "Version history",
   "View changes": "View changes",
+  "Employee groups - Active": "Employee groups - Active",
+  "Employee groups - Inactive": "Employee groups - Inactive",
   "Individual HR accounts": "Individual HR accounts",
   "Assigned groups and people receive HR access to these employee groups.": "Assigned groups and people receive HR access to these employee groups.",
   "Search by name or account ID": "Search by name or account ID",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "The comment help, guided tour and group rule example explain the new reminder rule.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.",
-  "The update window can also be closed using the × in the top right corner.": "The update window can also be closed using the × in the top right corner."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history."
 },
 "nplurals=2; plural=(n != 1);"
 );

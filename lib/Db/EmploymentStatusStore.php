@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OCA\Timesheet\Db;
 
 use OCA\Timesheet\Service\EmploymentStatus;
+use OCA\Timesheet\Service\EmployeeGroupRules;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Group\Events\UserAddedEvent;
 use OCP\Group\Events\UserRemovedEvent;
@@ -15,8 +16,8 @@ use OCP\PreConditionNotMetException;
 
 /** Combines group-derived activity and the personal freelancer preference with their histories. */
 class EmploymentStatusStore {
-	public const ACTIVE_GROUP_ID = 'Zeitnachweis';
-	public const ARCHIVE_GROUP_ID = 'Zeitnachweis-Archiv';
+	public const ACTIVE_GROUP_ID = EmployeeGroupRules::LEGACY_ACTIVE_GROUP_ID;
+	public const ARCHIVE_GROUP_ID = EmployeeGroupRules::LEGACY_ARCHIVE_GROUP_ID;
 	private const APP_ID = 'timesheet';
 	private const STATUS_KEY = 'employment_status';
 
@@ -46,11 +47,12 @@ class EmploymentStatusStore {
 		// Read fresh values rather than the preference cache populated during authentication.
 		$rawValues = $this->userConfig->getUserValueForUsers(self::APP_ID, self::STATUS_KEY, $userIds);
 		$today = $this->today();
+		$employeeGroups = $this->employeeGroupRules();
 		$statuses = [];
 		foreach ($userIds as $userId) {
 			$rawValue = array_key_exists($userId, $rawValues) ? $rawValues[$userId] : '';
 			$state = $this->decodeState($rawValue, $today);
-			$statuses[$userId] = $state['isActive'] === $this->isActiveGroupMember($userId)
+			$statuses[$userId] = $state['isActive'] === ($employeeGroups->status($userId) === true)
 				? $this->toStatus($state, $rawValue) : $this->syncActivity($userId);
 		}
 		return $statuses;
@@ -62,7 +64,9 @@ class EmploymentStatusStore {
 
 	/** Native events precede Nextcloud's membership cache invalidation. */
 	public function recordMembershipEvent(UserAddedEvent|UserRemovedEvent $event): void {
-		if ($event->getGroup()->getGID() !== self::ACTIVE_GROUP_ID) {
+		$groupId = $event->getGroup()->getGID();
+		$employeeGroups = $this->employeeGroupRules();
+		if (!$employeeGroups->affectsActivity($groupId)) {
 			return;
 		}
 		$userId = $event->getUser()->getUID();
@@ -71,7 +75,7 @@ class EmploymentStatusStore {
 		$this->lockingProvider->acquireLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
 		try {
 			[$state, $rawValue] = $this->readCurrentState($userId);
-			$isActive = $event instanceof UserAddedEvent;
+			$isActive = $employeeGroups->status($userId, $groupId, $event instanceof UserAddedEvent) === true;
 			if ($state['isActive'] !== $isActive) {
 				$state = $this->changeFlag($state, 'isActive', $isActive, $this->today());
 				$this->saveState($userId, $state, $rawValue);
@@ -130,7 +134,7 @@ class EmploymentStatusStore {
 
 	/** @return array{array,string} */
 	private function synchronizeMembership(string $userId, array $state, string $rawValue): array {
-		$isActive = $this->isActiveGroupMember($userId);
+		$isActive = $this->employeeGroupRules()->status($userId) === true;
 		if ($state['isActive'] === $isActive) {
 			return [$state, $rawValue];
 		}
@@ -138,8 +142,9 @@ class EmploymentStatusStore {
 		return [$state, $this->saveState($userId, $state, $rawValue)];
 	}
 
-	private function isActiveGroupMember(string $userId): bool {
-		return $this->groupManager->isInGroup($userId, self::ACTIVE_GROUP_ID);
+	private function employeeGroupRules(): EmployeeGroupRules {
+		$rules = json_decode($this->userConfig->getAppValue(self::APP_ID, 'hr_access_rules'), true);
+		return new EmployeeGroupRules(is_array($rules) ? $rules : [], $this->groupManager);
 	}
 
 	private function changeFlag(array $state, string $flag, bool $value, string $today): array {

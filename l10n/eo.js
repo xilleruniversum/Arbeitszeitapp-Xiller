@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Fermi",
   "The update notes could not be loaded. Please try again.": "La ĝisdatigaj notoj ne povis esti ŝargitaj. Bonvolu reprovi.",
   "Timesheet updated to {version}": "Laborhorregistro ĝisdatigita al versio {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administrantoj povas elekti ekzistantajn Nextcloud-grupojn por aktivaj kaj neaktivaj dungitoj en ĉiu regulo pri dungitaro.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "La superrigardo pri dungitaro kaj la historio de ŝanĝoj montras dungitojn, kiuj apartenas al ambaŭ grupotipoj, kiel aktivajn. Ĉiu dungito aperas unufoje sub «Ĉiuj dungitoj».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Ekzistantaj reguloj pri dungitaro plu determinas la staton kiel antaŭe, ĝis ŝanĝiĝas la elekto de dungitgrupoj.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Ĝisdatigaj sciigoj restas sub la sonorilo de Nextcloud. «Vidi ŝanĝojn» malfermas la historion de versioj, en kiu eblas disfaldi la detalojn de ĉiu versio.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "La gvidata vizito povas esti definitive fermita kaj restartigita iam ajn.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "La tabelo de la historio de ŝanĝoj donas pli da spaco al la nomoj de la ŝanĝintoj. La helpo pri dungitaro klarigas, kie oni agordas la paŭzregulojn.",
   "New features": "Novaj funkcioj",
   "Improvements": "Plibonigoj",
   "Bug fixes": "Cimkorektoj",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Malfermi la ĝisdatigajn notojn.",
   "Version history": "Historio de versioj",
   "View changes": "Vidi ŝanĝojn",
+  "Employee groups - Active": "Grupoj de aktivaj dungitoj",
+  "Employee groups - Inactive": "Grupoj de neaktivaj dungitoj",
   "Individual HR accounts": "Individuaj personaraj kontoj",
   "Assigned groups and people receive HR access to these employee groups.": "Asignitaj grupoj kaj personoj ricevas personaran aliron al ĉi tiuj dungitgrupoj.",
   "Search by name or account ID": "Serĉi laŭ nomo aŭ konta identigilo",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Uzu la kolumnon «Komento» por registri viajn proprajn informojn pri via labortago aŭ klarigi forestojn. Se mankas la komenca horo, la fina horo aŭ ambaŭ, nur rilata komento malebligas sciigon. Eniroj sen komento kun neniu aŭ nur unu indikita horo estas markitaj kiel nekompletaj.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "La reguloj pri memorigiloj ŝanĝiĝis. Ĉiu ne malplena komento nun malhelpas la retpoŝtan memorigilon pri mankantaj aŭ nekompletaj temporegistraĵoj kaj anstataŭas la antaŭan liston de kialoj. Se mankas nur la komenca aŭ fina horo, la averto pri nekompleta temporegistraĵo aperas nur kiam la kolumno Komento estas malplena.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "La superrigardo por homaj rimedoj kaj la ŝanĝhistorio montras aktivajn kaj neaktivajn dungitojn laŭ la grupoj Zeitnachweis kaj Zeitnachweis-Archiv. Ambaŭ vidoj havas la filtrilojn Ĉiuj, Aktivaj kaj Neaktivaj. Videbleco dependas de la atribuo al la respondeculo pri homaj rimedoj.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "La administrado de uzantoj de Nextcloud malebligas membrecon en ambaŭ grupoj samtempe. Averto klarigas, el kiu grupo oni unue devas eliri dum transiro.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-kontoj povas samtempe aparteni al la grupoj Zeitnachweis kaj Zeitnachweis-Archiv. Kontoj restas aktivaj dum ili apartenas al Zeitnachweis. Kiam oni forigas ilin el tiu grupo, ili restas en la arkivo.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "La komenthelpo, la gvidata rondiro kaj la ekzemplo pri grupreguloj klarigas la novan regulon pri memorigiloj.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "La helpo pri homaj rimedoj klarigas, ke la sojloj agordiĝas por ĉiu konto de homaj rimedoj kaj ke la semajna resumo estas retpoŝte sendata al tiu konto.",
-  "The update window can also be closed using the × in the top right corner.": "La ĝisdatiga fenestro ankaŭ estas fermebla per la × en la supra dekstra angulo."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Malfermu la eldonajn notojn per la sonorilo de Nextcloud. Elektu «Vidi ŝanĝojn» por malfermi la version-historion kun disfalteblaj eroj."
 },
   "nplurals=2; plural=(n != 1);"
 );

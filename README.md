@@ -42,7 +42,7 @@ Feiertage werden für deutsche Bundesländer unterstützt. E-Mail-Hinweise gehen
 
 ## Voraussetzungen
 
-Für Version 1.4.5 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompatibilität vorgesehen:
+Für Version 1.4.6 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompatibilität vorgesehen:
 
 - Nextcloud 30–34
 - PHP 8.2–8.5
@@ -53,11 +53,11 @@ Für Feiertagsdaten benötigt Nextcloud ausgehenden HTTPS-Zugriff auf `get.api-f
 
 ## Admin-Checkliste für aktive und archivierte Mitarbeitende
 
-Die HR-Übersicht und der Änderungsverlauf zeigen Mitarbeitende, die mindestens einer der beiden Statusgruppen angehören **und** eine passende HR-Zuordnung haben. Beim Wechsel des Status bleiben die Zeiteinträge erhalten.
+Die HR-Übersicht und der Änderungsverlauf zeigen Mitarbeitende aus den Gruppen, für die das jeweilige HR-Konto zuständig ist. Konten mit Mitgliedschaft in einer aktiven Gruppe gelten als **Aktiv**, auch wenn sie gleichzeitig einer inaktiven Gruppe angehören. Wer einer inaktiven Gruppe angehört und keine aktive Mitgliedschaft hat, erscheint unter **Inaktiv**. Unter **Alle** erscheint jedes Konto einmal. Beim Statuswechsel bleiben die Zeiteinträge erhalten.
 
-1. **Aktive Mitarbeitende prüfen.** Konten in der Nextcloud-Gruppe mit der exakten Kennung `Zeitnachweis` erscheinen unter **Aktiv** und **Alle** jeweils einmal, auch bei gleichzeitiger Mitgliedschaft in `Zeitnachweis-Archiv`. Bestehende Abteilungsgruppen und HR-Zuordnungen beibehalten.
-2. **Archivgruppe bei Bedarf anlegen.** Neue Mitarbeitende können bei der Einrichtung beiden Gruppen zugewiesen werden. Zum Archivieren genügt dann das Entfernen aus `Zeitnachweis`. Das Konto bleibt in `Zeitnachweis-Archiv` und erscheint bei passender HR-Zuordnung unter **Inaktiv** und **Alle**.
-3. **HR-Zugriff kontrollieren.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** prüfen, ob archivierte Konten weiterhin über eine passende Mitarbeitendengruppe dem zuständigen HR-Konto zugeordnet sind. Die gemeinsame Archivgruppe nur einer HR-Regel hinzufügen, wenn die zuständigen HR-Konten alle Mitglieder dieser Gruppe sehen dürfen. Bei Doppelmitgliedschaft gehören dazu auch aktive Konten.
+1. **Gruppen auswählen.** Unter **Profil → Einstellungen → Administration → Arbeitszeitnachweis** lassen sich pro HR-Regel bestehende Nextcloud-Gruppen unter **Mitarbeitergruppen - Aktiv** und **Mitarbeitergruppen - Inaktiv** auswählen. Die Gruppen können beliebige Namen haben. Die Auswahl erteilt den zuständigen HR-Konten Zugriff auf die Mitglieder beider Listen. Eine gemeinsame Archivgruppe daher nur einer Regel zuweisen, wenn deren HR-Konten alle Mitglieder dieser Gruppe sehen dürfen.
+2. **Bestehende Regeln prüfen.** Beim Update behalten bisherige Regeln ihr Statusverhalten, bis ihre Mitarbeitergruppenauswahl geändert wird. Im Formular erscheint eine bereits zugewiesene Gruppe mit der Kennung `Zeitnachweis-Archiv` unter **Mitarbeitergruppen - Inaktiv**. Andere bisher zugewiesene Gruppen erscheinen unter **Mitarbeitergruppen - Aktiv**. Vor einer Änderung prüfen, welche Gruppen künftig welchen Status abbilden sollen.
+3. **Mitgliedschaften verwalten.** Die Mitgliedschaft wird in der Nextcloud-Benutzerverwaltung geändert. Gehört ein Konto bereits einer inaktiven Gruppe an, genügt zum Archivieren das Entfernen aus allen aktiven Gruppen. Eine Rückkehr in eine aktive Gruppe macht das Konto wieder aktiv.
 4. **Filter testen.** Mit einem zuständigen HR-Konto in der HR-Übersicht und im Änderungsverlauf die Filter **Alle**, **Aktiv** und **Inaktiv** prüfen.
 
 ## Installation und Weiterentwicklung
@@ -112,7 +112,7 @@ Public holidays are supported for German federal states. Email notifications cur
 
 ## Requirements
 
-The [app metadata](appinfo/info.xml) declares the following compatibility for version 1.4.5:
+The [app metadata](appinfo/info.xml) declares the following compatibility for version 1.4.6:
 
 - Nextcloud 30–34
 - PHP 8.2–8.5
@@ -123,11 +123,11 @@ For public holiday data, Nextcloud needs outbound HTTPS access to `get.api-feier
 
 ## Administrator checklist for active and archived employees
 
-The HR overview and change history show employees who belong to at least one of the two status groups **and** are covered by an HR assignment. Changing status preserves existing time entries.
+The HR overview and change history show employees in the groups assigned to the respective HR account. An account in an active group counts as **Active**, including when it also belongs to an inactive group. Accounts in an inactive group with no active membership appear under **Inactive**. **All** lists each account once. Changing status preserves existing time entries.
 
-1. **Check active employees.** Accounts in the Nextcloud group with the exact ID `Zeitnachweis` appear once under **Active** and once under **All**, even if they also belong to `Zeitnachweis-Archiv`. Keep existing department groups and HR assignments.
-2. **Create the archive group if needed.** You can assign new employees to both groups when you create their accounts. To archive one of these accounts, remove it from `Zeitnachweis`. It stays in `Zeitnachweis-Archiv` and appears under **Inactive** and **All** if it is covered by an HR assignment.
-3. **Check HR access.** Under **Profile → Settings → Administration → Timesheet**, check that archived accounts remain assigned to the responsible HR account through an appropriate employee group. Add the shared archive group to an HR rule only if the responsible HR accounts are allowed to see all members of that group. That includes active accounts assigned to both status groups.
+1. **Select groups.** Under **Profile → Settings → Administration → Timesheet**, each HR rule can use existing Nextcloud groups in **Employee groups - Active** and **Employee groups - Inactive**. The groups can have any name. The selection gives the responsible HR accounts access to members of both lists. Assign a shared archive group only if those HR accounts may see every member of that group.
+2. **Check existing rules.** After an update, previous rules keep their status behaviour until their employee group selection changes. The form shows any previously assigned group with the ID `Zeitnachweis-Archiv` under **Employee groups - Inactive**. Other previously assigned groups appear under **Employee groups - Active**. Review the desired status groups before changing the selection.
+3. **Manage memberships.** Change group membership in Nextcloud user management. For an account already in an inactive group, removing it from all active groups archives it. Adding it back to an active group makes it active again.
 4. **Test the filters.** Using a responsible HR account, check the **All**, **Active** and **Inactive** filters in the HR overview and change history.
 
 ## Installation and development

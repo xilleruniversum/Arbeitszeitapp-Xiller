@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "닫기",
   "The update notes could not be loaded. Please try again.": "업데이트 내용을 불러오지 못했습니다. 다시 시도해 주세요.",
   "Timesheet updated to {version}": "근무 시간 기록이 버전 {version}(으)로 업데이트되었습니다",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "관리자는 인사 규칙마다 재직 직원과 비재직 직원에 사용할 기존 Nextcloud 그룹을 선택할 수 있습니다.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "인사 담당자 개요와 변경 이력에서는 두 유형의 그룹에 모두 속한 직원을 재직 상태로 표시하며, ‘모든 직원’에 각 직원을 한 번만 나열합니다.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "기존 인사 규칙은 직원 그룹 선택을 바꿀 때까지 이전과 같은 방식으로 상태를 판단합니다.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "업데이트 알림은 Nextcloud의 종 모양 메뉴에서 확인할 수 있습니다. ‘변경 사항 보기’를 선택하면 각 버전의 내용을 펼칠 수 있는 버전 기록이 열립니다.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "둘러보기 알림을 영구적으로 끌 수 있으며 둘러보기는 언제든 다시 시작할 수 있습니다.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "변경 이력 표에서 수정한 사람의 이름을 표시할 공간이 넓어졌습니다. 인사 담당자 도움말에서 휴게 시간 규칙을 설정하는 위치를 확인할 수 있습니다.",
   "New features": "새로운 기능",
   "Improvements": "개선 사항",
   "Bug fixes": "버그 수정",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "업데이트 내용 열기.",
   "Version history": "버전 기록",
   "View changes": "변경 사항 보기",
+  "Employee groups - Active": "직원 그룹(재직)",
+  "Employee groups - Inactive": "직원 그룹(비재직)",
   "Individual HR accounts": "개별 인사 담당 계정",
   "Assigned groups and people receive HR access to these employee groups.": "지정된 그룹과 개인에게 해당 직원 그룹에 대한 인사 접근 권한이 부여됩니다.",
   "Search by name or account ID": "이름 또는 계정 ID로 검색",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "‘메모’ 열에 근무일에 관한 내용을 기록하거나 부재 사유를 설명할 수 있습니다. 시작 시간, 종료 시간 또는 두 시간 모두 누락된 경우 관련 메모가 있을 때만 알림이 전송되지 않습니다. 메모가 없고 시간이 하나도 입력되지 않았거나 한쪽만 입력된 기록은 불완전한 것으로 표시됩니다.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "알림 규칙이 변경되었습니다. 기존 사유 목록 대신 이제 댓글에 내용이 있으면 근무 시간 기록이 누락되거나 불완전해도 이메일 알림이 발송되지 않습니다. 시작 시간과 종료 시간 중 하나만 누락된 경우 댓글 열이 비어 있을 때만 근무 시간 기록이 불완전하다는 경고가 표시됩니다.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "인사 개요와 변경 내역에는 Zeitnachweis 및 Zeitnachweis-Archiv 그룹을 기준으로 활성 및 비활성 직원이 표시됩니다. 두 화면 모두 전체, 활성, 비활성으로 필터링할 수 있습니다. 표시되는 직원은 인사 담당자 배정에 따라 달라집니다.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud 사용자 관리에서는 한 사용자가 두 그룹에 동시에 속할 수 없습니다. 그룹을 변경할 때는 먼저 어느 그룹에서 사용자를 제거해야 하는지 경고로 안내합니다.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud 계정은 Zeitnachweis 그룹과 Zeitnachweis-Archiv 그룹에 동시에 속할 수 있습니다. Zeitnachweis에 속해 있는 동안에는 활성 상태로 유지됩니다. 이 그룹에서 제거해도 보관 그룹에는 계속 속해 있습니다.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "댓글 도움말, 둘러보기, 그룹 규칙 예제에 새 알림 규칙이 설명되어 있습니다.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "인사 담당자용 도움말에는 기준값을 인사 계정별로 설정하며 주간 요약 이메일도 해당 계정으로 발송된다는 내용이 안내되어 있습니다.",
-  "The update window can also be closed using the × in the top right corner.": "업데이트 창은 오른쪽 상단의 × 버튼으로도 닫을 수 있습니다."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Nextcloud의 알림 종 아이콘에서 릴리스 노트를 열 수 있습니다. ‘변경 사항 보기’를 선택하면 각 버전의 변경 사항을 펼쳐 볼 수 있는 버전 기록이 열립니다."
 },
   "nplurals=1; plural=0;"
 );

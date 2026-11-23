@@ -77,6 +77,12 @@
     "Close": "Tutup",
     "The update notes could not be loaded. Please try again.": "Catatan pembaruan tidak dapat dimuat. Coba lagi.",
     "Timesheet updated to {version}": "Pencatatan waktu kerja diperbarui ke versi {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administrator dapat memilih grup Nextcloud yang sudah ada untuk karyawan aktif dan tidak aktif dalam setiap aturan HR.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Ringkasan HR dan riwayat perubahan menampilkan karyawan yang menjadi anggota kedua jenis grup sebagai aktif. Setiap karyawan tampil satu kali di bagian “Semua karyawan”.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Aturan HR yang sudah ada tetap menentukan status dengan cara yang sama hingga pilihan grup karyawannya diubah.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Pemberitahuan pembaruan tetap tersedia di menu lonceng Nextcloud. “Lihat perubahan” membuka riwayat versi yang dapat diperluas.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Pengingat tur berpemandu dapat dinonaktifkan secara permanen, dan turnya dapat dimulai kembali kapan saja.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tabel riwayat perubahan menyediakan lebih banyak ruang untuk nama orang yang membuat perubahan. Bantuan HR menjelaskan tempat mengatur aturan istirahat.",
     "New features": "Fitur baru",
     "Improvements": "Peningkatan",
     "Bug fixes": "Perbaikan bug",
@@ -92,6 +98,8 @@
     "Open the update notes.": "Buka catatan pembaruan.",
     "Version history": "Riwayat versi",
     "View changes": "Lihat perubahan",
+    "Employee groups - Active": "Grup karyawan aktif",
+    "Employee groups - Inactive": "Grup karyawan tidak aktif",
     "Individual HR accounts": "Akun HR perorangan",
     "Assigned groups and people receive HR access to these employee groups.": "Grup dan orang yang ditetapkan mendapat akses HR ke grup karyawan ini.",
     "Search by name or account ID": "Cari berdasarkan nama atau ID akun",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Gunakan kolom Komentar untuk mencatat informasi tentang hari kerja Anda atau menjelaskan ketidakhadiran. Jika waktu mulai, waktu selesai, atau keduanya tidak diisi, hanya komentar yang sesuai yang mencegah pengiriman pemberitahuan. Entri tanpa komentar yang tidak memiliki waktu atau hanya memiliki satu waktu akan ditandai sebagai tidak lengkap.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Aturan pengingat telah berubah. Kini, komentar apa pun yang berisi teks akan mencegah pengiriman pengingat melalui email untuk catatan waktu yang belum ada atau tidak lengkap. Ketentuan ini menggantikan daftar alasan sebelumnya. Jika hanya waktu mulai atau waktu selesai yang belum diisi, peringatan catatan waktu tidak lengkap hanya muncul saat kolom Komentar kosong.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Ringkasan SDM dan riwayat perubahan menampilkan karyawan aktif dan nonaktif berdasarkan grup Zeitnachweis dan Zeitnachweis-Archiv. Kedua tampilan dapat difilter dengan pilihan Semua, Aktif, dan Nonaktif. Karyawan ditampilkan sesuai dengan penugasan penanggung jawab SDM.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Pengelolaan pengguna Nextcloud menolak keanggotaan di kedua grup sekaligus. Saat berpindah grup, peringatan menunjukkan grup mana yang harus ditinggalkan terlebih dahulu.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Akun Nextcloud dapat menjadi anggota grup Zeitnachweis dan Zeitnachweis-Archiv secara bersamaan. Akun tetap aktif selama masih menjadi anggota Zeitnachweis. Setelah dikeluarkan dari grup tersebut, akun tetap berada di grup arsip.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Bantuan komentar, tur panduan, dan contoh aturan grup menjelaskan aturan pengingat yang baru.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Bantuan SDM menjelaskan bahwa nilai ambang ditetapkan untuk setiap akun SDM dan email ringkasan mingguan dikirim ke akun tersebut.",
-    "The update window can also be closed using the × in the top right corner.": "Jendela pembaruan juga dapat ditutup dengan tombol × di sudut kanan atas."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Buka catatan rilis melalui ikon lonceng notifikasi Nextcloud. Pilih “Lihat perubahan” untuk membuka riwayat versi dan menampilkan rincian perubahan pada setiap versi."
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

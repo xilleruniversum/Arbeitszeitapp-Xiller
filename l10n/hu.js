@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Bezárás",
   "The update notes could not be loaded. Please try again.": "A frissítési megjegyzéseket nem sikerült betölteni. Próbálja újra.",
   "Timesheet updated to {version}": "A munkaidő-nyilvántartás frissítve a(z) {version} verzióra",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "A rendszergazdák minden HR-szabályhoz meglévő Nextcloud-csoportokat választhatnak az aktív és az inaktív munkatársak számára.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "A HR-áttekintés és a változástörténet a mindkét típusú csoportba tartozó munkatársakat aktívként jeleníti meg. Az „Összes munkatárs” nézetben minden munkatárs egyszer szerepel.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "A meglévő HR-szabályok a korábbi módon állapítják meg az állapotot mindaddig, amíg a munkatársakhoz kiválasztott csoportok nem változnak.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "A frissítési értesítések a Nextcloud csengőmenüjében maradnak. A „Változások megtekintése” megnyitja a kibontva is megtekinthető verzióelőzményeket.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "A bemutatóra vonatkozó emlékeztető végleg kikapcsolható, a bemutató pedig bármikor újraindítható.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "A változástörténet táblázatában több hely jut a módosításokat végzők nevének. A HR-súgó ismerteti, hol állíthatók be a szünetekre vonatkozó szabályok.",
   "New features": "Új funkciók",
   "Improvements": "Fejlesztések",
   "Bug fixes": "Hibajavítások",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Frissítési megjegyzések megnyitása.",
   "Version history": "Verzióelőzmények",
   "View changes": "Változások megtekintése",
+  "Employee groups - Active": "Aktív munkatársak csoportjai",
+  "Employee groups - Inactive": "Inaktív munkatársak csoportjai",
   "Individual HR accounts": "Egyéni HR-fiókok",
   "Assigned groups and people receive HR access to these employee groups.": "A hozzárendelt csoportok és személyek HR-hozzáférést kapnak ezekhez a munkavállalói csoportokhoz.",
   "Search by name or account ID": "Keresés név vagy fiókazonosító alapján",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "A „Megjegyzés” oszlopban rögzíthet információkat a munkanapjáról, vagy megindokolhatja a távollétét. Ha a kezdési idő, a befejezési idő vagy mindkettő hiányzik, csak egy idevágó megjegyzés akadályozza meg az értesítés küldését. A megjegyzés nélküli bejegyzések hiányos jelölést kapnak, ha csak egy időpont szerepel bennük, vagy egy sem.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Megváltoztak az emlékeztetők szabályai. A korábbi indoklista helyett mostantól bármely nem üres megjegyzés megakadályozza, hogy a hiányzó vagy hiányos munkaidő-bejegyzésről e-mailes emlékeztető menjen ki. Ha csak a kezdési vagy a befejezési idő hiányzik, a hiányos időbejegyzésre vonatkozó figyelmeztetés csak akkor jelenik meg, ha a Megjegyzés oszlop üres.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "A HR-áttekintés és a változáselőzmények a Zeitnachweis és a Zeitnachweis-Archiv csoport alapján jelenítik meg az aktív és inaktív munkatársakat. Mindkét nézetben az Összes, az Aktív és az Inaktív szűrő közül lehet választani. A láthatóság a munkatársak HR-felelőshöz rendelésétől függ.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "A Nextcloud felhasználókezelése megakadályozza, hogy valaki egyszerre mindkét csoport tagja legyen. Váltáskor figyelmeztetés jelzi, melyik csoportból kell először eltávolítani a felhasználót.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "A Nextcloud-fiókok egyszerre lehetnek a Zeitnachweis és a Zeitnachweis-Archiv csoport tagjai. A fiókok addig maradnak aktívak, amíg a Zeitnachweis csoporthoz tartoznak. E tagság megszüntetése után az archív csoportban maradnak.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "A megjegyzésekhez tartozó súgó, a vezetett bemutató és a csoportszabályok példája ismerteti az új emlékeztetési szabályt.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "A HR-súgó ismerteti, hogy a határértékek HR-fiókonként állíthatók be, és a heti összefoglaló e-mail ugyanahhoz a fiókhoz érkezik.",
-  "The update window can also be closed using the × in the top right corner.": "A frissítési ablak a jobb felső sarokban lévő × gombbal is bezárható."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "A kiadási megjegyzések a Nextcloud értesítési harangján keresztül érhetők el. A „Változások megtekintése” lehetőség megnyitja a verzióelőzményeket, ahol az egyes verziók változáslistája kibontható."
 },
   "nplurals=2; plural=(n != 1);"
 );

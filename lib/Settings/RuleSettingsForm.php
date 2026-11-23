@@ -8,6 +8,7 @@ use OCP\Util;
 use OCP\IGroupManager;
 use OCP\IUserManager;
 use OCA\Timesheet\Service\HrRuleAssignments;
+use OCA\Timesheet\Service\EmployeeGroupRules;
 use OCA\Timesheet\Service\MissingEntryReminderSettings;
 use OCA\Timesheet\Service\EmployeeBalanceNotificationSettings;
 
@@ -34,8 +35,8 @@ class RuleSettingsForm {
 	}
 
 	public function getForm(string $scope): TemplateResponse {
-		Util::addScript($this->appName, 'timesheet-rule-settings-v3');
-		Util::addStyle($this->appName, 'timesheet-hr-settings-v7');
+		Util::addScript($this->appName, 'timesheet-rule-settings-v4');
+		Util::addStyle($this->appName, 'timesheet-hr-settings-v8');
 		return new TemplateResponse($this->appName, 'settings-hr', $this->getData($scope));
 	}
 
@@ -54,6 +55,10 @@ class RuleSettingsForm {
 
 		$rawRules = (string)$this->appConfig->getAppValueString('hr_access_rules');
 		$accessRules = $this->loadRules($rawRules);
+		if ($scope === 'assignments') {
+			$accessRules = array_map(static fn(array $rule): array =>
+				array_replace($rule, EmployeeGroupRules::forEditor($rule)), $accessRules);
+		}
 
 		return [
 			'settingsScope' => $scope === 'assignments' ? 'assignments' : 'policy',
@@ -106,19 +111,28 @@ class RuleSettingsForm {
 				continue;
 			}
 
-			$userGroups = isset($rule['userGroups']) && is_array($rule['userGroups']) ? $rule['userGroups'] : [];
-
-			$userGroups = array_values(array_unique(array_values(array_filter(array_map('trim', $userGroups), fn($groupId) => $groupId !== ''))));
+			$employeeGroups = ['userGroups' => $this->normalizeGroupIds($rule['userGroups'] ?? $rule['user_groups'] ?? [])];
+			if (array_key_exists('inactiveUserGroups', $rule)) {
+				$employeeGroups['inactiveUserGroups'] = $this->normalizeGroupIds($rule['inactiveUserGroups']);
+			}
 
 			$sanitizedRules[] = array_merge([
 				'id' => $ruleId,
 				...$this->hrAssignments->normalize($rule),
-				'userGroups' => $userGroups,
+				...$employeeGroups,
 				'missingEntryReminders' => MissingEntryReminderSettings::normalize($rule['missingEntryReminders'] ?? null),
 				'employeeBalanceNotifications' => EmployeeBalanceNotificationSettings::normalize($rule['employeeBalanceNotifications'] ?? null),
 			], $this->sanitizeRuleThresholds($rule));
 		}
 		return $sanitizedRules;
+	}
+
+	private function normalizeGroupIds(mixed $groups): array {
+		if (!is_array($groups)) {
+			return [];
+		}
+		$ids = array_map(static fn(mixed $groupId): string => is_scalar($groupId) ? trim((string)$groupId) : '', $groups);
+		return array_values(array_unique(array_filter($ids, static fn(string $groupId): bool => $groupId !== '')));
 	}
 
 	/**

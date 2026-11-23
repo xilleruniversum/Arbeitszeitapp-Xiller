@@ -152,6 +152,12 @@
     "Close": "Zavrieť",
     "The update notes could not be loaded. Please try again.": "Informácie o aktualizácii sa nepodarilo načítať. Skúste to znova.",
     "Timesheet updated to {version}": "Výkaz práce aktualizovaný na verziu {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Správcovia môžu v každom personálnom pravidle vybrať existujúce skupiny Nextcloud pre aktívnych a neaktívnych zamestnancov.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Prehľad pre personalistov a História zmien zobrazujú zamestnancov v oboch typoch skupín ako aktívnych. V zozname „Všetci zamestnanci“ je každý zamestnanec uvedený iba raz.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Existujúce personálne pravidlá určujú stav rovnako ako doteraz, kým sa nezmení výber skupín zamestnancov.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Upozornenia na aktualizácie zostávajú dostupné pod zvončekom v Nextcloud. Tlačidlo „Zobraziť zmeny“ otvorí históriu verzií s rozbaliteľnými sekciami.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Sprievodcu možno natrvalo skryť a kedykoľvek ho znova spustiť.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "V tabuľke histórie zmien je viac miesta na mená autorov zmien. Pomocník pre personalistov vysvetľuje, kde sa nastavujú pravidlá prestávok.",
     "New features": "Nové funkcie",
     "Improvements": "Vylepšenia",
     "Bug fixes": "Opravy chýb",
@@ -167,6 +173,8 @@
     "Open the update notes.": "Otvoriť informácie o aktualizácii.",
     "Version history": "História verzií",
     "View changes": "Zobraziť zmeny",
+    "Employee groups - Active": "Skupiny aktívnych zamestnancov",
+    "Employee groups - Inactive": "Skupiny neaktívnych zamestnancov",
     "Individual HR accounts": "Jednotlivé účty HR",
     "Assigned groups and people receive HR access to these employee groups.": "Priradené skupiny a osoby získajú prístup HR k týmto skupinám zamestnancov.",
     "Search by name or account ID": "Hľadať podľa mena alebo ID účtu",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Stĺpec Komentár môžete použiť na zápis vlastných poznámok o pracovnom dni alebo na vysvetlenie neprítomnosti. Ak chýba čas začiatku, čas konca alebo oba časy, oznámeniu zabráni iba príslušný komentár. Záznamy bez času alebo len s jedným časom a bez komentára sa označia ako neúplné.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Pravidlá pripomienok sa zmenili. Namiesto doterajšieho zoznamu dôvodov teraz akýkoľvek neprázdny komentár zabráni odoslaniu e-mailovej pripomienky pri chýbajúcich alebo neúplných časových záznamoch. Ak chýba iba čas začiatku alebo konca, upozornenie na neúplný záznam sa zobrazí len vtedy, ak je stĺpec Komentár prázdny.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Prehľad HR a história zmien zobrazujú aktívnych a neaktívnych zamestnancov podľa skupín Zeitnachweis a Zeitnachweis-Archiv. V oboch zobrazeniach možno filtrovať podľa možností Všetci, Aktívni a Neaktívni. Viditeľnosť závisí od priradenia k príslušnému pracovníkovi HR.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Správa používateľov Nextcloud neumožňuje členstvo v oboch skupinách naraz. Upozornenie vysvetlí, ktorú skupinu treba pri prechode opustiť ako prvú.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Účty Nextcloud môžu byť súčasne členmi skupín Zeitnachweis a Zeitnachweis-Archiv. Účty zostávajú aktívne, kým sú členmi skupiny Zeitnachweis. Po odstránení z tejto skupiny zostávajú v archívnej skupine.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Pomocník ku komentárom, sprievodca a príklad pri pravidlách skupín vysvetľujú nové pravidlo pripomienok.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Pomocník pre HR vysvetľuje, že limity sa nastavujú pre každý účet HR a týždenný súhrn e-mailom sa posiela na adresu tohto účtu.",
-    "The update window can also be closed using the × in the top right corner.": "Okno aktualizácie je možné zatvoriť aj pomocou × v pravom hornom rohu."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Poznámky k vydaniu otvorte pomocou zvončeka upozornení v Nextcloud. Výberom možnosti „Zobraziť zmeny“ otvoríte históriu verzií s rozbaliteľnými sekciami."
   },
   "pluralForm": "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);"
 }

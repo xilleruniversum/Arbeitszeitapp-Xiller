@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Хаах",
   "The update notes could not be loaded. Please try again.": "Шинэчлэлтийн тэмдэглэлийг ачаалж чадсангүй. Дахин оролдоно уу.",
   "Timesheet updated to {version}": "Ажлын цагийн бүртгэлийг {version} хувилбар болгон шинэчиллээ",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Админууд хүний нөөцийн дүрэм бүрд идэвхтэй болон идэвхгүй ажилтанд зориулж Nextcloud-д байгаа бүлгүүдээс сонгох боломжтой.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Хүний нөөцийн тойм болон өөрчлөлтийн түүхэнд хоёр төрлийн бүлэгт хоёуланд нь багтдаг ажилтныг идэвхтэй гэж харуулна. «Бүх ажилтан» хэсэгт ажилтан бүр нэг удаа харагдана.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Өмнөх хүний нөөцийн дүрмүүдийн ажилтны бүлгийн сонголтыг өөрчлөх хүртэл төлөвийг өмнөхийн адилаар тодорхойлно.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Шинэчлэлтийн мэдэгдэл Nextcloud-ийн хонхны цэсэнд үлдэнэ. «Өөрчлөлтийг харах» нь бичлэг бүрийг дэлгэж болох хувилбарын түүхийг нээнэ.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Танилцуулга аяллын сануулгыг бүрмөсөн унтрааж, аяллыг хүссэн үедээ дахин эхлүүлэх боломжтой.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Өөрчлөлтийн түүхийн хүснэгтэд засвар хийсэн хүний нэрийг харуулах зай нэмэгдлээ. Хүний нөөцийн тусламжид завсарлагын дүрмийг хаана тохируулахыг тайлбарласан.",
   "New features": "Шинэ боломжууд",
   "Improvements": "Сайжруулалт",
   "Bug fixes": "Алдааны засварууд",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Шинэчлэлтийн тэмдэглэлийг нээх.",
   "Version history": "Хувилбарын түүх",
   "View changes": "Өөрчлөлтийг харах",
+  "Employee groups - Active": "Идэвхтэй ажилтны бүлгүүд",
+  "Employee groups - Inactive": "Идэвхгүй ажилтны бүлгүүд",
   "Individual HR accounts": "Хүний нөөцийн тусдаа бүртгэлүүд",
   "Assigned groups and people receive HR access to these employee groups.": "Хуваарилсан бүлэг болон хүмүүс эдгээр ажилтны бүлэгт хүний нөөцийн эрхээр хандана.",
   "Search by name or account ID": "Нэр эсвэл бүртгэлийн ID-аар хайх",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "«Тайлбар» баганад ажлын өдрийн талаарх мэдээллээ тэмдэглэх эсвэл эзгүй байснаа тайлбарлаж болно. Эхэлсэн цаг, дууссан цаг эсвэл хоёулаа дутуу бол зөвхөн холбогдох тайлбар оруулснаар мэдэгдэл илгээхгүй. Тайлбаргүй бөгөөд цаг оруулаагүй эсвэл ганц цаг оруулсан бүртгэлийг дутуу гэж тэмдэглэнэ.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Сануулгын дүрэм өөрчлөгдлөө. Өмнөх шалтгааны жагсаалтыг халж, одоо тайлбар бичсэн л бол ажлын цагийн бүртгэл дутуу эсвэл огт хийгдээгүй тухай сануулгыг имэйлээр илгээхгүй. Зөвхөн эхлэх эсвэл дуусах цаг дутуу бол «Тайлбар» багана хоосон үед л цагийн бүртгэл дутуу гэсэн анхааруулга гарна.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Хүний нөөцийн тойм болон өөрчлөлтийн түүхэд Zeitnachweis ба Zeitnachweis-Archiv бүлгээр идэвхтэй болон идэвхгүй ажилтнуудыг харуулна. Хоёр хэсэгт хоёуланд нь «Бүгд», «Идэвхтэй», «Идэвхгүй» гэсэн сонголтоор шүүж болно. Аль ажилтан харагдах нь хариуцсан хүний нөөцийн ажилтны хуваарилалтаас хамаарна.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud-ийн хэрэглэгчийн удирдлага нэг хэрэглэгчийг хоёр бүлэгт зэрэг нэмэхээс сэргийлнэ. Бүлэг солих үед хэрэглэгчийг аль бүлгээс эхэлж хасахыг анхааруулгад заана.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud бүртгэл Zeitnachweis болон Zeitnachweis-Archiv бүлэгт зэрэг харьяалагдаж болно. Бүртгэл Zeitnachweis бүлэгт байгаа хугацаанд идэвхтэй хэвээр байна. Тухайн бүлгээс хассан ч архивын бүлэгт үлдэнэ.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Тайлбарын тусламж, танилцуулах хөтөч болон бүлгийн дүрмийн жишээнд сануулгын шинэ дүрмийг тайлбарласан.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Хүний нөөцийн тусламжид босго утгыг хүний нөөцийн бүртгэл тус бүрд тохируулдаг бөгөөд долоо хоногийн тоймыг тухайн бүртгэлд имэйлээр илгээдэг болохыг тайлбарласан.",
-  "The update window can also be closed using the × in the top right corner.": "Шинэчлэлийн цонхыг баруун дээд булан дахь × товчоор мөн хааж болно."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Хувилбарын тэмдэглэлийг Nextcloud-ийн мэдэгдлийн хонхоор нээнэ. «Өөрчлөлтийг харах» гэдгийг сонгож хувилбарын түүхийг нээгээд, хувилбар бүрийн өөрчлөлтийн жагсаалтыг дэлгэж харна."
 },
   "nplurals=2; plural=(n != 1);"
 );

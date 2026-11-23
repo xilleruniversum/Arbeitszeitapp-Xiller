@@ -249,6 +249,7 @@ namespace {
 	}
 	require_once __DIR__ . '/../../lib/Service/EmploymentStatus.php';
 	require_once __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
+	require_once __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 	require_once __DIR__ . '/../../lib/Listener/EmployeeActivityListener.php';
 	require_once __DIR__ . '/../../lib/Controller/EmploymentStatusController.php';
 	require_once __DIR__ . '/../../lib/Service/MissingEntryReminderMailer.php';
@@ -260,12 +261,16 @@ namespace {
 
 	class EmploymentConfigFixture implements \OCP\IConfig {
 		public array $values = [];
+		public array $rules = [];
 		public array $reads = [];
 		public array $writes = [];
 		public bool $rejectReads = false;
 		public bool $rejectWrites = false;
 		public ?\Closure $beforeWrite = null;
 		public function __construct(private EmploymentLockFixture $locks) {
+		}
+		public function getAppValue($app, $key, $default = '') {
+			return json_encode($this->rules, JSON_THROW_ON_ERROR);
 		}
 		public function getUserValueForUsers($app, $key, $users) {
 			$this->reads[] = $users;

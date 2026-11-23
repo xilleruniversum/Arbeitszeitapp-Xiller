@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "ປິດ",
   "The update notes could not be loaded. Please try again.": "ບໍ່ສາມາດໂຫຼດບັນທຶກການອັບເດດໄດ້. ກະລຸນາລອງອີກຄັ້ງ.",
   "Timesheet updated to {version}": "ບັນທຶກເວລາເຮັດວຽກຖືກອັບເດດເປັນລຸ້ນ {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "ຜູ້ບໍລິຫານລະບົບສາມາດເລືອກກຸ່ມ Nextcloud ທີ່ມີຢູ່ສຳລັບພະນັກງານທີ່ເຮັດວຽກຢູ່ ແລະພະນັກງານທີ່ບໍ່ໄດ້ເຮັດວຽກໃນແຕ່ລະກົດຂອງຝ່າຍບຸກຄົນ.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "ພາບລວມຝ່າຍບຸກຄົນ ແລະປະຫວັດການປ່ຽນແປງສະແດງພະນັກງານທີ່ຢູ່ໃນທັງສອງປະເພດກຸ່ມວ່າຍັງເຮັດວຽກຢູ່. ໃນ “ພະນັກງານທັງໝົດ” ພະນັກງານແຕ່ລະຄົນຈະຖືກສະແດງພຽງເທື່ອດຽວ.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "ກົດຂອງຝ່າຍບຸກຄົນທີ່ມີຢູ່ຍັງກຳນົດສະຖານະແບບເດີມຈົນກວ່າຈະປ່ຽນການເລືອກກຸ່ມພະນັກງານຂອງກົດນັ້ນ.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "ແຈ້ງການອັບເດດຍັງຢູ່ໃນເມນູຮູບກະດິ່ງຂອງ Nextcloud. “ເບິ່ງການປ່ຽນແປງ” ຈະເປີດປະຫວັດເວີຊັນທີ່ສາມາດຂະຫຍາຍແຕ່ລະລາຍການໄດ້.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "ສາມາດປິດການເຕືອນກ່ຽວກັບການແນະນຳການໃຊ້ງານຢ່າງຖາວອນ ແລະເລີ່ມການແນະນຳຄືນໄດ້ທຸກເວລາ.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "ຕາຕະລາງປະຫວັດການປ່ຽນແປງມີພື້ນທີ່ສະແດງຊື່ຜູ້ແກ້ໄຂຫຼາຍຂຶ້ນ. ຄູ່ມືຂອງຝ່າຍບຸກຄົນອະທິບາຍວ່າຕັ້ງກົດເວລາພັກໄດ້ຢູ່ໃສ.",
   "New features": "ຄຸນສົມບັດໃໝ່",
   "Improvements": "ການປັບປຸງ",
   "Bug fixes": "ການແກ້ໄຂຂໍ້ຜິດພາດ",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "ເປີດບັນທຶກການອັບເດດ.",
   "Version history": "ປະຫວັດເວີຊັນ",
   "View changes": "ເບິ່ງການປ່ຽນແປງ",
+  "Employee groups - Active": "ກຸ່ມພະນັກງານທີ່ເຮັດວຽກຢູ່",
+  "Employee groups - Inactive": "ກຸ່ມພະນັກງານທີ່ບໍ່ໄດ້ເຮັດວຽກ",
   "Individual HR accounts": "ບັນຊີ HR ລາຍບຸກຄົນ",
   "Assigned groups and people receive HR access to these employee groups.": "ກຸ່ມ ແລະ ບຸກຄົນທີ່ມອບໝາຍຈະໄດ້ຮັບສິດ HR ເຂົ້າເຖິງກຸ່ມພະນັກງານເຫຼົ່ານີ້.",
   "Search by name or account ID": "ຄົ້ນຫາດ້ວຍຊື່ ຫຼື ລະຫັດບັນຊີ",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "ໃຊ້ຖັນ «ຄຳເຫັນ» ເພື່ອບັນທຶກຂໍ້ມູນກ່ຽວກັບວັນເຮັດວຽກ ຫຼື ອະທິບາຍການຂາດວຽກ. ຖ້າຂາດເວລາເລີ່ມ, ເວລາສິ້ນສຸດ ຫຼື ທັງສອງຢ່າງ, ມີພຽງຄຳເຫັນທີ່ກ່ຽວຂ້ອງເທົ່ານັ້ນທີ່ຈະປ້ອງກັນການແຈ້ງເຕືອນ. ລາຍການທີ່ບໍ່ມີຄຳເຫັນຈະຖືກໝາຍວ່າບໍ່ຄົບຖ້ວນຖ້າບໍ່ມີເວລາ ຫຼື ມີພຽງເວລາດຽວ.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "ກົດການແຈ້ງເຕືອນມີການປ່ຽນແປງ. ຕອນນີ້ ການໃສ່ຂໍ້ຄວາມໃດໆ ໃນໝາຍເຫດຈະລະງັບອີເມວແຈ້ງເຕືອນເມື່ອບໍ່ມີບັນທຶກເວລາເຮັດວຽກ ຫຼື ເມື່ອບັນທຶກບໍ່ຄົບ. ກົດນີ້ໃຊ້ແທນລາຍການເຫດຜົນເດີມ. ຖ້າຂາດພຽງແຕ່ເວລາເລີ່ມ ຫຼື ເວລາສິ້ນສຸດ, ຄຳເຕືອນວ່າບັນທຶກເວລາບໍ່ຄົບຈະປະກົດຂຶ້ນສະເພາະເມື່ອຖັນໝາຍເຫດຫວ່າງເປົ່າ.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "ພາບລວມຝ່າຍບຸກຄະລາກອນ ແລະ ປະຫວັດການປ່ຽນແປງ ສະແດງພະນັກງານທີ່ຍັງເຮັດວຽກຢູ່ ແລະ ບໍ່ເຮັດວຽກແລ້ວ ຕາມກຸ່ມ Zeitnachweis ແລະ Zeitnachweis-Archiv. ທັງສອງໜ້າສາມາດກັ່ນຕອງຕາມຕົວເລືອກ ທັງໝົດ, ຍັງເຮັດວຽກຢູ່ ແລະ ບໍ່ເຮັດວຽກແລ້ວ. ພະນັກງານຈະປະກົດຕາມການມອບໝາຍໃຫ້ຜູ້ຮັບຜິດຊອບຝ່າຍບຸກຄະລາກອນ.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "ການຈັດການຜູ້ໃຊ້ຂອງ Nextcloud ບໍ່ອະນຸຍາດໃຫ້ຢູ່ໃນທັງສອງກຸ່ມພ້ອມກັນ. ເມື່ອຍ້າຍກຸ່ມ, ຄຳເຕືອນຈະບອກວ່າຕ້ອງນຳຜູ້ໃຊ້ອອກຈາກກຸ່ມໃດກ່ອນ.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "ບັນຊີ Nextcloud ສາມາດເປັນສະມາຊິກຂອງກຸ່ມ Zeitnachweis ແລະ Zeitnachweis-Archiv ພ້ອມກັນໄດ້. ບັນຊີຍັງມີສະຖານະໃຊ້ງານຢູ່ຕາບໃດທີ່ຍັງຢູ່ໃນກຸ່ມ Zeitnachweis. ເມື່ອນຳບັນຊີອອກຈາກກຸ່ມນັ້ນ ບັນຊີຍັງຄົງຢູ່ໃນກຸ່ມຈັດເກັບ.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "ຄຳອະທິບາຍຖັນໝາຍເຫດ, ການແນະນຳວິທີໃຊ້ ແລະ ຕົວຢ່າງກົດຂອງກຸ່ມ ອະທິບາຍກົດການແຈ້ງເຕືອນໃໝ່.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "ຄຳແນະນຳສຳລັບຝ່າຍບຸກຄະລາກອນອະທິບາຍວ່າ ຄ່າເກນຈະຖືກກຳນົດແຍກໃຫ້ແຕ່ລະບັນຊີຂອງຝ່າຍບຸກຄະລາກອນ ແລະ ອີເມວສະຫຼຸບປະຈຳອາທິດຈະສົ່ງໄປຫາບັນຊີນັ້ນ.",
-  "The update window can also be closed using the × in the top right corner.": "ສາມາດປິດໜ້າຕ່າງອັບເດດດ້ວຍປຸ່ມ × ທີ່ມຸມຂວາເທິງໄດ້ເຊັ່ນກັນ."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "ເປີດບັນທຶກການອອກເວີຊັນຜ່ານໄອຄອນກະດິ່ງແຈ້ງເຕືອນຂອງ Nextcloud. ເລືອກ «ເບິ່ງການປ່ຽນແປງ» ເພື່ອເປີດປະຫວັດເວີຊັນ ແລະຂະຫຍາຍເບິ່ງລາຍການປ່ຽນແປງຂອງແຕ່ລະເວີຊັນ."
 },
   "nplurals=1; plural=0;"
 );

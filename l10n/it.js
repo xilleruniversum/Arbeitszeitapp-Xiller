@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Chiudi",
   "The update notes could not be loaded. Please try again.": "Impossibile caricare le note di aggiornamento. Riprovare.",
   "Timesheet updated to {version}": "Registro delle ore aggiornato alla versione {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Gli amministratori possono scegliere gruppi Nextcloud esistenti per il personale attivo e inattivo in ciascuna regola HR.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "La panoramica HR e la cronologia delle modifiche mostrano come attivo chi appartiene a entrambe le tipologie di gruppo. Ogni persona compare una sola volta in «Tutti i collaboratori».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Le regole HR esistenti continuano a determinare lo stato come prima finché non cambia la selezione dei gruppi del personale.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Gli avvisi di aggiornamento restano nel menu della campanella di Nextcloud. «Visualizza le modifiche» apre la cronologia delle versioni, in cui si possono espandere le singole voci.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "È possibile disattivare definitivamente l'invito al tour guidato e riavviare il tour in qualsiasi momento.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "La tabella della cronologia delle modifiche riserva più spazio ai nomi di chi ha apportato le modifiche. La guida HR indica dove configurare le regole sulle pause.",
   "New features": "Nuove funzionalità",
   "Improvements": "Miglioramenti",
   "Bug fixes": "Correzioni di errori",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Apri le note di aggiornamento.",
   "Version history": "Cronologia delle versioni",
   "View changes": "Visualizza le modifiche",
+  "Employee groups - Active": "Gruppi del personale attivo",
+  "Employee groups - Inactive": "Gruppi del personale inattivo",
   "Individual HR accounts": "Account HR individuali",
   "Assigned groups and people receive HR access to these employee groups.": "I gruppi e le persone assegnati ricevono accesso HR a questi gruppi di dipendenti.",
   "Search by name or account ID": "Cerca per nome o identificativo dell'account",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Usa la colonna «Commento» per annotare informazioni sulla tua giornata lavorativa o spiegare le assenze. Se manca l’ora di inizio, quella di fine o entrambe, solo un commento pertinente evita la notifica. Le registrazioni senza commento sono contrassegnate come incomplete se contengono un solo orario o nessuno.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Le regole dei promemoria sono cambiate. L’elenco precedente di motivazioni è stato sostituito da una regola unica. Qualsiasi commento non vuoto impedisce l’invio del promemoria via email per le registrazioni orarie mancanti o incomplete. Se manca solo l’orario di inizio o di fine, l’avviso di registrazione incompleta viene visualizzato solo quando la colonna Commento è vuota.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "La panoramica HR e la cronologia delle modifiche mostrano i dipendenti attivi e inattivi in base ai gruppi Zeitnachweis e Zeitnachweis-Archiv. In entrambe le viste si può filtrare per Tutti, Attivi e Inattivi. La visibilità dipende dall’assegnazione al referente HR.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "La gestione utenti di Nextcloud impedisce l’appartenenza contemporanea a entrambi i gruppi. Quando si cambia gruppo, un avviso indica da quale gruppo bisogna prima rimuovere l’utente.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Gli account Nextcloud possono appartenere contemporaneamente ai gruppi Zeitnachweis e Zeitnachweis-Archiv. Gli account restano attivi finché appartengono a Zeitnachweis. Quando vengono rimossi da questo gruppo, restano nel gruppo di archivio.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "La guida ai commenti, il tour guidato e l’esempio delle regole di gruppo spiegano la nuova regola dei promemoria.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "La guida per HR chiarisce che le soglie vengono impostate per ciascun account HR e che il riepilogo settimanale viene inviato via email allo stesso account.",
-  "The update window can also be closed using the × in the top right corner.": "La finestra di aggiornamento si può chiudere anche con il pulsante × in alto a destra."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Apri le note di rilascio dalla campanella delle notifiche di Nextcloud. Seleziona «Visualizza le modifiche» per aprire la cronologia delle versioni, dove puoi espandere l’elenco delle modifiche di ogni versione."
 },
   "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 );

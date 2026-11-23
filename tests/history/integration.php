@@ -53,31 +53,49 @@ if ($phase === 'fresh') {
 	exit;
 }
 
-if ($phase === 'dual-membership') {
-	$employeeId = 'history-dual-employee';
-	$hrId = 'history-dual-hr';
-	$otherHrId = 'history-dual-other-hr';
+if (in_array($phase, ['dual-membership', 'custom-membership'], true)) {
+	$custom = $phase === 'custom-membership';
+	$prefix = $custom ? 'history-custom' : 'history-dual';
+	$employeeId = $prefix . '-employee';
+	$hrId = $prefix . '-hr';
+	$otherHrId = $prefix . '-other-hr';
 	$employee = $users->createUser($employeeId, getenv('HISTORY_TEST_PASSWORD'));
 	$users->createUser($hrId, getenv('HISTORY_TEST_PASSWORD'));
 	$users->createUser($otherHrId, getenv('HISTORY_TEST_PASSWORD'));
-	$activeGroupId = \OCA\Timesheet\Db\EmploymentStatusStore::ACTIVE_GROUP_ID;
-	$archiveGroupId = \OCA\Timesheet\Db\EmploymentStatusStore::ARCHIVE_GROUP_ID;
+	$activeGroupId = $custom ? $prefix . '-current' : \OCA\Timesheet\Db\EmploymentStatusStore::ACTIVE_GROUP_ID;
+	$archiveGroupId = $custom ? $prefix . '-former' : \OCA\Timesheet\Db\EmploymentStatusStore::ARCHIVE_GROUP_ID;
 	$activeGroup = $groups->get($activeGroupId) ?? $groups->createGroup($activeGroupId);
 	$archiveGroup = $groups->get($archiveGroupId) ?? $groups->createGroup($archiveGroupId);
-	$team = $groups->createGroup('history-dual-team');
-	$otherTeam = $groups->createGroup('history-dual-other-team');
-	$team->addUser($employee);
-	$appConfig->setAppValueString('hr_access_rules', json_encode([
-		['id' => 'history-dual', 'hrUsers' => [$hrId], 'userGroups' => [$team->getGID(), $archiveGroupId]],
-		['id' => 'history-dual-other', 'hrUsers' => [$otherHrId], 'userGroups' => [$otherTeam->getGID()]],
-	], JSON_THROW_ON_ERROR));
+	$otherTeam = $groups->createGroup($prefix . '-other-team');
+	$rule = ['id' => $prefix, 'hrUsers' => [$hrId]];
+	$otherRule = ['id' => $prefix . '-other', 'hrUsers' => [$otherHrId], 'userGroups' => [$otherTeam->getGID()]];
+	if ($custom) {
+		$rule['userGroups'] = [$activeGroupId];
+		$rule['inactiveUserGroups'] = [$archiveGroupId];
+		$otherRule['inactiveUserGroups'] = [];
+	} else {
+		$team = $groups->createGroup($prefix . '-team');
+		$team->addUser($employee);
+		$rule['userGroups'] = [$team->getGID(), $archiveGroupId];
+	}
+	$appConfig->setAppValueString('hr_access_rules', json_encode([$rule, $otherRule], JSON_THROW_ON_ERROR));
 	historyAs($hrId);
 	$overview = $container->get(\OCA\Timesheet\Controller\OverviewController::class);
 	$history = $container->get(\OCA\Timesheet\Service\ChangeHistoryService::class);
 	$entries = $container->get(\OCA\Timesheet\Service\EntryService::class);
 	$statuses = $container->get(\OCA\Timesheet\Db\EmploymentStatusStore::class);
 
+	$readStoredStatus = static function () use ($config, $employeeId): array {
+		$values = $config->getUserValueForUsers('timesheet', 'employment_status', [$employeeId]);
+		return json_decode($values[$employeeId] ?? '{}', true, 512, JSON_THROW_ON_ERROR);
+	};
+	if ($custom) {
+		historyCheck($statuses->getStatus($employeeId)->isActive, false, 'An account outside all configured groups is inactive');
+	}
 	$activeGroup->addUser($employee);
+	if ($custom) {
+		historyCheck($readStoredStatus()['isActive'] ?? null, true, 'The native add event marks membership in a custom group active');
+	}
 	$archiveGroup->addUser($employee);
 	historyCheck($archiveGroup->inGroup($employee), true, 'The native archive group accepts an existing active member');
 	$workDate = (new DateTimeImmutable('today', new DateTimeZone('Europe/Berlin')))->format('Y-m-d');
@@ -100,8 +118,18 @@ if ($phase === 'dual-membership') {
 	};
 	$assertViews(true);
 
-	$activeGroup->removeUser($employee);
-	historyCheck($archiveGroup->inGroup($employee), true, 'Removing only active membership leaves archive membership intact');
+	if ($custom) {
+		$otherTeam->addUser($employee);
+		$activeState = $readStoredStatus();
+		$activeGroup->removeUser($employee);
+		historyCheck($readStoredStatus(), $activeState, 'The native removal event leaves activity history intact while a second active membership remains');
+		$assertViews(true);
+		$otherTeam->removeUser($employee);
+		historyCheck($readStoredStatus()['isActive'] ?? null, false, 'The native removal event records inactivity after the last active membership is removed');
+	} else {
+		$activeGroup->removeUser($employee);
+	}
+	historyCheck($archiveGroup->inGroup($employee), true, 'Removing all active memberships leaves archive membership intact');
 	$assertViews(false);
 	historyAs($otherHrId);
 	historyCheck($overview->getHrUserListData()->getData(), [], 'Another HR account cannot see the archived employee in the overview');
@@ -110,8 +138,12 @@ if ($phase === 'dual-membership') {
 	historyAs($hrId);
 	$activeGroup->addUser($employee);
 	historyCheck($archiveGroup->inGroup($employee), true, 'An existing archive member can also be reactivated');
+	if ($custom) {
+		historyCheck($readStoredStatus()['isActive'] ?? null, true, 'The native add event records reactivation in the custom active group');
+	}
 	$assertViews(true);
-	echo json_encode(['historyDualMembershipChecks' => $checks, 'result' => 'passed'], JSON_THROW_ON_ERROR) . "\n";
+	$checkName = $custom ? 'historyCustomMembershipChecks' : 'historyDualMembershipChecks';
+	echo json_encode([$checkName => $checks, 'result' => 'passed'], JSON_THROW_ON_ERROR) . "\n";
 	exit;
 }
 

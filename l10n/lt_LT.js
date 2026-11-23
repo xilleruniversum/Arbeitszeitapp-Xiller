@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Užverti",
   "The update notes could not be loaded. Please try again.": "Nepavyko įkelti atnaujinimo pastabų. Bandykite dar kartą.",
   "Timesheet updated to {version}": "Darbo laiko apskaita atnaujinta į {version} versiją",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratoriai kiekvienoje personalo skyriaus taisyklėje gali pasirinkti esamas „Nextcloud“ grupes aktyviems ir neaktyviems darbuotojams.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Personalo skyriaus apžvalgoje ir pakeitimų istorijoje abiejų tipų grupėms priklausantys darbuotojai rodomi kaip aktyvūs. Skiltyje „Visi darbuotojai“ kiekvienas darbuotojas rodomas vieną kartą.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Esamose personalo skyriaus taisyklėse būsena nustatoma kaip anksčiau, kol nepakeičiamas darbuotojų grupių pasirinkimas.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Atnaujinimų pranešimai lieka „Nextcloud“ varpelio meniu. Pasirinkus „Peržiūrėti pakeitimus“, atveriama versijų istorija, kurioje galima išskleisti atskirus įrašus.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Priminimą apie pristatomąją ekskursiją galima išjungti visam laikui, o pačią ekskursiją bet kada paleisti iš naujo.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Pakeitimų istorijos lentelėje daugiau vietos skirta pakeitimus atlikusių žmonių vardams. Personalo skyriaus žinyne nurodyta, kur nustatomos pertraukų taisyklės.",
   "New features": "Naujos funkcijos",
   "Improvements": "Patobulinimai",
   "Bug fixes": "Klaidų pataisymai",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Atverti atnaujinimo pastabas.",
   "Version history": "Versijų istorija",
   "View changes": "Peržiūrėti pakeitimus",
+  "Employee groups - Active": "Aktyvių darbuotojų grupės",
+  "Employee groups - Inactive": "Neaktyvių darbuotojų grupės",
   "Individual HR accounts": "Atskiros personalo paskyros",
   "Assigned groups and people receive HR access to these employee groups.": "Priskirtos grupės ir asmenys gauna personalo prieigą prie šių darbuotojų grupių.",
   "Search by name or account ID": "Ieškoti pagal vardą arba paskyros ID",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Stulpelyje „Komentaras“ galite įrašyti savo pastabas apie darbo dieną arba paaiškinti neatvykimą į darbą. Jei nenurodytas pradžios laikas, pabaigos laikas arba abu, tik atitinkamas komentaras padeda išvengti pranešimo. Įrašai be komentaro žymimi kaip nebaigti, jei nenurodytas nė vienas laikas arba nurodytas tik vienas.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Priminimų taisyklės pasikeitė. Ankstesnį priežasčių sąrašą pakeitė taisyklė, pagal kurią bet koks netuščias komentaras sustabdo priminimą el. paštu apie trūkstamus arba nepilnus darbo laiko įrašus. Jei trūksta tik pradžios arba pabaigos laiko, įspėjimas apie nepilną įrašą rodomas tik tada, kai stulpelis „Komentaras“ tuščias.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Personalo apžvalgoje ir pakeitimų istorijoje aktyvūs bei neaktyvūs darbuotojai rodomi pagal grupes Zeitnachweis ir Zeitnachweis-Archiv. Abiejuose rodiniuose galima filtruoti pagal parinktis „Visi“, „Aktyvūs“ ir „Neaktyvūs“. Rodomi darbuotojai priklauso nuo to, kuriam personalo specialistui jie priskirti.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "„Nextcloud“ naudotojų valdymas neleidžia tam pačiam naudotojui vienu metu priklausyti abiem grupėms. Keičiant grupę, įspėjime nurodoma, iš kurios grupės naudotoją pirmiausia reikia pašalinti.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "„Nextcloud“ paskyros vienu metu gali priklausyti grupėms „Zeitnachweis“ ir „Zeitnachweis-Archiv“. Paskyros išlieka aktyvios, kol priklauso grupei „Zeitnachweis“. Pašalinus jas iš šios grupės, jos lieka archyvo grupėje.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Komentarų žinynas, pristatomasis gidas ir grupių taisyklių pavyzdys paaiškina naują priminimų taisyklę.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Personalo žinyne paaiškinama, kad ribinės vertės nustatomos kiekvienai personalo paskyrai atskirai, o savaitės suvestinė el. paštu siunčiama į tą pačią paskyrą.",
-  "The update window can also be closed using the × in the top right corner.": "Naujinimo langą taip pat galima užverti paspaudus × viršutiniame dešiniajame kampe."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Leidimo pastabas atverkite per „Nextcloud“ pranešimų varpelį. Pasirinkus „Peržiūrėti pakeitimus“, atveriama versijų istorija, kurioje galima išskleisti kiekvienos versijos pakeitimų sąrašą."
 },
   "nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);"
 );

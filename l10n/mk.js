@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Затвори",
   "The update notes could not be loaded. Please try again.": "Белешките за ажурирањето не може да се вчитаат. Обидете се повторно.",
   "Timesheet updated to {version}": "Евиденцијата на работното време е ажурирана на верзија {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Администраторите можат да изберат постојни групи на Nextcloud за активни и неактивни вработени во секое правило за човечки ресурси.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Прегледот за човечки ресурси и историјата на промени ги прикажуваат вработените што припаѓаат на двата вида групи како активни. Во „Сите вработени“ секој вработен се прикажува еднаш.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Постојните правила за човечки ресурси го одредуваат статусот како и досега сè додека не се смени изборот на групи на вработени.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Известувањата за ажурирање остануваат во менито со ѕвонче на Nextcloud. „Прикажи ги промените“ ја отвора историјата на верзии, во која може да се прошират поединечните записи.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Потсетникот за водената обиколка може трајно да се исклучи, а обиколката може повторно да се стартува во секое време.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Табелата со историјата на промени има повеќе простор за имињата на лицата што ги направиле измените. Помошта за човечки ресурси објаснува каде се поставуваат правилата за паузи.",
   "New features": "Нови функции",
   "Improvements": "Подобрувања",
   "Bug fixes": "Поправки на грешки",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Отвори ги белешките за ажурирањето.",
   "Version history": "Историја на верзии",
   "View changes": "Прикажи ги промените",
+  "Employee groups - Active": "Групи на активни вработени",
+  "Employee groups - Inactive": "Групи на неактивни вработени",
   "Individual HR accounts": "Поединечни HR сметки",
   "Assigned groups and people receive HR access to these employee groups.": "Доделените групи и лица добиваат HR пристап до овие групи вработени.",
   "Search by name or account ID": "Пребарување по име или идентификатор на сметка",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Користете ја колоната „Коментар“ за да запишете свои информации за работниот ден или да објасните отсуство. Ако недостасува почетното време, крајното време или и двете, само соодветен коментар спречува испраќање известување. Записите без коментар во кои не е внесено ниту едно време или е внесено само едно време се означуваат како нецелосни.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Правилата за потсетување се изменети. Претходниот список со причини е заменет со правило според кое секој непразен коментар го спречува испраќањето потсетник по е-пошта за записи за работното време што недостигаат или се нецелосни. Ако недостига само почетното или крајното време, предупредувањето за нецелосен запис се прикажува само кога колоната „Коментар“ е празна.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Прегледот за човечки ресурси и историјата на промени ги прикажуваат активните и неактивните вработени според групите Zeitnachweis и Zeitnachweis-Archiv. Двата приказа може да се филтрираат со „Сите“, „Активни“ и „Неактивни“. Видливоста зависи од тоа на кој одговорен за човечки ресурси му е доделен вработениот.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Управувањето со корисници во Nextcloud не дозволува членство во двете групи истовремено. При префрлање, предупредувањето објаснува од која група прво треба да се отстрани корисникот.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Сметките на Nextcloud може истовремено да членуваат во групите Zeitnachweis и Zeitnachweis-Archiv. Сметките остануваат активни додека членуваат во Zeitnachweis. Кога ќе се отстранат од таа група, остануваат во архивската група.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Помошта за коментари, водената обиколка и примерот за групните правила го објаснуваат новото правило за потсетување.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Во помошта за човечки ресурси е објаснето дека праговите се поставуваат за секоја сметка за човечки ресурси посебно и дека неделното резиме по е-пошта се испраќа на таа сметка.",
-  "The update window can also be closed using the × in the top right corner.": "Прозорецот за ажурирање може да се затвори и со копчето × во горниот десен агол."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Отворете ги белешките за изданието преку ѕвончето за известувања на Nextcloud. Изберете „Прикажи ги промените“ за да ја отворите историјата на верзии, каде што можете да го проширите списокот со промени за секоја верзија."
 },
   "nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;"
 );

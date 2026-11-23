@@ -152,6 +152,12 @@
     "Close": "Funga",
     "The update notes could not be loaded. Please try again.": "Maelezo ya sasisho hayakuweza kupakiwa. Tafadhali jaribu tena.",
     "Timesheet updated to {version}": "Rekodi ya muda wa kazi imesasishwa hadi toleo {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Wasimamizi wanaweza kuchagua vikundi vilivyopo vya Nextcloud kwa ajili ya wafanyakazi walio katika hali ya kufanya kazi au wasio katika hali hiyo katika kila kanuni ya rasilimali watu.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Muhtasari wa rasilimali watu na historia ya mabadiliko huonyesha walio katika aina zote mbili za vikundi kama wafanyakazi wanaofanya kazi. Kila mfanyakazi huorodheshwa mara moja katika «Wafanyakazi wote».",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Kanuni zilizopo za rasilimali watu zinaendelea kubainisha hali ya wafanyakazi kama awali hadi chaguo la vikundi vya wafanyakazi libadilishwe.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Arifa za masasisho hubaki chini ya ikoni ya kengele ya Nextcloud. «Angalia mabadiliko» hufungua historia ya matoleo yenye sehemu zinazoweza kupanuliwa.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Mafunzo yanaweza kufichwa kabisa na kuanzishwa tena wakati wowote.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Jedwali la historia ya mabadiliko linatoa nafasi zaidi kwa majina ya waliofanya mabadiliko. Usaidizi wa rasilimali watu unaeleza mahali pa kusanidi kanuni za mapumziko.",
     "New features": "Vipengele vipya",
     "Improvements": "Maboresho",
     "Bug fixes": "Marekebisho ya hitilafu",
@@ -167,6 +173,8 @@
     "Open the update notes.": "Fungua maelezo ya sasisho.",
     "Version history": "Historia ya matoleo",
     "View changes": "Angalia mabadiliko",
+    "Employee groups - Active": "Vikundi vya wafanyakazi wanaofanya kazi",
+    "Employee groups - Inactive": "Vikundi vya wafanyakazi wasiofanya kazi",
     "Individual HR accounts": "Akaunti za watu binafsi za HR",
     "Assigned groups and people receive HR access to these employee groups.": "Vikundi na watu waliokabidhiwa hupata ufikiaji wa HR kwa vikundi hivi vya wafanyakazi.",
     "Search by name or account ID": "Tafuta kwa jina au kitambulisho cha akaunti",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Tumia safu ya Maoni kuandika taarifa zako kuhusu siku ya kazi au kueleza sababu ya kutokuwepo. Ikiwa muda wa kuanza, muda wa kumaliza au yote mawili hayajaandikwa, ni maoni yanayohusika pekee yanayozuia arifa. Rekodi zisizo na muda wowote au zenye muda mmoja tu na zisizo na maoni huwekwa alama kuwa hazijakamilika.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Kanuni za vikumbusho zimebadilika. Maoni yoyote yenye maandishi sasa yanazuia kikumbusho cha barua pepe kuhusu rekodi za muda zinazokosekana au ambazo hazijakamilika. Hii inachukua nafasi ya orodha ya awali ya sababu. Ikiwa ni muda wa kuanza au muda wa kumaliza pekee unaokosekana, onyo la muda usiokamilika linaonekana tu ikiwa safu ya Maoni haina maandishi.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Muhtasari wa rasilimali watu na historia ya mabadiliko zinaonyesha wafanyakazi walio hai na wasio hai kulingana na vikundi vya Zeitnachweis na Zeitnachweis-Archiv. Katika mionekano yote miwili unaweza kuchuja kwa chaguo la Wote, Walio hai au Wasio hai. Wafanyakazi wanaoonekana hutegemea mgawo wa majukumu ya rasilimali watu.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Usimamizi wa watumiaji wa Nextcloud huzuia mtumiaji kuwa mwanachama wa vikundi vyote viwili kwa wakati mmoja. Onyo linaeleza ni kikundi kipi anachopaswa kuondoka kwanza anapohama.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Akaunti za Nextcloud zinaweza kuwa katika vikundi vya Zeitnachweis na Zeitnachweis-Archiv kwa wakati mmoja. Akaunti zinaendelea kuwa hai mradi ziwe katika kikundi cha Zeitnachweis. Zikiondolewa katika kikundi hicho, zinabaki katika kikundi cha kumbukumbu.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Maelezo ya msaada ya safu ya Maoni, ziara elekezi na mfano katika kanuni za vikundi vinaeleza kanuni mpya ya vikumbusho.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Msaada wa rasilimali watu unaeleza kuwa vizingiti huwekwa kwa kila akaunti ya rasilimali watu na muhtasari wa kila wiki hutumwa kwa barua pepe kwa akaunti hiyo.",
-    "The update window can also be closed using the × in the top right corner.": "Dirisha la sasisho linaweza pia kufungwa kwa kubofya × kwenye kona ya juu kulia."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Fungua madokezo ya toleo kupitia ikoni ya kengele ya Nextcloud. Chagua «Angalia mabadiliko» ili kufungua historia ya matoleo yenye sehemu zinazoweza kupanuliwa."
   },
   "pluralForm": "nplurals=2; plural=(n != 1);"
 }

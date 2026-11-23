@@ -77,6 +77,12 @@
     "Close": "Zatvori",
     "The update notes could not be loaded. Please try again.": "Bilješke o ažuriranju nije moguće učitati. Pokušajte ponovno.",
     "Timesheet updated to {version}": "Evidencija radnog vremena ažurirana je na verziju {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratori mogu u svakom pravilu kadrovske službe odabrati postojeće Nextcloud grupe za aktivne i neaktivne zaposlenike.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Pregled kadrovske službe i povijest promjena prikazuju članove obiju vrsta grupa kao aktivne. Svaki se zaposlenik prikazuje samo jednom pod „Svi zaposlenici”.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Postojeća pravila kadrovske službe i dalje određuju status na isti način sve dok se ne promijeni njihov odabir grupa zaposlenika.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Obavijesti o ažuriranjima ostaju u izborniku zvona u Nextcloudu. „Prikaži promjene” otvara povijest verzija s prikazom koji se može proširiti.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Podsjetnik na vođeni obilazak može se trajno isključiti, a obilazak se može ponovno pokrenuti u bilo kojem trenutku.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tablica povijesti promjena daje više prostora imenima osoba koje su napravile izmjene. Pomoć za kadrovsku službu objašnjava gdje se postavljaju pravila o stankama.",
     "New features": "Nove značajke",
     "Improvements": "Poboljšanja",
     "Bug fixes": "Ispravci pogrešaka",
@@ -92,6 +98,8 @@
     "Open the update notes.": "Otvori bilješke o ažuriranju.",
     "Version history": "Povijest verzija",
     "View changes": "Prikaži promjene",
+    "Employee groups - Active": "Grupe aktivnih zaposlenika",
+    "Employee groups - Inactive": "Grupe neaktivnih zaposlenika",
     "Individual HR accounts": "Pojedinačni HR računi",
     "Assigned groups and people receive HR access to these employee groups.": "Dodijeljene grupe i osobe dobivaju HR pristup ovim grupama zaposlenika.",
     "Search by name or account ID": "Pretraživanje prema imenu ili ID-u računa",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Upotrijebite stupac „Komentar” za bilježenje vlastitih informacija o radnom danu ili objašnjavanje izostanaka. Ako nedostaje vrijeme početka, vrijeme završetka ili oba, samo odgovarajući komentar sprječava slanje obavijesti. Zapisi bez komentara koji nemaju uneseno nijedno vrijeme ili imaju samo jedno označavaju se kao nepotpuni.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Pravila za podsjetnike su promijenjena. Umjesto dosadašnjeg popisa razloga, svaki komentar sa sadržajem sada sprječava slanje podsjetnika e-poštom za nedostajuće ili nepotpune unose radnog vremena. Ako nedostaje samo vrijeme početka ili završetka, upozorenje o nepotpunom unosu prikazuje se samo ako je stupac Komentar prazan.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Pregled ljudskih resursa i povijest promjena prikazuju aktivne i neaktivne zaposlenike prema grupama Zeitnachweis i Zeitnachweis-Archiv. Oba se prikaza mogu filtrirati po opcijama Svi, Aktivni i Neaktivni. Vidljivost ovisi o tome kojem su voditelju ljudskih resursa zaposlenici dodijeljeni.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloudovo upravljanje korisnicima onemogućuje istodobno članstvo u objema grupama. Pri prelasku upozorenje navodi koju grupu prvo treba napustiti.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Računi Nextclouda mogu istodobno biti članovi grupa Zeitnachweis i Zeitnachweis-Archiv. Računi ostaju aktivni dok su članovi grupe Zeitnachweis. Nakon uklanjanja iz te grupe ostaju u arhivskoj grupi.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Pomoć za komentare, vođeni obilazak i primjer pravila za grupe objašnjavaju novo pravilo za podsjetnike.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "U pomoći za ljudske resurse objašnjeno je da se granične vrijednosti postavljaju za svaki račun zasebno i da se tjedni sažetak e-poštom šalje na isti račun.",
-    "The update window can also be closed using the × in the top right corner.": "Prozor s novostima o ažuriranju može se zatvoriti i klikom na × u gornjem desnom kutu."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Napomene o izdanju otvaraju se preko zvona za obavijesti u Nextcloudu. Odaberite „Prikaži promjene” da biste otvorili povijest verzija, u kojoj možete proširiti popis promjena za svaku verziju."
   },
   "pluralForm": "nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;"
 }

@@ -314,7 +314,7 @@ test('administrator assignment editor retains rule creation, group constraints a
 	// The role split intentionally differs from the original combined settings page.
 	const result = await (async (root) => {
 		// The unchanged reference checkout retains its original asset and root names.
-		const settingsScript = root === candidateRoot ? 'timesheet-rule-settings-v3.js' : 'admin.js';
+		const settingsScript = root === candidateRoot ? 'timesheet-rule-settings-v4.js' : 'admin.js';
 		const settingsRootId = root === candidateRoot ? 'timesheet-hr-settings' : 'timesheet-admin-settings';
 		const events = new Map();
 		const requests = [];
@@ -396,7 +396,7 @@ test('administrator assignment editor retains rule creation, group constraints a
 	assert.equal(savedRules[2][2].maxHours, 10, 'Assignment controls do not edit time policy');
 	assert.deepEqual(savedRules[2][2].userGroups, []);
 	assert.equal(savedRules[3].length, 2);
-	assert.ok(result.requests.every(request => request.url.endsWith('/settings/hr_access_rules')));
+	assert.ok(result.requests.every(request => request.url.endsWith('/settings/hr_access_rules') && request.body?.separateEmployeeGroups === '1'));
 	assert.equal(result.settingValue, '999');
 	assert.equal(result.checked, false);
 	assert.ok(result.snapshots[2][2].innerHTML.includes('data-group="A&amp;B"'));

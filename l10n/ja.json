@@ -77,6 +77,12 @@
     "Close": "閉じる",
     "The update notes could not be loaded. Please try again.": "更新内容を読み込めませんでした。もう一度お試しください。",
     "Timesheet updated to {version}": "勤務時間記録をバージョン {version} に更新しました",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "管理者は人事ルールごとに、在職中と非在職の従業員にそれぞれ既存のNextcloudグループを選択できます。",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "人事担当者向けの概要と変更履歴では、両方のグループに所属する従業員は在職中として扱われ、「すべての従業員」に一人ずつ表示されます。",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "既存の人事ルールのステータス判定は、従業員グループの選択を変更するまで従来どおりです。",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "更新のお知らせはNextcloudのベルアイコンから確認できます。「変更内容を表示」を選ぶと、各バージョンを展開できるバージョン履歴が開きます。",
+    "The guided tour can be dismissed permanently and restarted at any time.": "ガイドツアーの案内は今後表示しないように設定でき、ツアー自体はいつでも再開できます。",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "変更履歴の表では編集者名の表示幅が広がりました。人事担当者向けのヘルプでは、休憩ルールの設定場所を案内します。",
     "New features": "新機能",
     "Improvements": "改善",
     "Bug fixes": "不具合の修正",
@@ -92,6 +98,8 @@
     "Open the update notes.": "更新内容を開く。",
     "Version history": "バージョン履歴",
     "View changes": "変更内容を表示",
+    "Employee groups - Active": "従業員グループ（在職）",
+    "Employee groups - Inactive": "従業員グループ（非在職）",
     "Individual HR accounts": "個別の人事担当アカウント",
     "Assigned groups and people receive HR access to these employee groups.": "割り当てられたグループと個人に、これらの従業員グループへの人事アクセス権が付与されます。",
     "Search by name or account ID": "名前またはアカウントIDで検索",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "「コメント」列に、勤務日の情報や欠勤の理由を記録できます。開始時刻、終了時刻、または両方が未入力の場合、該当するコメントがあるときに限り通知は送信されません。コメントがなく、時刻が両方とも未入力、または片方のみ入力されている記録は、不完全と表示されます。",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "リマインダーのルールが変わりました。これまでの理由の一覧に代わり、コメント欄に内容が入力されていれば、勤務時間が未入力または不完全でもメールでのリマインダーは送信されません。開始時刻か終了時刻の一方だけが未入力の場合、コメント欄が空のときに限り、勤務時間が不完全であることを示す警告が表示されます。",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "人事概要と変更履歴では、Zeitnachweis と Zeitnachweis-Archiv の各グループに基づいて、有効な従業員と無効な従業員を表示します。どちらの画面でも「すべて」「有効」「無効」で絞り込めます。表示される従業員は人事担当者への割り当てに応じて決まります。",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud のユーザー管理では、両方のグループに同時に所属することはできません。グループを切り替える際は、どちらのグループから先にユーザーを外すかが警告に表示されます。",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud アカウントは Zeitnachweis と Zeitnachweis-Archiv の両方に同時に所属できます。Zeitnachweis に所属している間は有効として扱われます。このグループから外しても、アーカイブグループへの所属は維持されます。",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "コメント欄のヘルプ、ガイドツアー、グループルールの例で、新しいリマインダーのルールを説明しています。",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "人事向けのヘルプでは、しきい値は人事アカウントごとに設定され、週次サマリーのメールはそのアカウントに届くことを説明しています。",
-    "The update window can also be closed using the × in the top right corner.": "更新情報のウィンドウは、右上の「×」でも閉じられます。"
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "リリースノートは Nextcloud の通知ベルから開けます。「変更内容を表示」を選択すると、バージョンごとの変更内容を展開できるバージョン履歴が開きます。"
   },
   "pluralForm": "nplurals=1; plural=0;"
 }

@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "Đóng",
   "The update notes could not be loaded. Please try again.": "Không thể tải ghi chú cập nhật. Vui lòng thử lại.",
   "Timesheet updated to {version}": "Bảng chấm công đã được cập nhật lên phiên bản {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Quản trị viên có thể chọn các nhóm Nextcloud hiện có cho nhân viên đang làm việc và nhân viên đã ngừng làm việc trong từng quy tắc nhân sự.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Tổng quan nhân sự và Lịch sử thay đổi hiển thị nhân viên thuộc cả hai loại nhóm là đang làm việc và chỉ liệt kê mỗi nhân viên một lần trong «Tất cả nhân viên».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Các quy tắc nhân sự hiện có tiếp tục xác định trạng thái như trước cho đến khi lựa chọn nhóm nhân viên thay đổi.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Thông báo cập nhật vẫn nằm trong biểu tượng chuông của Nextcloud. «Xem thay đổi» mở lịch sử phiên bản với các mục có thể mở rộng.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Có thể ẩn hướng dẫn vĩnh viễn và bắt đầu lại bất cứ lúc nào.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Bảng lịch sử thay đổi dành thêm chỗ cho tên người thực hiện thay đổi. Phần trợ giúp nhân sự giải thích nơi thiết lập quy tắc nghỉ giải lao.",
   "New features": "Tính năng mới",
   "Improvements": "Cải tiến",
   "Bug fixes": "Sửa lỗi",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "Mở ghi chú cập nhật.",
   "Version history": "Lịch sử phiên bản",
   "View changes": "Xem thay đổi",
+  "Employee groups - Active": "Nhóm nhân viên đang làm việc",
+  "Employee groups - Inactive": "Nhóm nhân viên đã ngừng làm việc",
   "Individual HR accounts": "Tài khoản nhân sự riêng lẻ",
   "Assigned groups and people receive HR access to these employee groups.": "Các nhóm và cá nhân được phân công có quyền nhân sự đối với các nhóm nhân viên này.",
   "Search by name or account ID": "Tìm theo tên hoặc mã tài khoản",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Dùng cột Ghi chú để ghi lại thông tin về ngày làm việc hoặc giải thích việc vắng mặt. Khi thiếu giờ bắt đầu, giờ kết thúc hoặc cả hai, chỉ ghi chú tương ứng mới ngăn gửi thông báo. Các mục không có giờ hoặc chỉ có một mốc giờ và không có ghi chú sẽ được đánh dấu là chưa hoàn chỉnh.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Quy tắc nhắc nhở đã thay đổi. Giờ đây, bất kỳ bình luận nào có nội dung đều ngăn gửi email nhắc nhở về mục chấm công bị thiếu hoặc không đầy đủ, thay cho danh sách lý do trước đây. Nếu chỉ thiếu giờ bắt đầu hoặc giờ kết thúc, cảnh báo về thời gian không đầy đủ chỉ xuất hiện khi cột Bình luận để trống.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Tổng quan nhân sự và lịch sử thay đổi hiển thị nhân viên đang hoạt động và không hoạt động dựa trên hai nhóm Zeitnachweis và Zeitnachweis-Archiv. Cả hai chế độ xem đều có thể lọc theo Tất cả, Đang hoạt động và Không hoạt động. Danh sách hiển thị phụ thuộc vào việc phân công phụ trách nhân sự.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Phần quản lý người dùng Nextcloud không cho phép một người đồng thời là thành viên của cả hai nhóm. Cảnh báo cho biết cần rời nhóm nào trước khi chuyển sang nhóm kia.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Tài khoản Nextcloud có thể thuộc cả hai nhóm Zeitnachweis và Zeitnachweis-Archiv cùng lúc. Tài khoản vẫn được xem là đang hoạt động chừng nào còn thuộc nhóm Zeitnachweis. Khi bị xóa khỏi nhóm này, tài khoản vẫn nằm trong nhóm lưu trữ.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Phần trợ giúp về bình luận, hướng dẫn sử dụng và ví dụ trong quy tắc nhóm giải thích quy tắc nhắc nhở mới.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Phần trợ giúp nhân sự giải thích rằng các ngưỡng được thiết lập theo từng tài khoản nhân sự và email tổng hợp hằng tuần được gửi đến chính tài khoản đó.",
-  "The update window can also be closed using the × in the top right corner.": "Cũng có thể đóng cửa sổ cập nhật bằng dấu × ở góc trên bên phải."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Mở ghi chú phát hành từ biểu tượng chuông thông báo của Nextcloud. Chọn “Xem thay đổi” để mở lịch sử phiên bản có các mục có thể mở rộng."
 },
   "nplurals=1; plural=0;"
 );

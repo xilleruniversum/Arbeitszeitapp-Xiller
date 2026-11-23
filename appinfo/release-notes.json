@@ -1,6 +1,27 @@
 {
 	"releases": [
 		{
+			"version": "1.4.6",
+			"sections": [
+				{
+					"title": "New features",
+					"items": [
+						"Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.",
+						"The HR overview and change history show employees with both memberships as active and list each employee once under All.",
+						"Existing HR rules keep their current status behaviour until their employee group selection changes."
+					]
+				},
+				{
+					"title": "Improvements",
+					"items": [
+						"Update notices stay in the Nextcloud bell. View changes opens the expandable version history.",
+						"The guided tour can be dismissed permanently and restarted at any time.",
+						"The change history table gives editor names more space. The HR help explains where break rules are configured."
+					]
+				}
+			]
+		},
+		{
 			"version": "1.4.5",
 			"sections": [
 				{
@@ -8,10 +29,10 @@
 					"items": [
 						"Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.",
 						"The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.",
-						"Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.",
+						"Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.",
 						"The comment help, guided tour and group rule example explain the new reminder rule.",
 						"The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.",
-						"The update window can also be closed using the × in the top right corner."
+						"Open release notes from the Nextcloud bell. Select View changes to open the expandable version history."
 					]
 				}
 			]

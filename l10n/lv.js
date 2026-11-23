@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Aizvērt",
   "The update notes could not be loaded. Please try again.": "Neizdevās ielādēt atjauninājuma piezīmes. Mēģiniet vēlreiz.",
   "Timesheet updated to {version}": "Darba laika uzskaite atjaunināta uz versiju {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratori katrā personāla nodaļas kārtulā aktīvajiem un neaktīvajiem darbiniekiem var izvēlēties jau esošas Nextcloud grupas.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Personāla nodaļas pārskatā un izmaiņu vēsturē darbinieki, kas ietilpst abu veidu grupās, tiek rādīti kā aktīvi. Sadaļā “Visi darbinieki” katrs darbinieks tiek parādīts vienu reizi.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Esošajās personāla nodaļas kārtulās statuss tiek noteikts tāpat kā līdz šim, kamēr tajās nav mainīta darbinieku grupu izvēle.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Paziņojumi par atjauninājumiem paliek Nextcloud zvaniņa izvēlnē. “Skatīt izmaiņas” atver versiju vēsturi, kurā var izvērst atsevišķus ierakstus.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Atgādinājumu par iepazīšanās pamācību var izslēgt pavisam, bet pašu pamācību var atsākt jebkurā laikā.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Izmaiņu vēstures tabulā ir vairāk vietas to lietotāju vārdiem, kuri veikuši izmaiņas. Personāla nodaļas palīdzībā ir norādīts, kur iestatīt pārtraukumu nosacījumus.",
   "New features": "Jaunas iespējas",
   "Improvements": "Uzlabojumi",
   "Bug fixes": "Kļūdu labojumi",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Atvērt atjauninājuma piezīmes.",
   "Version history": "Versiju vēsture",
   "View changes": "Skatīt izmaiņas",
+  "Employee groups - Active": "Aktīvo darbinieku grupas",
+  "Employee groups - Inactive": "Neaktīvo darbinieku grupas",
   "Individual HR accounts": "Atsevišķi personāla konti",
   "Assigned groups and people receive HR access to these employee groups.": "Piešķirtās grupas un personas saņem personāla piekļuvi šīm darbinieku grupām.",
   "Search by name or account ID": "Meklēt pēc vārda vai konta identifikatora",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Lietojiet aili “Komentārs”, lai pierakstītu informāciju par savu darba dienu vai paskaidrotu prombūtni. Ja trūkst sākuma laika, beigu laika vai abu laiku, tikai atbilstošs komentārs novērsīs paziņojuma nosūtīšanu. Ieraksti bez komentāra, kuros nav norādīts neviens laiks vai ir norādīts tikai viens laiks, tiek atzīmēti kā nepilnīgi.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Atgādinājumu noteikumi ir mainīti. Iepriekšējo iemeslu sarakstu aizstāj jauns noteikums: jebkurš komentārs ar saturu novērš atgādinājuma e-pasta nosūtīšanu par trūkstošiem vai nepilnīgiem darba laika ierakstiem. Ja trūkst tikai sākuma vai beigu laika, brīdinājums par nepilnīgu ierakstu tiek rādīts tikai tad, ja kolonna „Komentārs” ir tukša.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Personāla pārskatā un izmaiņu vēsturē aktīvie un neaktīvie darbinieki tiek rādīti atbilstoši grupām Zeitnachweis un Zeitnachweis-Archiv. Abos skatos var filtrēt pēc iespējām „Visi”, „Aktīvi” un „Neaktīvi”. Darbinieku redzamība ir atkarīga no tā, kuram personāla speciālistam viņi ir piešķirti.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud lietotāju pārvaldība neļauj vienam lietotājam vienlaikus būt abās grupās. Mainot grupu, brīdinājumā norādīts, no kuras grupas lietotājs vispirms jāizņem.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud konti vienlaikus var būt grupu Zeitnachweis un Zeitnachweis-Archiv dalībnieki. Konti paliek aktīvi, kamēr tie ir grupā Zeitnachweis. Izņemot kontus no šīs grupas, tie paliek arhīva grupā.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Komentāru palīdzībā, iepazīšanās ceļvedī un grupu noteikumu piemērā ir izskaidrots jaunais atgādinājumu noteikums.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Personāla palīdzībā paskaidrots, ka robežvērtības iestata katram personāla kontam atsevišķi un iknedēļas kopsavilkumu e-pastā nosūta uz šo pašu kontu.",
-  "The update window can also be closed using the × in the top right corner.": "Atjauninājuma logu var aizvērt arī ar pogu × augšējā labajā stūrī."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Laidiena piezīmes var atvērt no Nextcloud paziņojumu zvana. Izvēlieties “Skatīt izmaiņas”, lai atvērtu versiju vēsturi, kurā var izvērst katras versijas izmaiņu sarakstu."
 },
   "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);"
 );

@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "დახურვა",
   "The update notes could not be loaded. Please try again.": "განახლების შენიშვნები ვერ ჩაიტვირთა. სცადეთ ხელახლა.",
   "Timesheet updated to {version}": "სამუშაო დროის აღრიცხვა განახლდა {version} ვერსიამდე",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "ადმინისტრატორებს შეუძლიათ პერსონალის თითოეული წესისთვის არსებული Nextcloud ჯგუფები შეარჩიონ აქტიური და არააქტიური თანამშრომლებისთვის.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "პერსონალის მიმოხილვასა და ცვლილებების ისტორიაში ორივე ტიპის ჯგუფის წევრები აქტიურ თანამშრომლებად არიან მონიშნული. „ყველა თანამშრომელი“ თითოეულ თანამშრომელს ერთხელ აჩვენებს.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "პერსონალის არსებული წესები სტატუსს კვლავ ძველებურად განსაზღვრავს, სანამ თანამშრომელთა ჯგუფების არჩევანი არ შეიცვლება.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "განახლების შეტყობინებები Nextcloud-ის ზარის მენიუში რჩება. „ცვლილებების ნახვა“ ხსნის ვერსიების ისტორიას, სადაც ცალკეული ვერსიების გაშლა შეიძლება.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "შესავალი ტურის შეხსენების სამუდამოდ გამორთვა და თავად ტურის ნებისმიერ დროს ხელახლა გაშვება შეიძლება.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "ცვლილებების ისტორიის ცხრილში მეტი ადგილია ცვლილებების შემტანი პირების სახელებისთვის. პერსონალის დახმარების განყოფილება განმარტავს, სად იმართება შესვენების წესები.",
   "New features": "ახალი ფუნქციები",
   "Improvements": "გაუმჯობესებები",
   "Bug fixes": "შეცდომების გასწორება",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "განახლების შენიშვნების გახსნა.",
   "Version history": "ვერსიების ისტორია",
   "View changes": "ცვლილებების ნახვა",
+  "Employee groups - Active": "აქტიურ თანამშრომელთა ჯგუფები",
+  "Employee groups - Inactive": "არააქტიურ თანამშრომელთა ჯგუფები",
   "Individual HR accounts": "ცალკეული HR ანგარიშები",
   "Assigned groups and people receive HR access to these employee groups.": "მინიჭებული ჯგუფები და პირები იღებენ HR წვდომას თანამშრომელთა ამ ჯგუფებზე.",
   "Search by name or account ID": "ძებნა სახელით ან ანგარიშის იდენტიფიკატორით",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "გამოიყენეთ სვეტი „კომენტარი“, რათა ჩაიწეროთ ინფორმაცია სამუშაო დღის შესახებ ან მიუთითოთ გაცდენის მიზეზი. თუ დაწყების, დასრულების ან ორივე დრო აკლია, მხოლოდ შესაბამისი კომენტარი აგარიდებთ შეტყობინებას. ჩანაწერები უკომენტაროდ, რომლებშიც არცერთი ან მხოლოდ ერთი დროა მითითებული, არასრულად მოინიშნება.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "შეხსენების წესები შეიცვალა. მიზეზების ძველი სიის ნაცვლად, ახლა ნებისმიერი შევსებული კომენტარი აჩერებს ელფოსტით შეხსენების გაგზავნას გამოტოვებული ან არასრული დროის ჩანაწერების შესახებ. თუ მხოლოდ დაწყების ან დასრულების დრო აკლია, არასრული ჩანაწერის გაფრთხილება გამოჩნდება მხოლოდ მაშინ, როცა სვეტი „კომენტარი“ ცარიელია.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "HR-ის მიმოხილვა და ცვლილებების ისტორია აქტიურ და არააქტიურ თანამშრომლებს Zeitnachweis და Zeitnachweis-Archiv ჯგუფების მიხედვით აჩვენებს. ორივე ხედში შესაძლებელია გაფილტვრა ოფციებით „ყველა“, „აქტიური“ და „არააქტიური“. ხილვადობა დამოკიდებულია იმაზე, თუ რომელ HR პასუხისმგებელ პირს ჰყავს თანამშრომელი მიბარებული.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud-ის მომხმარებლების მართვა ორივე ჯგუფში ერთდროულ წევრობას არ უშვებს. ჯგუფის შეცვლისას გაფრთხილებაში მითითებულია, რომელი ჯგუფიდან უნდა ამოიღოთ მომხმარებელი პირველად.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-ის ანგარიშები შეიძლება ერთდროულად იყვნენ Zeitnachweis და Zeitnachweis-Archiv ჯგუფების წევრები. ანგარიშები აქტიურად ითვლება, სანამ Zeitnachweis ჯგუფში არიან. ამ ჯგუფიდან ამოღების შემდეგ ანგარიშები არქივის ჯგუფში რჩება.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "კომენტარის დახმარება, გაცნობითი ტური და ჯგუფის წესის მაგალითი შეხსენების ახალ წესს განმარტავს.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "HR-ის დახმარებაში განმარტებულია, რომ ზღვრული მნიშვნელობები თითოეული HR ანგარიშისთვის ცალ-ცალკე განისაზღვრება და ყოველკვირეული შეჯამება ელფოსტით შესაბამის ანგარიშზე იგზავნება.",
-  "The update window can also be closed using the × in the top right corner.": "განახლების ფანჯრის დახურვა ასევე შესაძლებელია ზედა მარჯვენა კუთხეში მდებარე × ღილაკით."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "გამოშვების შენიშვნები გახსენით Nextcloud-ის შეტყობინებების ზარის მეშვეობით. აირჩიეთ „ცვლილებების ნახვა“ ვერსიების ისტორიის გასახსნელად, სადაც თითოეული ვერსიის ცვლილებების სია შეგიძლიათ გაშალოთ."
 },
   "nplurals=2; plural=(n!=1);"
 );

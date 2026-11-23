@@ -152,6 +152,12 @@
     "Close": "Închide",
     "The update notes could not be loaded. Please try again.": "Notele actualizării nu au putut fi încărcate. Încercați din nou.",
     "Timesheet updated to {version}": "Evidența timpului de lucru a fost actualizată la versiunea {version}",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "În fiecare regulă de resurse umane, administratorii pot alege grupuri Nextcloud existente pentru angajații activi și inactivi.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Prezentarea resurselor umane și Istoricul modificărilor îi afișează ca activi pe angajații care fac parte din ambele tipuri de grupuri și afișează fiecare angajat o singură dată în lista „Toți angajații”.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Regulile de resurse umane existente păstrează modul actual de stabilire a statutului până la modificarea grupurilor de angajați selectate.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Notificările de actualizare rămân sub pictograma clopoțelului din Nextcloud. „Vezi modificările” deschide istoricul versiunilor cu secțiuni extensibile.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Tutorialul poate fi ascuns definitiv și reluat oricând.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tabelul din Istoricul modificărilor oferă mai mult spațiu pentru numele autorilor modificărilor. Ajutorul pentru resurse umane explică unde se configurează regulile privind pauzele.",
     "New features": "Funcții noi",
     "Improvements": "Îmbunătățiri",
     "Bug fixes": "Remedieri de erori",
@@ -167,6 +173,8 @@
     "Open the update notes.": "Deschide notele actualizării.",
     "Version history": "Istoricul versiunilor",
     "View changes": "Vezi modificările",
+    "Employee groups - Active": "Grupuri de angajați activi",
+    "Employee groups - Inactive": "Grupuri de angajați inactivi",
     "Individual HR accounts": "Conturi HR individuale",
     "Assigned groups and people receive HR access to these employee groups.": "Grupurile și persoanele desemnate primesc acces HR la aceste grupuri de angajați.",
     "Search by name or account ID": "Căutare după nume sau identificatorul contului",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Folosiți coloana Comentariu pentru a nota observații despre ziua de lucru sau pentru a explica absențele. Dacă lipsește ora de început, ora de sfârșit sau ambele, doar un comentariu corespunzător împiedică trimiterea unei notificări. Înregistrările fără ore sau cu o singură oră și fără comentariu sunt marcate ca incomplete.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Regulile de reamintire s-au schimbat. Orice comentariu care conține text oprește acum trimiterea e-mailului de reamintire pentru înregistrări de timp lipsă sau incomplete, înlocuind vechea listă de motive. Dacă lipsește doar ora de început sau cea de sfârșit, avertismentul privind orele incomplete apare doar dacă rubrica Comentariu este goală.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Prezentarea generală HR și istoricul modificărilor afișează angajații activi și inactivi pe baza grupurilor Zeitnachweis și Zeitnachweis-Archiv. Ambele vizualizări pot fi filtrate după Toți, Activi și Inactivi. Vizibilitatea depinde de responsabilul HR desemnat.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Administrarea utilizatorilor din Nextcloud împiedică apartenența simultană la ambele grupuri. Un avertisment indică grupul din care utilizatorul trebuie scos mai întâi pentru a putea face trecerea.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Conturile Nextcloud pot face parte simultan din grupurile Zeitnachweis și Zeitnachweis-Archiv. Conturile rămân active cât timp fac parte din Zeitnachweis. La eliminarea din acest grup, conturile rămân în grupul de arhivă.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Ajutorul pentru comentarii, turul ghidat și exemplul din regulile de grup explică noua regulă de reamintire.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Secțiunea de ajutor pentru HR explică faptul că pragurile se stabilesc pentru fiecare cont HR și că rezumatul săptămânal este trimis prin e-mail la acel cont.",
-    "The update window can also be closed using the × in the top right corner.": "Fereastra de actualizare poate fi închisă și cu butonul × din colțul din dreapta sus."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Deschide notele de lansare de la clopoțelul de notificări Nextcloud. Selectează „Vezi modificările” pentru a deschide istoricul versiunilor cu secțiuni extensibile."
   },
   "pluralForm": "nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));"
 }

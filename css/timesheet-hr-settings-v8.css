@@ -131,6 +131,10 @@
 	margin-bottom: 4px;
 }
 
+#timesheet-hr-settings .ts-employee-group-picker + .ts-employee-group-picker {
+	margin-top: 12px;
+}
+
 #timesheet-hr-settings .ts-chips {
 	display: flex;
 	flex-wrap: wrap;

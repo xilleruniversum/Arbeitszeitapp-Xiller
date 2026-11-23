@@ -153,6 +153,12 @@ OC.L10N.register(
   "Close": "Fechar",
   "The update notes could not be loaded. Please try again.": "Não foi possível carregar as notas da atualização. Tente novamente.",
   "Timesheet updated to {version}": "Registo de horas atualizado para a versão {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Em cada regra de RH, os administradores podem selecionar grupos existentes do Nextcloud para colaboradores ativos e inativos.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "No Resumo de RH e no Histórico de alterações, quem pertence aos dois tipos de grupo aparece como ativo e cada colaborador é listado uma única vez em «Todos os colaboradores».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "As regras de RH existentes mantêm o comportamento atual do estado até à alteração da seleção de grupos de colaboradores.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Os avisos de atualização ficam no sino de notificações do Nextcloud. «Ver alterações» abre o histórico de versões com secções expansíveis.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "É possível dispensar o tutorial definitivamente e reiniciá-lo em qualquer altura.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "A tabela do Histórico de alterações dá mais espaço aos nomes dos autores das alterações. A ajuda de RH explica onde se configuram as regras de pausa.",
   "New features": "Novas funcionalidades",
   "Improvements": "Melhorias",
   "Bug fixes": "Correções de erros",
@@ -168,6 +174,8 @@ OC.L10N.register(
   "Open the update notes.": "Abrir as notas da atualização.",
   "Version history": "Histórico de versões",
   "View changes": "Ver alterações",
+  "Employee groups - Active": "Grupos de colaboradores ativos",
+  "Employee groups - Inactive": "Grupos de colaboradores inativos",
   "Individual HR accounts": "Contas individuais de RH",
   "Assigned groups and people receive HR access to these employee groups.": "Os grupos e as pessoas atribuídos recebem acesso de RH a estes grupos de funcionários.",
   "Search by name or account ID": "Pesquisar por nome ou identificador da conta",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Utilize a coluna Comentário para registar observações sobre o dia de trabalho ou justificar ausências. Se faltar a hora de início, a de fim ou ambas, só um comentário correspondente evita a notificação. Os registos sem horas ou com apenas uma hora e sem comentário são assinalados como incompletos.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "As regras dos lembretes foram alteradas. Agora, qualquer comentário com conteúdo impede o envio do lembrete por e-mail sobre registos de horários em falta ou incompletos, substituindo a lista de motivos anterior. Quando falta apenas a hora de início ou de fim, o aviso de horários incompletos só aparece se a coluna Comentário estiver vazia.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "A visão geral de RH e o histórico de alterações mostram os colaboradores ativos e inativos consoante os grupos Zeitnachweis e Zeitnachweis-Archiv. Em ambas as vistas, é possível filtrar por Todos, Ativos e Inativos. A visibilidade depende da atribuição de RH.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "A gestão de utilizadores do Nextcloud impede que um utilizador pertença aos dois grupos em simultâneo. Um aviso indica qual o grupo a abandonar primeiro para efetuar a mudança.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "As contas do Nextcloud podem pertencer em simultâneo aos grupos Zeitnachweis e Zeitnachweis-Archiv. Continuam ativas enquanto pertencerem a Zeitnachweis. Ao serem removidas desse grupo, permanecem no grupo de arquivo.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "A ajuda da coluna Comentário, a visita guiada e o exemplo das regras de grupo explicam a nova regra dos lembretes.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "A ajuda de RH explica que os limites são definidos por conta de RH e que o resumo semanal por e-mail é enviado para essa conta.",
-  "The update window can also be closed using the × in the top right corner.": "A janela de atualização também se pode fechar com o × no canto superior direito."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Abra as notas da versão através do sino de notificações do Nextcloud. Selecione «Ver alterações» para abrir o histórico de versões com secções expansíveis."
 },
   "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 );

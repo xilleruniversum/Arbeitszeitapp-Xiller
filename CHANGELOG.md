@@ -1,6 +1,20 @@
 # Changelog
 
-User-facing changes from version 1.3.0 onward are maintained in [the release notes catalog](appinfo/release-notes.json) and displayed in the app. Earlier releases remain documented below.
+The app displays changes from version 1.3.0 onward from its [release notes catalog](appinfo/release-notes.json). This file also supplies the current release notes to the Nextcloud App Store.
+
+## 1.4.6
+
+### Added
+
+- Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.
+- The HR overview and change history show employees with both memberships as active and list each employee once under All.
+- Existing HR rules keep their current status behaviour until their employee group selection changes.
+
+### Changed
+
+- Update notices stay in the Nextcloud bell. View changes opens the expandable version history.
+- The guided tour can be dismissed permanently and restarted at any time.
+- The change history table gives editor names more space. The HR help explains where break rules are configured.
 
 ## [1.2.0]
 ### Added

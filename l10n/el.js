@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Κλείσιμο",
   "The update notes could not be loaded. Please try again.": "Δεν ήταν δυνατή η φόρτωση των σημειώσεων ενημέρωσης. Δοκιμάστε ξανά.",
   "Timesheet updated to {version}": "Η καταγραφή χρόνου ενημερώθηκε στην έκδοση {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Οι διαχειριστές μπορούν να επιλέγουν υπάρχουσες ομάδες του Nextcloud για ενεργούς και ανενεργούς εργαζομένους σε κάθε κανόνα του τμήματος προσωπικού.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Στην επισκόπηση του τμήματος προσωπικού και στο ιστορικό αλλαγών, οι εργαζόμενοι που ανήκουν και στους δύο τύπους ομάδων εμφανίζονται ως ενεργοί. Κάθε εργαζόμενος εμφανίζεται μία φορά στην επιλογή «Όλοι οι εργαζόμενοι».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Οι υπάρχοντες κανόνες του τμήματος προσωπικού συνεχίζουν να καθορίζουν την κατάσταση όπως προηγουμένως, μέχρι να αλλάξει η επιλογή των ομάδων εργαζομένων.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Οι ειδοποιήσεις ενημερώσεων παραμένουν στο μενού του κουδουνιού του Nextcloud. Η επιλογή «Προβολή αλλαγών» ανοίγει το ιστορικό εκδόσεων, όπου μπορούν να αναπτυχθούν οι λεπτομέρειες κάθε έκδοσης.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Η πρόταση για την καθοδηγούμενη περιήγηση μπορεί να αποκρυφθεί μόνιμα και η περιήγηση μπορεί να ξεκινήσει ξανά ανά πάσα στιγμή.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Ο πίνακας του ιστορικού αλλαγών δίνει περισσότερο χώρο στα ονόματα των συντακτών. Η βοήθεια για το τμήμα προσωπικού εξηγεί πού ρυθμίζονται οι κανόνες διαλειμμάτων.",
   "New features": "Νέες λειτουργίες",
   "Improvements": "Βελτιώσεις",
   "Bug fixes": "Διορθώσεις σφαλμάτων",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Άνοιγμα των σημειώσεων ενημέρωσης.",
   "Version history": "Ιστορικό εκδόσεων",
   "View changes": "Προβολή αλλαγών",
+  "Employee groups - Active": "Ομάδες ενεργών εργαζομένων",
+  "Employee groups - Inactive": "Ομάδες ανενεργών εργαζομένων",
   "Individual HR accounts": "Μεμονωμένοι λογαριασμοί HR",
   "Assigned groups and people receive HR access to these employee groups.": "Οι ομάδες και τα άτομα που έχουν οριστεί αποκτούν πρόσβαση HR σε αυτές τις ομάδες εργαζομένων.",
   "Search by name or account ID": "Αναζήτηση με όνομα ή αναγνωριστικό λογαριασμού",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Χρησιμοποιήστε τη στήλη «Σχόλιο» για να σημειώσετε πληροφορίες για την εργάσιμη ημέρα σας ή να εξηγήσετε τυχόν απουσίες. Αν λείπει η ώρα έναρξης, η ώρα λήξης ή και οι δύο, μόνο ένα σχετικό σχόλιο αποτρέπει την ειδοποίηση. Οι καταχωρίσεις χωρίς σχόλιο επισημαίνονται ως ελλιπείς αν έχει καταχωριστεί μόνο η μία ώρα ή καμία.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Οι κανόνες υπενθύμισης άλλαξαν. Οποιοδήποτε σχόλιο με περιεχόμενο αποτρέπει πλέον την υπενθύμιση μέσω email για καταχωρίσεις χρόνου που λείπουν ή είναι ελλιπείς και αντικαθιστά την προηγούμενη λίστα αιτιών. Αν λείπει μόνο η ώρα έναρξης ή λήξης, η προειδοποίηση για ελλιπή καταχώριση εμφανίζεται μόνο όταν η στήλη «Σχόλιο» είναι κενή.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Η επισκόπηση HR και το ιστορικό αλλαγών εμφανίζουν ενεργούς και ανενεργούς εργαζομένους με βάση τις ομάδες Zeitnachweis και Zeitnachweis-Archiv. Και οι δύο προβολές διαθέτουν τα φίλτρα «Όλοι», «Ενεργοί» και «Ανενεργοί». Η ορατότητα εξαρτάται από την ανάθεση στον αντίστοιχο υπεύθυνο HR.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Η διαχείριση χρηστών του Nextcloud απορρίπτει την ταυτόχρονη συμμετοχή και στις δύο ομάδες. Μια προειδοποίηση εξηγεί από ποια ομάδα πρέπει να αποχωρήσει πρώτα ο χρήστης κατά την αλλαγή.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Οι λογαριασμοί Nextcloud μπορούν να ανήκουν ταυτόχρονα στις ομάδες Zeitnachweis και Zeitnachweis-Archiv. Παραμένουν ενεργοί όσο ανήκουν στην ομάδα Zeitnachweis. Όταν αφαιρούνται από αυτήν την ομάδα, παραμένουν στο αρχείο.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Η βοήθεια για τα σχόλια, η ξενάγηση και το παράδειγμα των κανόνων ομάδας εξηγούν τον νέο κανόνα υπενθύμισης.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Η βοήθεια HR εξηγεί ότι τα όρια ορίζονται ανά λογαριασμό HR και ότι η εβδομαδιαία σύνοψη αποστέλλεται μέσω email σε αυτόν τον λογαριασμό.",
-  "The update window can also be closed using the × in the top right corner.": "Το παράθυρο ενημέρωσης μπορεί επίσης να κλείσει με το × στην επάνω δεξιά γωνία."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Ανοίξτε τις σημειώσεις έκδοσης από το εικονίδιο ειδοποιήσεων του Nextcloud. Επιλέξτε «Προβολή αλλαγών» για να ανοίξετε το ιστορικό εκδόσεων με αναπτυσσόμενες καταχωρίσεις."
 },
   "nplurals=2; plural=(n != 1);"
 );

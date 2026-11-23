@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Tanca",
   "The update notes could not be loaded. Please try again.": "No s'han pogut carregar les notes de l'actualització. Torneu-ho a provar.",
   "Timesheet updated to {version}": "Registre horari actualitzat a la versió {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "En cada regla de recursos humans, els administradors poden triar grups existents de Nextcloud per al personal actiu i inactiu.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Al resum de recursos humans i a l'historial de canvis, el personal que pertany a tots dos tipus de grup figura com a actiu. Cada persona hi apareix una sola vegada a «Tots els empleats».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Les regles de recursos humans existents mantenen els criteris d'estat fins que se'n modifica la selecció de grups de personal.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Els avisos d'actualització es mantenen a la campana de Nextcloud. «Mostra els canvis» obre l'historial de versions, on es poden desplegar els detalls de cada versió.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "La visita guiada es pot descartar de manera permanent i es pot tornar a iniciar en qualsevol moment.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "La taula de l'historial de canvis deixa més espai per als noms dels autors. L'ajuda de recursos humans explica on es configuren les regles de descans.",
   "New features": "Funcions noves",
   "Improvements": "Millores",
   "Bug fixes": "Correccions d'errors",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Obre les notes de l'actualització.",
   "Version history": "Historial de versions",
   "View changes": "Mostra els canvis",
+  "Employee groups - Active": "Grups de personal actiu",
+  "Employee groups - Inactive": "Grups de personal inactiu",
   "Individual HR accounts": "Comptes individuals de recursos humans",
   "Assigned groups and people receive HR access to these employee groups.": "Els grups i les persones assignats reben accés de recursos humans a aquests grups d'empleats.",
   "Search by name or account ID": "Cerca per nom o identificador del compte",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Feu servir la columna «Comentari» per anotar informació sobre la vostra jornada o explicar-hi les absències. Si falta l’hora d’inici, l’hora de fi o totes dues, només un comentari pertinent evita l’avís. Els registres sense comentari es marquen com a incomplets si no hi consta cap hora o només n’hi consta una.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Han canviat les regles dels recordatoris. Qualsevol comentari amb contingut evita ara el recordatori per correu electrònic quan falten entrades de temps o són incompletes, en substitució de la llista anterior de motius. Si només falta l’hora d’inici o la de finalització, l’avís de temps incomplet només es mostra quan la columna «Comentari» és buida.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "El resum de RH i l’historial de canvis mostren les persones actives i inactives segons els grups Zeitnachweis i Zeitnachweis-Archiv. Totes dues vistes es poden filtrar per «Tothom», «Actius» i «Inactius». La visibilitat depèn de l’assignació de RH.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "La gestió d’usuaris de Nextcloud impedeix pertànyer als dos grups simultàniament. En fer el canvi, un avís indica de quin grup cal sortir primer.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Els comptes de Nextcloud poden pertànyer alhora als grups Zeitnachweis i Zeitnachweis-Archiv. Els comptes continuen actius mentre pertanyin a Zeitnachweis. Quan se’ls treu d’aquest grup, es queden a l’arxiu.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "L’ajuda sobre els comentaris, la visita guiada i l’exemple de les regles de grup expliquen la nova regla dels recordatoris.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "L’ajuda de RH explica que els llindars es configuren per compte de RH i que el resum setmanal s’envia per correu electrònic a aquest compte.",
-  "The update window can also be closed using the × in the top right corner.": "La finestra d’actualització també es pot tancar amb la × del cantó superior dret."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Obriu les notes de la versió des de la campana de Nextcloud. Seleccioneu «Mostra els canvis» per obrir l’historial de versions desplegable."
 },
   "nplurals=2; plural=(n != 1);"
 );

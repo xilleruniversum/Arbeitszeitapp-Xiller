@@ -19,6 +19,7 @@ use OCA\Timesheet\Service\EmployeeBalanceNotificationSettings;
 use OCA\Timesheet\Service\MissingEntryReminderService;
 use OCA\Timesheet\Service\HrService;
 use OCA\Timesheet\Service\HrRuleAssignments;
+use OCA\Timesheet\Service\EmployeeGroupRules;
 
 class SettingsController extends Controller {
 	private HrRuleAssignments $hrAssignments;
@@ -87,6 +88,7 @@ class SettingsController extends Controller {
 		}
 		// Stable identifiers preserve enrollment when either editor saves the same rule.
 		$submittedById = [];
+		$separateEmployeeGroups = $scope === 'assignments' && $this->request->getParam('separateEmployeeGroups') === '1';
 		foreach ($submittedRules as $rule) {
 			if (!is_array($rule) || !is_scalar($rule['id'] ?? null) || trim((string)$rule['id']) === '') {
 				return new DataResponse(['message' => 'Invalid rules'], 400);
@@ -96,13 +98,15 @@ class SettingsController extends Controller {
 				return new DataResponse(['message' => 'Duplicate rule identifiers'], 400);
 			}
 			$submittedById[$ruleId] = $rule;
+			$separateEmployeeGroups = $separateEmployeeGroups
+				|| ($scope === 'assignments' && array_key_exists('inactiveUserGroups', $rule));
 		}
 
 		$lockKey = hash('sha256', 'timesheet:hr-access-rules');
 		try {
 			$this->lockingProvider->acquireLock($lockKey, ILockingProvider::LOCK_EXCLUSIVE);
 		} catch (LockedException) {
-			return $this->currentRulesConflict($scope, $currentUserId);
+			return $this->currentRulesConflict($scope, $currentUserId, $separateEmployeeGroups);
 		} catch (\Throwable $saveError) {
 			return new DataResponse(['message' => 'Saving reminder settings failed'], 500);
 		}
@@ -117,7 +121,7 @@ class SettingsController extends Controller {
 			$decodedRules = json_decode($previousRulesJson, true);
 			$previousRules = is_array($decodedRules) ? $this->sanitizeRules($decodedRules) : [];
 			if (!hash_equals(hash('sha256', $previousRulesJson), strtolower($expectedRevision))) {
-				return $this->rulesConflict($previousRules, $previousRulesJson);
+				return $this->rulesConflict($previousRules, $previousRulesJson, $separateEmployeeGroups);
 			}
 
 			$mergedRules = $scope === 'assignments'
@@ -132,7 +136,7 @@ class SettingsController extends Controller {
 			$this->missingEntryReminderService->prepareRuleChanges($previousRules, $sanitizedRules);
 			$savedRulesJson = json_encode($sanitizedRules, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 			$this->appConfig->setAppValueString('hr_access_rules', $savedRulesJson);
-			return new DataResponse(['rules' => $sanitizedRules, 'rulesRevision' => hash('sha256', $savedRulesJson)]);
+			return new DataResponse($this->rulesSnapshot($sanitizedRules, $savedRulesJson, $separateEmployeeGroups));
 		} catch (\InvalidArgumentException $invalidSettings) {
 			return new DataResponse(['message' => $invalidSettings->getMessage()], 400);
 		} catch (\Throwable $saveError) {
@@ -149,7 +153,7 @@ class SettingsController extends Controller {
 		return (new HrService($this->appConfig, $this->userSession, $this->groupManager, $this->userManager))->isHr($userId);
 	}
 
-	private function currentRulesConflict(string $scope, string $userId): DataResponse {
+	private function currentRulesConflict(string $scope, string $userId, bool $separateEmployeeGroups): DataResponse {
 		try {
 			$this->sharedAppConfig->clearCache();
 			if (!$this->canSaveScope($scope, $userId)) {
@@ -157,14 +161,23 @@ class SettingsController extends Controller {
 			}
 			$rawRules = $this->appConfig->getAppValueString('hr_access_rules');
 			$rules = json_decode($rawRules, true);
-			return $this->rulesConflict(is_array($rules) ? $this->sanitizeRules($rules) : [], $rawRules);
+			return $this->rulesConflict(is_array($rules) ? $this->sanitizeRules($rules) : [], $rawRules, $separateEmployeeGroups);
 		} catch (\Throwable) {
 			return new DataResponse(['message' => 'Saving reminder settings failed'], 500);
 		}
 	}
 
-	private function rulesConflict(array $rules, string $rawRules): DataResponse {
-		return new DataResponse(['code' => 'rules_conflict', 'rules' => $rules, 'rulesRevision' => hash('sha256', $rawRules)], 409);
+	private function rulesConflict(array $rules, string $rawRules, bool $separateEmployeeGroups): DataResponse {
+		return new DataResponse(['code' => 'rules_conflict', ...$this->rulesSnapshot($rules, $rawRules, $separateEmployeeGroups)], 409);
+	}
+
+	private function rulesSnapshot(array $rules, string $rawRules, bool $separateEmployeeGroups): array {
+		// Older editors round-trip userGroups and would silently drop a projected legacy archive.
+		if ($separateEmployeeGroups) {
+			$rules = array_map(static fn(array $rule): array =>
+				array_replace($rule, EmployeeGroupRules::forEditor($rule)), $rules);
+		}
+		return ['rules' => $rules, 'rulesRevision' => hash('sha256', $rawRules)];
 	}
 
 	/** Assignment edits cannot alter existing time rules or broaden restricted mail delivery. */
@@ -181,11 +194,41 @@ class SettingsController extends Controller {
 				'id' => (string)$ruleId,
 				'hrGroups' => $assignments['hrGroups'],
 				'hrUsers' => $assignments['hrUsers'],
-				'userGroups' => $this->cleanGroupList(is_array($submitted['userGroups'] ?? null) ? $submitted['userGroups'] : []),
+				...$this->mergeEmployeeGroups($submitted, $previousById[$ruleId] ?? null),
 				'priority' => $this->sanitizeRuleThresholds($submitted)['priority'],
 			]);
 		}
 		return $mergedRules;
+	}
+
+	private function mergeEmployeeGroups(array $submitted, ?array $previous): array {
+		$active = $submitted['userGroups'] ?? null;
+		if (!array_key_exists('inactiveUserGroups', $submitted)) {
+			return ['userGroups' => $this->cleanGroupList(is_array($active) ? $active : [])];
+		}
+
+		$inactive = $submitted['inactiveUserGroups'];
+		foreach ([$active, $inactive] as $groups) {
+			if (!is_array($groups) || !array_is_list($groups) || count(array_filter($groups, 'is_string')) !== count($groups)) {
+				throw new \InvalidArgumentException('Invalid rules');
+			}
+		}
+		$selection = [
+			'userGroups' => $this->cleanGroupList($active),
+			'inactiveUserGroups' => $this->cleanGroupList($inactive),
+		];
+		if ($previous === null || array_key_exists('inactiveUserGroups', $previous)) {
+			return $selection;
+		}
+
+		// Autosaves for other fields must not change how an untouched legacy rule classifies its members.
+		$previousSelection = EmployeeGroupRules::forEditor($previous);
+		foreach ($selection as $field => $groups) {
+			if (array_diff($groups, $previousSelection[$field]) !== [] || array_diff($previousSelection[$field], $groups) !== []) {
+				return $selection;
+			}
+		}
+		return ['userGroups' => $previous['userGroups']];
 	}
 
 	/** Each HR editor owns its fields; older clients retain the complete policy writer. */
@@ -319,14 +362,16 @@ class SettingsController extends Controller {
 				continue;
 			}
 
-			$userGroups = isset($rule['userGroups']) && is_array($rule['userGroups']) ? $rule['userGroups'] : [];
-
-			$userGroups = $this->cleanGroupList($userGroups);
+			$userGroups = $rule['userGroups'] ?? $rule['user_groups'] ?? [];
+			$employeeGroups = ['userGroups' => $this->cleanGroupList(is_array($userGroups) ? $userGroups : [])];
+			if (array_key_exists('inactiveUserGroups', $rule)) {
+				$employeeGroups['inactiveUserGroups'] = $this->cleanGroupList(is_array($rule['inactiveUserGroups']) ? $rule['inactiveUserGroups'] : []);
+			}
 
 			$sanitizedRules[] = array_merge([
 				'id' => $ruleId,
 				...($assignmentsValidated ? array_intersect_key($rule, array_flip(['hrGroups', 'hrUsers', 'mailRecipients'])) : $this->hrAssignments->normalize($rule)),
-				'userGroups' => $userGroups,
+				...$employeeGroups,
 				'missingEntryReminders' => MissingEntryReminderSettings::normalize($rule['missingEntryReminders'] ?? null),
 				'employeeBalanceNotifications' => EmployeeBalanceNotificationSettings::normalize($rule['employeeBalanceNotifications'] ?? null),
 			], $this->sanitizeRuleThresholds($rule));
@@ -352,7 +397,8 @@ class SettingsController extends Controller {
 	}
 
 	private function cleanGroupList(array $groups): array {
-		$groups = array_values(array_filter(array_map(fn($groupId) => trim((string)$groupId), $groups), fn($trimmedGroupId) => $trimmedGroupId !== ''));
+		$groups = array_map(static fn(mixed $groupId): string => is_scalar($groupId) ? trim((string)$groupId) : '', $groups);
+		$groups = array_values(array_filter($groups, static fn(string $groupId): bool => $groupId !== ''));
 		$groups = array_values(array_unique($groups));
 
 		$existingGroupIds = [];
@@ -372,8 +418,7 @@ class SettingsController extends Controller {
 		$seenGroupIds = [];
 		$duplicateGroupIds = [];
 		foreach ($rules as $rule) {
-			$userGroups = isset($rule['userGroups']) && is_array($rule['userGroups']) ? $rule['userGroups'] : [];
-			foreach ($userGroups as $groupId) {
+			foreach (array_merge($rule['userGroups'], $rule['inactiveUserGroups'] ?? []) as $groupId) {
 				$groupKey = (string)$groupId;
 				if ($groupKey === '') {
 					continue;

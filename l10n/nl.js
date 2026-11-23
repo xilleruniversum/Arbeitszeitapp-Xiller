@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Sluiten",
   "The update notes could not be loaded. Please try again.": "De update-informatie kon niet worden geladen. Probeer het opnieuw.",
   "Timesheet updated to {version}": "Urenregistratie bijgewerkt naar versie {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Beheerders kunnen per HR-regel bestaande Nextcloud-groepen kiezen voor actieve en inactieve medewerkers.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Het HR-overzicht en de wijzigingsgeschiedenis tonen medewerkers in beide soorten groepen als actief. Onder ‘Alle medewerkers’ komt elke medewerker één keer voor.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Bestaande HR-regels blijven de status op dezelfde manier bepalen totdat de selectie van medewerkersgroepen wijzigt.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Updatemeldingen blijven beschikbaar via het belpictogram in Nextcloud. ‘Wijzigingen bekijken’ opent de versiegeschiedenis, waarin afzonderlijke versies kunnen worden uitgeklapt.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "De herinnering aan de rondleiding kan definitief worden uitgeschakeld. De rondleiding kan op elk moment opnieuw worden gestart.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "De tabel met de wijzigingsgeschiedenis biedt meer ruimte voor de namen van degenen die wijzigingen hebben aangebracht. De HR-hulp legt uit waar pauzeregels worden ingesteld.",
   "New features": "Nieuwe functies",
   "Improvements": "Verbeteringen",
   "Bug fixes": "Opgeloste fouten",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Open de update-informatie.",
   "Version history": "Versiegeschiedenis",
   "View changes": "Wijzigingen bekijken",
+  "Employee groups - Active": "Medewerkersgroepen – actief",
+  "Employee groups - Inactive": "Medewerkersgroepen – inactief",
   "Individual HR accounts": "Afzonderlijke HR-accounts",
   "Assigned groups and people receive HR access to these employee groups.": "Toegewezen groepen en personen krijgen HR-toegang tot deze medewerkersgroepen.",
   "Search by name or account ID": "Zoeken op naam of account-ID",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Gebruik de kolom ‘Opmerking’ om informatie over je werkdag vast te leggen of afwezigheid toe te lichten. Ontbreekt de begintijd, de eindtijd of allebei, dan voorkomt alleen een passende opmerking een melding. Registraties zonder opmerking waarin geen of slechts één tijd is ingevuld, worden als onvolledig gemarkeerd.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "De herinneringsregels zijn gewijzigd. De eerdere lijst met redenen is vervangen door een regel waarbij elke ingevulde opmerking de e-mailherinnering voor ontbrekende of onvolledige tijdregistraties onderdrukt. Als alleen de begin- of eindtijd ontbreekt, verschijnt de waarschuwing voor een onvolledige tijdregistratie alleen wanneer de kolom Opmerking leeg is.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Het HR-overzicht en de wijzigingsgeschiedenis tonen actieve en inactieve medewerkers op basis van de groepen Zeitnachweis en Zeitnachweis-Archiv. In beide weergaven kun je filteren op Alle, Actief en Inactief. Welke medewerkers zichtbaar zijn, hangt af van hun toewijzing aan een HR-verantwoordelijke.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Het gebruikersbeheer van Nextcloud staat gelijktijdig lidmaatschap van beide groepen niet toe. Bij het wisselen geeft een waarschuwing aan uit welke groep de gebruiker eerst moet worden verwijderd.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-accounts kunnen tegelijk lid zijn van de groepen Zeitnachweis en Zeitnachweis-Archiv. De accounts blijven actief zolang ze lid zijn van Zeitnachweis. Wanneer ze uit die groep worden verwijderd, blijven ze lid van de archiefgroep.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "De hulp bij opmerkingen, de rondleiding en het voorbeeld bij de groepsregels leggen de nieuwe herinneringsregel uit.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "De HR-hulp legt uit dat de grenswaarden per HR-account worden ingesteld en dat het wekelijkse overzicht per e-mail naar datzelfde account wordt verzonden.",
-  "The update window can also be closed using the × in the top right corner.": "Het updatevenster kan ook worden gesloten met de × rechtsboven."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Open de releaseopmerkingen via het meldingsbelletje in Nextcloud. Kies ‘Wijzigingen bekijken’ om de versiegeschiedenis te openen, waarin je de wijzigingen per versie kunt uitklappen."
 },
   "nplurals=2; plural=(n != 1);"
 );

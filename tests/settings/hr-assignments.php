@@ -29,6 +29,7 @@ namespace {
 
 	require __DIR__ . '/../../lib/Service/HrRuleAssignments.php';
 	require __DIR__ . '/../../lib/Db/EmploymentStatusStore.php';
+	require_once __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 	require __DIR__ . '/../../lib/Service/HrService.php';
 
 	class AssignmentUser {

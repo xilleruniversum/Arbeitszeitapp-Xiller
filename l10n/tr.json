@@ -152,6 +152,12 @@
     "Close": "Kapat",
     "The update notes could not be loaded. Please try again.": "Güncelleme notları yüklenemedi. Lütfen yeniden deneyin.",
     "Timesheet updated to {version}": "Çalışma süresi kaydı {version} sürümüne güncellendi",
+    "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Yöneticiler her İK kuralında aktif ve pasif çalışanlar için mevcut Nextcloud gruplarını seçebilir.",
+    "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "İK genel bakışı ve değişiklik geçmişi, her iki grup türüne de üye olan çalışanları aktif olarak gösterir ve «Tüm çalışanlar» listesinde her çalışan yalnızca bir kez görünür.",
+    "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Mevcut İK kuralları, çalışan grubu seçimi değişene kadar durumları eskisi gibi belirler.",
+    "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Güncelleme bildirimleri Nextcloud bildirim zilinde kalır. «Değişiklikleri görüntüle» seçeneği, genişletilebilir bölümler içeren sürüm geçmişini açar.",
+    "The guided tour can be dismissed permanently and restarted at any time.": "Tanıtım kalıcı olarak gizlenebilir ve istenildiği zaman yeniden başlatılabilir.",
+    "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Değişiklik geçmişi tablosunda değişikliği yapanların adları için daha fazla yer vardır. İK yardımında mola kurallarının nerede yapılandırıldığı açıklanır.",
     "New features": "Yeni özellikler",
     "Improvements": "İyileştirmeler",
     "Bug fixes": "Hata düzeltmeleri",
@@ -167,6 +173,8 @@
     "Open the update notes.": "Güncelleme notlarını aç.",
     "Version history": "Sürüm geçmişi",
     "View changes": "Değişiklikleri görüntüle",
+    "Employee groups - Active": "Aktif çalışan grupları",
+    "Employee groups - Inactive": "Pasif çalışan grupları",
     "Individual HR accounts": "Bireysel İK hesapları",
     "Assigned groups and people receive HR access to these employee groups.": "Atanan gruplar ve kişiler, bu çalışan gruplarına İK erişimi kazanır.",
     "Search by name or account ID": "Ada veya hesap kimliğine göre ara",
@@ -341,10 +349,10 @@
     "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "İş gününüzle ilgili kendi notlarınızı yazmak veya devamsızlığı açıklamak için Yorum sütununu kullanın. Başlangıç saati, bitiş saati veya her ikisi eksikse yalnızca ilgili bir yorum bildirim gönderilmesini önler. Hiç saat girilmemiş veya yalnızca tek saat girilmiş ve yorum eklenmemiş kayıtlar eksik olarak işaretlenir.",
     "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Anımsatıcı kuralları değişti. Önceki gerekçe listesinin yerini yeni bir kural aldı. Artık içeriği olan herhangi bir yorum, eksik veya tamamlanmamış zaman kayıtları için e-posta anımsatıcısının gönderilmesini engelliyor. Yalnızca başlangıç veya bitiş saati eksikse tamamlanmamış zaman uyarısı ancak Yorum sütunu boş olduğunda görüntüleniyor.",
     "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "İK özeti ve değişiklik geçmişi, etkin ve etkin olmayan çalışanları Zeitnachweis ve Zeitnachweis-Archiv gruplarına göre gösterir. Her iki görünüm de Tümü, Etkin ve Etkin olmayan seçenekleriyle süzülebilir. Görünürlük, çalışanın atandığı İK sorumlusuna bağlıdır.",
-    "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Nextcloud kullanıcı yönetimi, iki gruba aynı anda üye olunmasına izin vermez. Bir uyarı, grup değiştirirken önce hangi gruptan ayrılmak gerektiğini açıklar.",
+    "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud hesapları aynı anda Zeitnachweis ve Zeitnachweis-Archiv gruplarına üye olabilir. Hesaplar Zeitnachweis grubunda kaldıkları sürece etkin sayılır. Bu gruptan çıkarıldıklarında arşiv grubunda kalırlar.",
     "The comment help, guided tour and group rule example explain the new reminder rule.": "Yorum yardımı, rehberli tur ve grup kuralları örneği yeni anımsatıcı kuralını açıklar.",
     "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "İK yardımı, eşiklerin her İK hesabı için ayrı ayrı ayarlandığını ve haftalık özet e-postasının o hesaba gönderildiğini açıklar.",
-    "The update window can also be closed using the × in the top right corner.": "Güncelleme penceresi, sağ üst köşedeki × ile de kapatılabilir."
+    "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Sürüm notlarını Nextcloud bildirim zilinden açın. Genişletilebilir bölümler içeren sürüm geçmişini açmak için «Değişiklikleri görüntüle» seçeneğini seçin."
   },
   "pluralForm": "nplurals=2; plural=(n > 1);"
 }

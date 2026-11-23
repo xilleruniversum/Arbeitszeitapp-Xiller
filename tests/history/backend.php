@@ -73,11 +73,17 @@ namespace OCA\Timesheet\Service {
 			$actor ??= $this->session->getUser()?->getUID();
 			return $actor === $employee || ($this->isHr($actor) && in_array($employee, $this->assignedEmployees, true));
 		}
+		public function getEmploymentGroupStatus(string $uid): ?bool {
+			if ($this->groups->isInGroup($uid, 'Zeitnachweis')) {
+				return true;
+			}
+			return $this->groups->isInGroup($uid, 'Zeitnachweis-Archiv') ? false : null;
+		}
 		public function getEmployeesForOverview(?string $id = null): array {
 			$employees = [];
 			foreach ($this->assignedEmployees as $uid) {
-				$isActive = $this->groups->isInGroup($uid, 'Zeitnachweis');
-				if ($isActive || $this->groups->isInGroup($uid, 'Zeitnachweis-Archiv')) {
+				$isActive = $this->getEmploymentGroupStatus($uid);
+				if ($isActive !== null) {
 					$employees[] = ['id' => $uid, 'name' => $uid, 'isActive' => $isActive];
 				}
 			}
@@ -224,7 +230,7 @@ namespace {
 		$mapper = new \OCA\Timesheet\Db\EntryMapper($db); $balances = new \OCA\Timesheet\Service\MonthlyBalanceService($db);
 		$entries = new \OCA\Timesheet\Service\EntryService($mapper, $session, $balances, $writes);
 		$configs = new \OCA\Timesheet\Service\WorkSettingsService(new \OCA\Timesheet\Db\UserConfigMapper($db), $balances, $writes);
-		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, $groups, $clock, $queue, new HistoryMemoryRecording());
+		$reader = new \OCA\Timesheet\Service\ChangeHistoryService($history, $hr, $session, $clock, $queue, new HistoryMemoryRecording());
 		return compact('db', 'users', 'session', 'hr', 'groups', 'locks', 'clock', 'history', 'queue', 'writes', 'mapper', 'entries', 'configs', 'reader');
 	}
 	$checks = 0; $failures = 0;

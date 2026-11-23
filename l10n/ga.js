@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Dún",
   "The update notes could not be loaded. Please try again.": "Níorbh fhéidir nótaí an nuashonraithe a lódáil. Bain triail eile as.",
   "Timesheet updated to {version}": "Taifead ama nuashonraithe go leagan {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Is féidir le riarthóirí grúpaí Nextcloud atá ann cheana a roghnú d’fhostaithe gníomhacha agus neamhghníomhacha i ngach riail acmhainní daonna.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "Taispeántar fostaithe atá sa dá chineál grúpa mar fhostaithe gníomhacha san fhorléargas acmhainní daonna agus i stair na n-athruithe. Taispeántar gach fostaí uair amháin faoi «Gach fostaí».",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Leanann na rialacha acmhainní daonna atá ann cheana den stádas a chinneadh mar a bhí go dtí go n-athraítear roghnú na ngrúpaí fostaithe iontu.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Fanann fógraí nuashonraithe faoi chlog Nextcloud. Osclaíonn «Féach ar na hathruithe» stair na leaganacha, áit ar féidir sonraí gach leagain a leathnú.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Is féidir an cuireadh chun an turas treoraithe a dhéanamh a cheilt go buan agus an turas a atosú am ar bith.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tá níos mó spáis d’ainmneacha na n-údar sa tábla ina bhfuil stair na n-athruithe. Mínítear sa chabhair acmhainní daonna cá háit a socraítear rialacha sosanna.",
   "New features": "Gnéithe nua",
   "Improvements": "Feabhsúcháin",
   "Bug fixes": "Ceartúcháin fabhtanna",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Oscail nótaí an nuashonraithe.",
   "Version history": "Stair na leaganacha",
   "View changes": "Féach ar na hathruithe",
+  "Employee groups - Active": "Grúpaí fostaithe gníomhacha",
+  "Employee groups - Inactive": "Grúpaí fostaithe neamhghníomhacha",
   "Individual HR accounts": "Cuntais AD aonair",
   "Assigned groups and people receive HR access to these employee groups.": "Faigheann na grúpaí agus na daoine sannta rochtain AD ar na grúpaí fostaithe seo.",
   "Search by name or account ID": "Cuardaigh de réir ainm nó aitheantais cuntais",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Úsáid an colún «Trácht» chun d’fhaisnéis féin faoin lá oibre a thaifeadadh nó chun neamhláithreachtaí a mhíniú. Má tá an t-am tosaithe, an t-am críochnaithe nó an dá cheann ar iarraidh, ní choisceann ach trácht ábhartha an fógra. Marcáiltear iontrálacha gan trácht mar neamhiomlán mura bhfuil ach am amháin iontu nó mura bhfuil am ar bith iontu.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Tá rialacha na meabhrúchán athraithe. Cuireann aon trácht nach bhfuil folamh cosc anois ar an meabhrúchán ríomhphoist faoi iontrálacha ama atá ar iarraidh nó neamhiomlán. Tagann sé sin in áit an liosta cúiseanna a bhí ann roimhe seo. Mura bhfuil ach an t-am tosaithe nó críochnaithe ar iarraidh, ní thaispeántar an rabhadh faoi iontráil neamhiomlán ach amháin nuair atá an colún «Trácht» folamh.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "Taispeánann an forléargas AD agus stair na n-athruithe fostaithe gníomhacha agus neamhghníomhacha de réir na ngrúpaí Zeitnachweis agus Zeitnachweis-Archiv. Is féidir an dá radharc a scagadh leis na roghanna «Gach duine», «Gníomhach» agus «Neamhghníomhach». Braitheann an infheictheacht ar an sannadh AD.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Ní cheadaíonn bainistíocht úsáideoirí Nextcloud ballraíocht sa dá ghrúpa ag an am céanna. Míníonn rabhadh cén grúpa atá le fágáil ar dtús agus tú ag aistriú.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Is féidir le cuntais Nextcloud a bheith sna grúpaí Zeitnachweis agus Zeitnachweis-Archiv ag an am céanna. Fanann na cuntais gníomhach fad a bhíonn siad sa ghrúpa Zeitnachweis. Má bhaintear den ghrúpa sin iad, fanann siad sa chartlann.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Mínítear riail nua an mheabhrúcháin sa chabhair do thráchtanna, sa turas treoraithe agus sa sampla de rialacha an ghrúpa.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "Míníonn an chabhair AD go socraítear tairseacha do gach cuntas AD agus go seoltar an achoimre sheachtainiúil chuig an gcuntas sin trí ríomhphost.",
-  "The update window can also be closed using the × in the top right corner.": "Is féidir an fhuinneog nuashonraithe a dhúnadh freisin leis an × sa chúinne uachtarach ar dheis."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Oscail nótaí eisiúna ó chlog fógraí Nextcloud. Roghnaigh «Féach ar na hathruithe» chun stair na leaganacha a oscailt. Is féidir na hiontrálacha a leathnú ansin."
 },
   "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
 );

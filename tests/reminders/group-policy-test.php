@@ -32,6 +32,7 @@ namespace {
 	require_once __DIR__ . '/../../lib/Service/EmployeeBalanceNotificationSettings.php';
 	require_once __DIR__ . '/../../lib/Service/HrRuleAssignments.php';
 	require_once __DIR__ . '/../../lib/Service/GroupRuleService.php';
+	require_once __DIR__ . '/../../lib/Service/EmployeeGroupRules.php';
 
 	$checks = 0;
 	$expectSame = static function (mixed $expected, mixed $actual, string $description) use (&$checks): void {

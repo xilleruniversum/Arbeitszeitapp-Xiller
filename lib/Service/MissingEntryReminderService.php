@@ -168,7 +168,7 @@ class MissingEntryReminderService {
 		$ruleId = (string)$rule['id'];
 		$isInitialCohort = !$this->reminderStore->isRuleInitialized($ruleId);
 		$employees = [];
-		foreach ($rule['userGroups'] as $groupId) {
+		foreach (EmployeeGroupRules::assignedGroups($rule) as $groupId) {
 			$group = $this->groupManager->get($groupId);
 			if (!$group) {
 				continue;

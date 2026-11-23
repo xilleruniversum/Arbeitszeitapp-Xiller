@@ -78,6 +78,12 @@ OC.L10N.register(
   "Close": "Lukk",
   "The update notes could not be loaded. Please try again.": "Oppdateringsnotatene kunne ikke lastes. Prøv igjen.",
   "Timesheet updated to {version}": "Timeregistreringen er oppdatert til versjon {version}",
+  "Administrators can choose existing Nextcloud groups for active and inactive employees in each HR rule.": "Administratorer kan velge eksisterende Nextcloud-grupper for aktive og inaktive medarbeidere i hver HR-regel.",
+  "The HR overview and change history show employees with both memberships as active and list each employee once under All.": "HR-oversikten og endringshistorikken viser medarbeidere i begge gruppetypene som aktive. Under «Alle medarbeidere» vises hver medarbeider én gang.",
+  "Existing HR rules keep their current status behaviour until their employee group selection changes.": "Eksisterende HR-regler fastsetter status som før til valget av medarbeidergrupper i regelen endres.",
+  "Update notices stay in the Nextcloud bell. View changes opens the expandable version history.": "Oppdateringsvarsler blir værende i bjellemenyen i Nextcloud. «Vis endringer» åpner versjonshistorikken, der hver versjon kan utvides.",
+  "The guided tour can be dismissed permanently and restarted at any time.": "Påminnelsen om omvisningen kan slås av permanent, og omvisningen kan startes på nytt når som helst.",
+  "The change history table gives editor names more space. The HR help explains where break rules are configured.": "Tabellen for endringshistorikk gir mer plass til navnene på dem som gjorde endringene. HR-hjelpen forklarer hvor pauseregler konfigureres.",
   "New features": "Nye funksjoner",
   "Improvements": "Forbedringer",
   "Bug fixes": "Feilrettinger",
@@ -93,6 +99,8 @@ OC.L10N.register(
   "Open the update notes.": "Åpne oppdateringsnotatene.",
   "Version history": "Versjonshistorikk",
   "View changes": "Vis endringer",
+  "Employee groups - Active": "Ansattgrupper – aktive",
+  "Employee groups - Inactive": "Ansattgrupper – inaktive",
   "Individual HR accounts": "Enkeltstående HR-kontoer",
   "Assigned groups and people receive HR access to these employee groups.": "Tildelte grupper og personer får HR-tilgang til disse medarbeidergruppene.",
   "Search by name or account ID": "Søk etter navn eller konto-ID",
@@ -342,10 +350,10 @@ OC.L10N.register(
   "Use the Comment column to record your own information about your workday or explain absences. If the start time, end time, or both are missing, only a corresponding comment prevents a notification. Entries with no time or only one time and no comment are marked as incomplete.": "Bruk kolonnen «Kommentar» til å notere egne opplysninger om arbeidsdagen eller forklare fravær. Hvis starttidspunktet, sluttidspunktet eller begge mangler, kan bare en kommentar om det hindre et varsel. Registreringer uten kommentar som mangler begge tidspunktene eller bare har ett, markeres som ufullstendige.",
   "Reminder rules have changed. Any comment with content now suppresses the email reminder for missing or incomplete time entries, replacing the previous list of reasons. If only the start or end time is missing, the incomplete time warning appears only when the Comment column is empty.": "Påminnelsesreglene er endret. Den tidligere listen over grunner er erstattet av en regel om at enhver kommentar med innhold hindrer at det sendes en påminnelse på e-post om manglende eller ufullstendige tidsregistreringer. Hvis bare start- eller sluttiden mangler, vises varselet om ufullstendig tidsregistrering bare når kolonnen Kommentar er tom.",
   "The HR overview and change history show active and inactive employees based on the Zeitnachweis and Zeitnachweis-Archiv groups. Both views can be filtered by All, Active and Inactive. Visibility follows the HR assignment.": "HR-oversikten og endringsloggen viser aktive og inaktive ansatte basert på gruppene Zeitnachweis og Zeitnachweis-Archiv. Begge visningene kan filtreres etter Alle, Aktive og Inaktive. Hvem som vises, avhenger av hvilken HR-ansvarlig de ansatte er tilordnet.",
-  "Nextcloud user management rejects membership in both groups at the same time. A warning explains which group to leave first when switching.": "Brukeradministrasjonen i Nextcloud hindrer samtidig medlemskap i begge grupper. Ved bytte av gruppe forklarer et varsel hvilken gruppe brukeren først må fjernes fra.",
+  "Nextcloud accounts can belong to Zeitnachweis and Zeitnachweis-Archiv at the same time. Accounts remain active while they belong to Zeitnachweis. Removing that membership leaves them in the archive.": "Nextcloud-kontoer kan være med i både Zeitnachweis og Zeitnachweis-Archiv samtidig. Kontoene forblir aktive så lenge de er med i Zeitnachweis. Når de fjernes fra den gruppen, blir de værende i arkivgruppen.",
   "The comment help, guided tour and group rule example explain the new reminder rule.": "Hjelpen for kommentarer, den guidede omvisningen og eksempelet på grupperegler forklarer den nye påminnelsesregelen.",
   "The HR help explains that thresholds are set per HR account and the weekly summary email goes to that account.": "HR-hjelpen forklarer at grenseverdier settes for hver HR-konto, og at den ukentlige oversikten sendes på e-post til den samme kontoen.",
-  "The update window can also be closed using the × in the top right corner.": "Oppdateringsvinduet kan også lukkes med × øverst til høyre."
+  "Open release notes from the Nextcloud bell. Select View changes to open the expandable version history.": "Åpne versjonsmerknadene fra varselbjellen i Nextcloud. Velg «Vis endringer» for å åpne versjonshistorikken, der endringene for hver versjon kan vises ved å utvide listen."
 },
   "nplurals=2; plural=(n != 1);"
 );

@@ -140,11 +140,7 @@ class GroupRuleService {
 				continue;
 			}
 
-			$userGroups = $rule['userGroups'] ?? [];
-
-			$userGroups = is_array($userGroups) ? $userGroups : [];
-
-			$userGroups = $this->cleanGroupList($userGroups);
+			$userGroups = array_values(array_filter(EmployeeGroupRules::assignedGroups($rule), $this->groupManager->groupExists(...)));
 
 			$sanitizedRules[] = array_merge([
 				'id' => $ruleId,
@@ -192,23 +188,6 @@ class GroupRuleService {
 	 */
 	private function getRulePriority(array $rule): int {
 		return $this->clampInt($rule['priority'] ?? self::PRIORITY_DEFAULT, self::PRIORITY_MIN, self::PRIORITY_MAX);
-	}
-
-	/**
-	 * @param array $groups
-	 * @return string[]
-	 */
-	private function cleanGroupList(array $groups): array {
-		$groups = array_values(array_filter(array_map(fn($groupId) => trim((string)$groupId), $groups), fn($groupId) => $groupId !== ''));
-		$groups = array_values(array_unique($groups));
-
-		$existingGroupIds = [];
-		foreach ($groups as $groupId) {
-			if ($this->groupManager->groupExists($groupId)) {
-				$existingGroupIds[] = $groupId;
-			}
-		}
-		return $existingGroupIds;
 	}
 
 	private function clampInt($value, int $min, int $max): int {
