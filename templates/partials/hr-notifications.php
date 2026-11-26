@@ -87,8 +87,20 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 			<h2 id="ts-reminder-mail-title"><?php p($l->t('Edit email text')); ?></h2>
 			<p id="ts-reminder-mail-audience"></p>
 			<p id="ts-reminder-mail-scope"
-				data-reminder="<?php p($l->t('This text applies to this group rule and to recipients with your account language.')); ?>"
-				data-weekly="<?php p($l->t('This text applies to your weekly email and your current account language.')); ?>"></p>
+				data-reminder="<?php p($l->t('This text applies to the current group rule.')); ?>"
+				data-weekly="<?php p($l->t('This text applies to your own weekly summary.')); ?>"></p>
+			<div class="ts-reminder-mail-language-field">
+				<div class="hr-help-heading">
+					<label for="ts-reminder-mail-language"><?php p($l->t('Email language')); ?></label>
+					<?php $renderHelpPopup('ts-reminder-mail-language-help', $l->t('Email language'), [
+						$l->t('Emails are sent in the recipient’s Nextcloud account language.'),
+					]); ?>
+				</div>
+				<select id="ts-reminder-mail-language" aria-describedby="ts-reminder-mail-language-status"></select>
+				<p id="ts-reminder-mail-language-status" role="status"
+					data-loading="<?php p(\OCP\Util::getL10N('settings', $l->getLanguageCode())->t('Loading') . '…'); ?>"
+					data-error="<?php p($l->t('The original email text could not be loaded. Select the language again to retry.')); ?>"></p>
+			</div>
 			<label for="ts-reminder-mail-text"><?php p($l->t('Email text')); ?></label>
 			<textarea id="ts-reminder-mail-text" rows="9" dir="auto" autofocus required
 				data-invalid-placeholder-message="<?php p($l->t('Use {entries} exactly once.')); ?>" aria-describedby="ts-reminder-mail-placeholders"></textarea>
@@ -108,5 +120,5 @@ $embeddedJsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_
 		<p id="hr-notification-save-error" class="hr-mail-settings-error" role="alert"></p>
 		<button id="hr-notification-save" type="button" class="primary" disabled><?php p(\OCP\Util::getL10N('settings', $l->getLanguageCode())->t('Save')); ?></button>
 	</div>
-	<p id="hr-notification-saved" class="hr-notification-saved" role="status" aria-atomic="true"></p>
+	<p id="hr-notification-saved" class="ts-save-confirmation" role="status" aria-atomic="true"></p>
 </section>

@@ -16,6 +16,7 @@ return [
 		['name' => 'settings#searchPeople',       'url' => '/api/hr/people',        'verb' => 'GET'],
 		['name' => 'changeHistory#index',        'url' => '/api/hr/change-history', 'verb' => 'GET'],
 		['name' => 'overview#getHrUserListData',  'url' => '/api/hr/userlist',      'verb' => 'GET'],
+		['name' => 'hrStatistics#index',         'url' => '/api/hr/statistics',    'verb' => 'POST'],
 		['name' => 'overview#getOvertimeSummary', 'url' => '/api/overtime/summary', 'verb' => 'GET'],
 
 		// REST: automatic balance snapshots
@@ -35,6 +36,7 @@ return [
 		['name' => 'config#setUserConfig', 'url' => '/api/hr/config/{userId}', 'verb' => 'PUT'],
 
 		['name' => 'config#getHrNotificationSettings', 'url' => '/api/hr/notifications', 'verb' => 'GET'],
+		['name' => 'page#getNotificationMailOriginals', 'url' => '/api/hr/notification-mail-originals', 'verb' => 'GET'],
 		['name' => 'config#setHrNotificationSettings', 'url' => '/api/hr/notifications', 'verb' => 'PUT'],
 		['name' => 'config#getHrWarningThresholds', 'url' => '/api/hr/warnings', 'verb' => 'GET'],
 		['name' => 'config#setHrWarningThresholds', 'url' => '/api/hr/warnings', 'verb' => 'PUT'],

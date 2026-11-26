@@ -102,37 +102,118 @@
 
 	function initNotificationMailEditor(dialog) {
 		const textarea = document.getElementById('ts-reminder-mail-text');
+		const languageSelect = document.getElementById('ts-reminder-mail-language');
+		const languageStatus = document.getElementById('ts-reminder-mail-language-status');
 		const audience = document.getElementById('ts-reminder-mail-audience');
 		const scope = document.getElementById('ts-reminder-mail-scope');
 		const placeholders = document.getElementById('ts-reminder-mail-placeholders');
+		const resetButton = document.getElementById('ts-reminder-mail-reset');
+		const applyButton = document.getElementById('ts-reminder-mail-apply');
+		const originalsByLanguage = new Map();
 		let edit;
+		let selection = 0;
+
+		for (const language of weeklyMailEditor.languages) {
+			const option = document.createElement('option');
+			option.value = language.code;
+			option.textContent = language.name;
+			languageSelect.append(option);
+		}
+
+		function setLoading(loading) {
+			textarea.disabled = resetButton.disabled = applyButton.disabled = loading;
+		}
+
+		function showLanguage(language, original) {
+			edit.visibleLanguage = language;
+			edit.visibleOriginal = original;
+			languageSelect.value = language;
+			textarea.lang = language.split('@')[0].replaceAll('_', '-');
+			textarea.value = edit.drafts.get(language)?.body ?? edit.text(language) ?? original;
+			textarea.setCustomValidity('');
+		}
+
+		function rememberText() {
+			const { visibleLanguage: language, visibleOriginal: original } = edit;
+			const savedText = edit.text(language);
+			const reset = edit.drafts.get(language)?.reset === true && savedText != null && textarea.value === original;
+			if (textarea.value === (savedText ?? original) && !reset) edit.drafts.delete(language);
+			else edit.drafts.set(language, { body: textarea.value, original, reset });
+		}
+
+		async function getOriginal(language, session) {
+			if (language === session.language) return session.original;
+			if (!originalsByLanguage.has(language)) {
+				originalsByLanguage.set(language, timesheet.api('/api/hr/notification-mail-originals?language=' + encodeURIComponent(language)));
+			}
+			try {
+				const originals = await originalsByLanguage.get(language);
+				const original = originals?.[session.mode]?.[session.key];
+				if (typeof original !== 'string') throw new Error('Invalid email original');
+				return original;
+			} catch (error) {
+				originalsByLanguage.delete(language);
+				throw error;
+			}
+		}
+
+		languageSelect.addEventListener('change', async () => {
+			if (!edit) return;
+			const language = languageSelect.value;
+			const session = edit;
+			const request = ++selection;
+			rememberText();
+			languageStatus.textContent = languageStatus.dataset.loading;
+			setLoading(true);
+			try {
+				const original = await getOriginal(language, session);
+				if (edit !== session || selection !== request) return;
+				showLanguage(language, original);
+				languageStatus.textContent = '';
+			} catch {
+				if (edit !== session || selection !== request) return;
+				languageSelect.value = edit.visibleLanguage;
+				languageStatus.textContent = languageStatus.dataset.error;
+			} finally {
+				if (edit === session && selection === request) setLoading(false);
+			}
+		});
 
 		textarea.addEventListener('input', () => textarea.setCustomValidity(''));
-		document.getElementById('ts-reminder-mail-reset').addEventListener('click', () => {
-			textarea.value = edit.original;
+		resetButton.addEventListener('click', () => {
+			const { visibleLanguage: language, visibleOriginal: original } = edit;
+			edit.drafts.set(language, { body: original, original, reset: true });
+			textarea.value = original;
 			textarea.setCustomValidity('');
 		});
 		document.getElementById('ts-reminder-mail-cancel').addEventListener('click', () => dialog.close());
 		dialog.addEventListener('close', () => { if (!dialog.open) edit = null; });
 		dialog.querySelector('form').addEventListener('submit', event => {
 			event.preventDefault();
-			if (textarea.value.split('{entries}').length !== 2) {
+			if (!edit || textarea.disabled) return;
+			rememberText();
+			for (const [language, { body, original }] of edit.drafts) {
+				if (body.split('{entries}').length === 2) continue;
+				showLanguage(language, original);
 				textarea.setCustomValidity(textarea.dataset.invalidPlaceholderMessage);
 				textarea.reportValidity();
 				return;
 			}
-			edit.apply(textarea.value === edit.original ? null : textarea.value);
+			for (const [language, { body, original }] of edit.drafts) {
+				edit.apply(language, body === original ? null : body);
+			}
 			dialog.close();
 		});
 
 		return options => {
-			edit = options;
+			edit = { ...options, drafts: new Map() };
 			audience.textContent = edit.label;
 			scope.textContent = scope.dataset[edit.mode];
 			placeholders.textContent = placeholders.dataset[edit.mode];
 			textarea.maxLength = edit.maxLength;
-			textarea.value = edit.text ?? edit.original;
-			textarea.setCustomValidity('');
+			languageStatus.textContent = '';
+			setLoading(false);
+			showLanguage(edit.language, edit.original);
 			dialog.showModal();
 		};
 	}
@@ -146,11 +227,7 @@
 			([key, value]) => value !== savedNotificationSettings.warningThresholds[key]
 		));
 		if (Object.keys(thresholds).length) patch.warningThresholds = thresholds;
-		if (weeklyMailDrafts.size) {
-			patch.weeklyMailTemplates = Object.fromEntries(Array.from(
-				weeklyMailDrafts, ([alert, text]) => [alert, { [weeklyMailEditor.language]: text }]
-			));
-		}
+		if (weeklyMailDrafts.size) patch.weeklyMailTemplates = Object.fromEntries(weeklyMailDrafts);
 		return patch;
 	}
 
@@ -184,17 +261,24 @@
 				const button = event.target.closest('[data-edit-weekly-mail]');
 				if (!button || !savedNotificationSettings) return;
 				const alert = button.dataset.editWeeklyMail;
-				const language = weeklyMailEditor.language;
-				const persistedText = () => savedWeeklyMailTemplates[alert]?.[language] ?? null;
+				const persistedText = language => savedWeeklyMailTemplates[alert]?.[language] ?? null;
 				openMailEditor({
 					mode: 'weekly',
 					label: document.getElementById(button.getAttribute('aria-describedby')).textContent,
+					key: alert,
+					language: weeklyMailEditor.language,
 					original: weeklyMailEditor.originals[alert],
-					text: weeklyMailDrafts.has(alert) ? weeklyMailDrafts.get(alert) : persistedText(),
+					text(language) {
+						const entries = weeklyMailDrafts.get(alert) ?? {};
+						return Object.hasOwn(entries, language) ? entries[language] : persistedText(language);
+					},
 					maxLength: weeklyMailEditor.maxLength,
-					apply(text) {
-						if (text === persistedText()) weeklyMailDrafts.delete(alert);
-						else weeklyMailDrafts.set(alert, text);
+					apply(language, text) {
+						const entries = { ...weeklyMailDrafts.get(alert) };
+						if (text === persistedText(language)) delete entries[language];
+						else entries[language] = text;
+						if (Object.keys(entries).length) weeklyMailDrafts.set(alert, entries);
+						else weeklyMailDrafts.delete(alert);
 						errorStatus.textContent = '';
 						updateSaveButton();
 					}

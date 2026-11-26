@@ -12,7 +12,7 @@ const releases = JSON.parse(readFileSync(resolve(root, 'appinfo/release-notes.js
 const interfaceMessages = [
 	"What's new in Timesheet?", 'Version {version}', 'Close',
 	'The update notes could not be loaded. Please try again.', 'Timesheet updated to {version}',
-	'Open the update notes.', 'Version history', 'View changes',
+	'Open the update notes.', 'Version history', 'Older versions', 'View changes',
 ];
 const placeholders = value => [...value.matchAll(/\{\w+\}/g)].map(match => match[0]).sort();
 
@@ -65,6 +65,7 @@ test('both German variants use the same concise explanations without personal ad
 		'Timesheet updated to {version}': 'Arbeitszeitnachweis auf Version {version} aktualisiert',
 		'Open the update notes.': 'Änderungsliste öffnen.',
 		'Version history': 'Versionshistorie',
+		'Older versions': 'Ältere Versionen',
 		'View changes': 'Änderungen ansehen',
 		'New features': 'Neue Funktionen',
 		'Improvements': 'Verbesserungen',

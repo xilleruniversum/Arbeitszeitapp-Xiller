@@ -27,7 +27,7 @@
 	margin-inline-start: auto;
 }
 
-#tab-hr .hr-notification-saved {
+.ts-save-confirmation {
 	position: fixed;
 	z-index: 1000;
 	left: 50%;
@@ -41,13 +41,24 @@
 	background: var(--color-main-background, #fff);
 	color: var(--color-main-text, #222);
 	box-shadow: 0 4px 16px rgb(0 0 0 / .22);
+	font-size: calc(1em + 1px);
 	font-weight: 600;
 	text-align: center;
 	overflow-wrap: anywhere;
 	pointer-events: none;
 }
 
-#tab-hr .hr-notification-saved:empty {
+:is([data-theme-dark], [data-theme-dark-highcontrast]) .ts-save-confirmation {
+	color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+	.ts-save-confirmation:not(:is([data-theme-light], [data-theme-light-highcontrast]) *) {
+		color: #fff;
+	}
+}
+
+.ts-save-confirmation:empty {
 	opacity: 0;
 }
 
@@ -474,6 +485,23 @@
 #ts-reminder-mail-dialog label,
 #ts-reminder-mail-audience {
 	font-weight: 600;
+}
+
+#ts-reminder-mail-dialog .ts-reminder-mail-language-field {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+#ts-reminder-mail-language {
+	box-sizing: border-box;
+	inline-size: 100%;
+	max-inline-size: 20rem;
+	margin: 6px 0 0;
+}
+
+#ts-reminder-mail-dialog #ts-reminder-mail-language-status:not(:empty) {
+	margin-block-start: 6px;
 }
 
 #ts-reminder-mail-dialog textarea {

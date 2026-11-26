@@ -193,6 +193,9 @@ namespace OCA\Timesheet\Service {
 namespace OCP\L10N {
 	interface IFactory {
 		public function getLanguageIterator(\OCP\IUser $user): \Iterator;
+		public function getLanguages(): array;
+		public function languageExists($app, $lang);
+		public function findGenericLanguage(?string $appId = null): string;
 		public function get(string $app, ?string $language = null): \OCP\IL10N;
 	}
 }
@@ -397,6 +400,15 @@ namespace {
 		}
 	}
 	class EmploymentMailLanguageFixture implements \OCP\L10N\IFactory {
+		public function getLanguages(): array {
+			return ['commonLanguages' => [['code' => 'de', 'name' => 'Deutsch']], 'otherLanguages' => []];
+		}
+		public function languageExists($app, $lang): bool {
+			return true;
+		}
+		public function findGenericLanguage(?string $appId = null): string {
+			return 'en';
+		}
 		public function getLanguageIterator(\OCP\IUser $user): \Iterator {
 			return new \ArrayIterator(['de']);
 		}

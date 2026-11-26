@@ -5,6 +5,7 @@ namespace OCA\Timesheet\Controller;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
 use OCP\IGroupManager;
@@ -62,13 +63,13 @@ class PageController extends Controller {
 		Util::addScript('timesheet', 'timesheet-mail-help-v2');
 		Util::addScript('timesheet', 'timesheet-entries-v2');
 		Util::addScript('timesheet', 'timesheet-employment-status');
-		Util::addScript('timesheet', 'timesheet-hr-dashboard-v5');
+		Util::addScript('timesheet', 'timesheet-hr-dashboard-v8');
 		Util::addScript('timesheet', 'timesheet-export');
 		Util::addScript('timesheet', 'timesheet-copy');
-		Util::addScript('timesheet', 'timesheet-settings-v2');
+		Util::addScript('timesheet', 'timesheet-settings-v3');
 		if ($isHr) {
 			Util::addScript('timesheet', 'timesheet-history');
-			Util::addScript('timesheet', 'timesheet-rule-settings-v4');
+			Util::addScript('timesheet', 'timesheet-rule-settings-v6');
 		}
 		if ($updateNotesEnabled) {
 			Util::addScript('timesheet', 'timesheet-update-notes');
@@ -79,10 +80,10 @@ class PageController extends Controller {
 		}
 		Util::addScript('timesheet', 'timesheet-main-v2');
 
-		Util::addStyle('timesheet', 'timesheet-layout-v8');
+		Util::addStyle('timesheet', 'timesheet-layout-v9');
 		if ($isHr) {
 			Util::addStyle('timesheet', 'timesheet-history-v5');
-			Util::addStyle('timesheet', 'timesheet-hr-settings-v8');
+			Util::addStyle('timesheet', 'timesheet-hr-settings-v10');
 		}
 		if ($updateNotesEnabled) {
 			Util::addStyle('timesheet', 'timesheet-release-notes');
@@ -147,14 +148,12 @@ class PageController extends Controller {
 			$mailLanguage = $this->l10nFactory->getLanguageIterator($currentUser)->current();
 			$mailTranslator = $this->l10nFactory->get($this->appName, $mailLanguage);
 			$weeklyMailEditor = HrWeeklyMailTemplates::editor($mailTranslator, $mailLanguage);
+			$weeklyMailEditor['languages'] = array_values($this->notificationMailLanguages($mailLanguage));
 			try {
 				$notificationRuleSettings = $this->ruleSettingsForm->getData('notifications');
 				$notificationRuleSettings['reminderMailEditor'] = [
 					'language' => $mailLanguage,
-					'originals' => [
-						'employee' => MissingEntryReminderMailer::originalBody($mailTranslator, false),
-						'hr' => MissingEntryReminderMailer::originalBody($mailTranslator, true),
-					],
+					'originals' => $this->reminderMailOriginals($mailTranslator),
 					'maxLength' => MissingEntryReminderSettings::MAIL_TEMPLATE_MAX_LENGTH,
 				];
 			} catch (\Throwable $loadError) {
@@ -181,5 +180,45 @@ class PageController extends Controller {
 			'tourEnabled' => $tourEnabled,
 			'tourStateAvailable' => $tourStateAvailable,
 		]);
+	}
+
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
+	public function getNotificationMailOriginals(mixed $language = null): DataResponse {
+		$currentUser = $this->userSession->getUser();
+		if ($currentUser === null || !$this->hrService->isHr()) {
+			return new DataResponse(['error' => 'Forbidden'], 403);
+		}
+
+		$currentLanguage = $this->l10nFactory->getLanguageIterator($currentUser)->current();
+		if (!is_string($language) || !isset($this->notificationMailLanguages($currentLanguage)[$language])) {
+			return new DataResponse(['error' => 'Invalid notification mail language'], 400);
+		}
+
+		// An untranslated account language uses the instance fallback rather than the editor's language.
+		$translationLanguage = $this->l10nFactory->languageExists($this->appName, $language)
+			? $language
+			: $this->l10nFactory->findGenericLanguage($this->appName);
+		$translator = $this->l10nFactory->get($this->appName, $translationLanguage);
+		return new DataResponse([
+			'weekly' => HrWeeklyMailTemplates::editor($translator, $language)['originals'],
+			'reminder' => $this->reminderMailOriginals($translator),
+		], 200);
+	}
+
+	/** @return array<string, array{code: string, name: string}> */
+	private function notificationMailLanguages(string $currentLanguage): array {
+		$groups = $this->l10nFactory->getLanguages();
+		$languages = array_column([...$groups['commonLanguages'], ...$groups['otherLanguages']], null, 'code');
+		$languages[$currentLanguage] ??= ['code' => $currentLanguage, 'name' => $currentLanguage];
+		return $languages;
+	}
+
+	/** @return array{employee: string, hr: string} */
+	private function reminderMailOriginals(IL10N $translator): array {
+		return [
+			'employee' => MissingEntryReminderMailer::originalBody($translator, false),
+			'hr' => MissingEntryReminderMailer::originalBody($translator, true),
+		];
 	}
 }

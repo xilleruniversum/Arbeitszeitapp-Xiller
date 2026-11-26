@@ -51,6 +51,8 @@
 	let localEditRevision = 0;
 	const rulesContainer = document.getElementById('timesheet-hr-rules');
 	const addRuleButton = document.getElementById('timesheet-add-hr-rule');
+	const assignmentSaved = document.getElementById('timesheet-assignment-saved');
+	let assignmentSavedTimer;
 	const specialDaysOvertime = document.getElementById('timesheet-specialdays-overtime');
 
 	function notify(message) {
@@ -359,13 +361,16 @@
 	function renderReminderRecipient(audience, identifier, checked) {
 		const key = audience === 'employee' ? 'notifyEmployees' : 'notifyHr';
 		const inputId = audience === 'employee' ? identifier + '-employees' : identifier + '-hr';
+		const editMail = reminderMailEditor.originals && reminderMailEditLabel ? `
+			<button type="button" data-edit-reminder-mail="${audience}" aria-haspopup="dialog" aria-controls="ts-reminder-mail-dialog"
+				aria-describedby="${inputId}-label">${escapeHtml(reminderMailEditLabel)}</button>` : '';
 		return `
 			<tr role="row">
 				<th role="rowheader" scope="row"><label id="${inputId}-label" for="${inputId}">${escapeHtml(t('timesheet', reminderMailLabels[audience]))}</label></th>
 				<td role="cell">
 					<div class="ts-reminder-recipient">
 						<input type="checkbox" id="${inputId}" class="ts-reminder-input" data-reminder-key="${key}" aria-describedby="${identifier}-summary"${checked ? ' checked' : ''}>
-						${reminderMailEditor.originals && reminderMailEditLabel ? `<button type="button" data-edit-reminder-mail="${audience}" aria-haspopup="dialog" aria-controls="ts-reminder-mail-dialog" aria-describedby="${inputId}-label">${escapeHtml(reminderMailEditLabel)}</button>` : ''}
+						${editMail}
 					</div>
 				</td>
 			</tr>`;
@@ -801,6 +806,10 @@
 		accessRules = uniqueGroupResult.rules;
 		const saveRevision = ++localEditRevision;
 		const queuedGeneration = saveGeneration;
+		if (assignmentSaved) {
+			window.clearTimeout(assignmentSavedTimer);
+			assignmentSaved.textContent = '';
+		}
 
 		// Persist changes in order; stale responses never replace more recent edits.
 		const pendingSave = ruleSaveQueue.then(async () => {
@@ -811,6 +820,12 @@
 				if (saveRevision === localEditRevision) {
 					accessRules = saved.rules;
 					renderRules();
+					if (assignmentSaved) {
+						assignmentSaved.textContent = t('timesheet', 'Saved') + '!';
+						assignmentSavedTimer = window.setTimeout(() => {
+							assignmentSaved.textContent = '';
+						}, 2200);
+					}
 				}
 			} catch (error) {
 				if (error.conflict) {
@@ -850,11 +865,11 @@
 		return notificationInputErrors.values().next().value;
 	}
 
-	function setReminderMailText(settings, audience, text) {
+	function setReminderMailText(settings, audience, language, text) {
 		const mailTemplates = { ...settings.mailTemplates };
 		const translations = { ...mailTemplates[audience] };
-		if (text === null) delete translations[reminderMailLanguage];
-		else translations[reminderMailLanguage] = text;
+		if (text === null) delete translations[language];
+		else translations[language] = text;
 		if (Object.keys(translations).length) mailTemplates[audience] = translations;
 		else delete mailTemplates[audience];
 
@@ -865,11 +880,16 @@
 	}
 
 	function getReminderMailChanges(previousSettings, draftSettings) {
-		const edits = new Map();
+		const edits = {};
 		for (const audience of Object.keys(reminderMailLabels)) {
-			const previousText = previousSettings?.mailTemplates?.[audience]?.[reminderMailLanguage];
-			const draftText = draftSettings.mailTemplates?.[audience]?.[reminderMailLanguage];
-			if (draftText !== previousText) edits.set(audience, draftText ?? null);
+			const previous = previousSettings?.mailTemplates?.[audience] ?? {};
+			const draft = draftSettings.mailTemplates?.[audience] ?? {};
+			const languages = new Set([...Object.keys(previous), ...Object.keys(draft)]);
+			for (const language of languages) {
+				if (draft[language] !== previous[language]) {
+					(edits[audience] ??= {})[language] = draft[language] ?? null;
+				}
+			}
 		}
 		return edits;
 	}
@@ -880,11 +900,7 @@
 			delete settings.mailTemplates;
 			const previousSettings = previousRules.get(rule.id)?.missingEntryReminders;
 			const edits = getReminderMailChanges(previousSettings, rule.missingEntryReminders);
-			if (edits.size) {
-				settings.mailTemplates = Object.fromEntries(
-					Array.from(edits, ([audience, text]) => [audience, { [reminderMailLanguage]: text }])
-				);
-			}
+			if (Object.keys(edits).length) settings.mailTemplates = edits;
 			return { ...rule, missingEntryReminders: settings };
 		});
 	}
@@ -920,8 +936,11 @@
 							}
 						}
 					}
-					for (const [audience, text] of getReminderMailChanges(previous.missingEntryReminders, draft.missingEntryReminders)) {
-						merged.missingEntryReminders = setReminderMailText(merged.missingEntryReminders, audience, text);
+					const mailEdits = getReminderMailChanges(previous.missingEntryReminders, draft.missingEntryReminders);
+					for (const [audience, translations] of Object.entries(mailEdits)) {
+						for (const [language, text] of Object.entries(translations)) {
+							merged.missingEntryReminders = setReminderMailText(merged.missingEntryReminders, audience, language, text);
+						}
 					}
 					merged.missingEntryReminders.enabled = merged.missingEntryReminders.notifyEmployees || merged.missingEntryReminders.notifyHr;
 					return merged;
@@ -1031,16 +1050,21 @@
 			const ruleId = button.closest('.ts-rule').dataset.ruleId;
 			const audience = button.dataset.editReminderMail;
 			const rule = accessRules.find(rule => rule.id === ruleId);
+			if (!rule) return;
 			window.Timesheet?.config?.openNotificationMailEditor?.({
 				mode: 'reminder',
 				label: t('timesheet', reminderMailLabels[audience]),
+				key: audience,
+				language: reminderMailLanguage,
 				original: reminderMailEditor.originals[audience],
-				text: rule.missingEntryReminders.mailTemplates?.[audience]?.[reminderMailLanguage],
+				text(language) {
+					return rule.missingEntryReminders.mailTemplates?.[audience]?.[language] ?? null;
+				},
 				maxLength: reminderMailEditor.maxLength,
-				apply(text) {
+				apply(language, text) {
 					updateRule(ruleId, rule => ({
 						...rule,
-						missingEntryReminders: setReminderMailText(rule.missingEntryReminders, audience, text)
+						missingEntryReminders: setReminderMailText(rule.missingEntryReminders, audience, language, text)
 					}));
 					updateNotificationSaveButton();
 				}

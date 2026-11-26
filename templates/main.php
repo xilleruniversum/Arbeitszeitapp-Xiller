@@ -195,7 +195,7 @@ if ($tourEnabled) {
 						<label for="hr-employee-filter-mode"><?php p($l->t('Show employees')); ?></label>
 						<select id="hr-employee-filter-mode">
 							<option value="all"><?php p($l->t('All employees')); ?></option>
-							<option value="active"><?php p($l->t('Active employees')); ?></option>
+							<option value="active" selected><?php p($l->t('Active employees')); ?></option>
 							<option value="inactive"><?php p($l->t('Inactive employees')); ?></option>
 							<option value="freelancers"><?php p($l->t('Freelancers')); ?></option>
 						</select>
@@ -206,32 +206,106 @@ if ($tourEnabled) {
 							<h5 id="hr-stats-heading"><?php p($l->t('Statistics')); ?></h5>
 							<button type="button" id="hr-stats-close" aria-label="<?php p($l->t('Close')); ?>">&#215;</button>
 						</div>
-						<dl class="hr-stats">
-							<div>
-								<dt><?php p($l->t('Total hours of employees (this Month)')); ?></dt>
-								<dd id="hr-stat-total-hours">-</dd>
+						<div class="hr-stats-controls">
+							<div class="hr-stats-period">
+								<label for="hr-stats-period"><?php p($l->t('Period')); ?></label>
+								<select id="hr-stats-period">
+									<option value="monthToDate"><?php p($l->t('This month')); ?></option>
+									<option value="yearToDate"><?php p($l->t('This year')); ?></option>
+									<option value="previousYear"><?php p($l->t('Previous year')); ?></option>
+									<option value="custom" selected><?php p($l->t('Custom period')); ?></option>
+								</select>
 							</div>
-							<div>
-								<dt><?php p($l->t('Employees with overtime')); ?></dt>
-								<dd id="hr-stat-employees-overtime">-</dd>
+							<div id="hr-stats-custom" class="hr-stats-custom" hidden>
+								<div>
+									<label for="hr-stats-from"><?php p($l->t('From')); ?></label>
+									<input type="date" id="hr-stats-from" required>
+								</div>
+								<div>
+									<label for="hr-stats-to"><?php p($l->t('To')); ?></label>
+									<input type="date" id="hr-stats-to" required>
+								</div>
 							</div>
-							<div>
-								<dt><?php p($l->t('Employees with negative overtime')); ?></dt>
-								<dd id="hr-stat-employees-negative">-</dd>
+						</div>
+						<p id="hr-stats-status" class="hr-stats-status" role="status"
+							data-empty-message="<?php p($l->t('No complete time entries in this period.')); ?>"
+							data-invalid-period-message="<?php p($l->t('Select a valid period up to today.')); ?>"
+							data-employee-load-error-message="<?php p($l->t('Employee list could not be loaded.')); ?>"
+							data-no-employees-message="<?php p($l->t('No employees match the current filters.')); ?>"
+							data-employee-loading-message="<?php p($l->t('Loading employees…')); ?>"
+							data-loading-message="<?php p($l->t('Loading statistics…')); ?>"
+							data-error-message="<?php p($l->t('Statistics could not be loaded.')); ?>"></p>
+						<button type="button" id="hr-stats-retry" hidden><?php p($l->t('Retry')); ?></button>
+						<div id="hr-stats-results" hidden>
+							<p id="hr-stats-range" class="hr-stats-range"></p>
+							<dl class="hr-stats-totals">
+								<div>
+									<dt><?php p($l->t('Actual hours')); ?></dt>
+									<dd id="hr-stats-actual">–</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Target hours')); ?></dt>
+									<dd id="hr-stats-target">–</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Difference')); ?></dt>
+									<dd id="hr-stats-difference">–</dd>
+								</div>
+							</dl>
+							<p class="hr-stats-target-note"><?php p($l->t('Target based on current settings')); ?></p>
+							<p id="hr-stats-holiday-warning" class="hr-stats-holiday-warning" hidden><?php p($l->t('Some holiday data is unavailable. For the affected dates, target hours are calculated without holiday adjustments.')); ?></p>
+							<div class="hr-stats-chart-heading" aria-hidden="true">
+								<span><?php p($l->t('Hours')); ?></span>
+								<ul class="hr-stats-chart-legend">
+									<li><span class="hr-stats-chart-actual"></span><?php p($l->t('Actual hours')); ?></li>
+									<li><span class="hr-stats-chart-target"></span><?php p($l->t('Target hours')); ?></li>
+								</ul>
 							</div>
-							<div>
-								<dt><?php p($l->t('Total overtime')); ?></dt>
-								<dd id="hr-stat-total-overtime">-</dd>
+							<div class="hr-stats-chart-scroll" role="region" aria-label="<?php p($l->t('Actual and target hours')); ?>" tabindex="0">
+								<div id="hr-stats-chart" class="hr-stats-chart" aria-hidden="true"></div>
 							</div>
-							<div>
-								<dt><?php p($l->t('Total negative overtime')); ?></dt>
-								<dd id="hr-stat-total-negative">-</dd>
-							</div>
-							<div>
-								<dt><?php p($l->t('Sum of +/- overtimes')); ?></dt>
-								<dd id="hr-stat-sum-overtimes">-</dd>
-							</div>
-						</dl>
+							<details class="hr-stats-disclosure">
+								<summary><?php p($l->t('Show values as a table')); ?></summary>
+								<div class="hr-stats-table-scroll" role="region" aria-label="<?php p($l->t('Actual and target hours')); ?>" tabindex="0">
+									<table class="hr-stats-values" aria-label="<?php p($l->t('Actual and target hours')); ?>">
+										<thead>
+											<tr>
+												<th scope="col"><?php p($l->t('Period')); ?></th>
+												<th scope="col"><?php p($l->t('Actual hours')); ?></th>
+												<th scope="col"><?php p($l->t('Target hours')); ?></th>
+												<th scope="col"><?php p($l->t('Difference')); ?></th>
+											</tr>
+										</thead>
+										<tbody id="hr-stats-table-body"></tbody>
+									</table>
+								</div>
+							</details>
+						</div>
+						<details class="hr-stats-disclosure">
+							<summary><?php p($l->t('Current hour balances')); ?></summary>
+							<dl class="hr-stats">
+								<div>
+									<dt><?php p($l->t('Employees with overtime')); ?></dt>
+									<dd id="hr-stat-employees-overtime">-</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Employees with negative overtime')); ?></dt>
+									<dd id="hr-stat-employees-negative">-</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Total overtime')); ?></dt>
+									<dd id="hr-stat-total-overtime">-</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Total negative overtime')); ?></dt>
+									<dd id="hr-stat-total-negative">-</dd>
+								</div>
+								<div>
+									<dt><?php p($l->t('Sum of +/- overtimes')); ?></dt>
+									<dd id="hr-stat-sum-overtimes">-</dd>
+								</div>
+							</dl>
+						</details>
 					</section>
 					<p id="hr-employee-count" class="hr-employee-count" role="status"></p>
 					<p id="hr-employee-list-message" class="hr-employee-list-message" role="status"></p>

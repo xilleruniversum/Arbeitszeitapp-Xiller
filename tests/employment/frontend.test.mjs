@@ -7,7 +7,9 @@ import vm from 'node:vm';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const statusSource = readFileSync(resolve(root, 'js/timesheet-employment-status.js'), 'utf8');
-const hrSource = readFileSync(resolve(root, 'js/timesheet-hr-dashboard-v5.js'), 'utf8');
+const hrSource = readFileSync(resolve(root, 'js/timesheet-hr-dashboard-v8.js'), 'utf8');
+const mainTemplate = readFileSync(resolve(root, 'templates/main.php'), 'utf8');
+const statisticsStatusTemplate = mainTemplate.match(/<p id="hr-stats-status"[\s\S]*?<\/p>/)[0];
 const copy = value => JSON.parse(JSON.stringify(value));
 const flush = () => new Promise(setImmediate);
 
@@ -21,7 +23,7 @@ const employees = [
 ];
 
 // Exercise real status and HR handlers while replacing only the DOM, time and transport.
-async function openApp({ available = true, respond = null, records = employees, now = '2026-11-20T12:00:00Z', accountLanguage = null, browserLanguage = 'en-GB' } = {}) {
+async function openApp({ available = true, respond = null, records = employees, now = '2026-11-20T12:00:00Z', accountLanguage = null, serverLanguage = accountLanguage, browserLanguage = 'en-GB' } = {}) {
 	const elements = new Map();
 	const accountTranslations = {};
 	const documentEvents = new Map();
@@ -31,7 +33,7 @@ async function openApp({ available = true, respond = null, records = employees, 
 	class Element {
 		constructor(tagName = 'div', id = '') {
 			this.tagName = tagName.toUpperCase(); this.id = id;
-			this.children = []; this.parentElement = null; this.dataset = {}; this.style = {};
+			this.children = []; this.parentElement = null; this.dataset = {}; this.style = { setProperty(name, value) { this[name] = value; } };
 			this.className = ''; this.textContent = ''; this.value = ''; this.checked = false; this.disabled = false; this.hidden = false;
 			this.attributes = new Map(); this.listeners = new Map();
 			this.classList = {
@@ -71,6 +73,7 @@ async function openApp({ available = true, respond = null, records = employees, 
 	Object.assign(app.dataset, { employmentStatusAvailable: String(available), employmentIsActive: 'true', freelancerMode: 'false', employmentStatusRevision: 'alice-1' });
 	for (const id of ['freelancer-mode-switch', 'freelancer-mode-feedback', 'hr-employment-status', 'hr-employment-status-feedback', 'hr-employee-freelancer', 'hr-employee-count', 'hr-employee-list-message', 'hr-employee-list-retry', 'hr-employee-filter-button', 'hr-employee-filter-popup', 'hr-employee-search', 'hr-employee-filter-mode', 'hr-employee-filter-close', 'hr-employee-filter-clear', 'hr-back-button']) element(id.includes('switch') || id.includes('search') ? 'input' : 'div', id, app);
 	elements.get('hr-employment-status').tagName = 'SPAN';
+	// Simulate a previously selected value restored by the browser.
 	elements.get('hr-employee-filter-mode').value = 'all';
 	elements.get('hr-employee-filter-popup').hidden = true;
 	elements.get('freelancer-mode-switch').className = 'ts-freelancer-toggle-switch';
@@ -80,11 +83,30 @@ async function openApp({ available = true, respond = null, records = employees, 
 	const list = element('tbody', 'hr-userlist', listSection);
 	const detail = element('div', 'hr-user-entries', hrTab); detail.className = 'ts-hr-section'; detail.style.display = 'none';
 	const title = element('h4', 'hr-user-title', detail); element('span', '', title);
-	for (const id of ['hr-stat-total-hours', 'hr-stat-total-overtime', 'hr-stat-employees-overtime', 'hr-stat-total-negative', 'hr-stat-employees-negative', 'hr-stat-sum-overtimes']) element('span', id, app);
+	element('button', 'hr-stats-button', listSection);
+	const statistics = element('section', 'hr-stats-section', listSection); statistics.hidden = true;
+	element('button', 'hr-stats-close', statistics);
+	element('select', 'hr-stats-period', statistics);
+	const custom = element('div', 'hr-stats-custom', statistics); custom.hidden = true;
+	element('input', 'hr-stats-from', custom); element('input', 'hr-stats-to', custom);
+	const statsStatus = element('p', 'hr-stats-status', statistics);
+	const serverTranslations = serverLanguage
+		? JSON.parse(readFileSync(resolve(root, 'l10n', serverLanguage + '.json'), 'utf8')).translations
+		: {};
+	for (const [, attribute, key] of statisticsStatusTemplate.matchAll(/data-([\w-]+)="<\?php p\(\$l->t\('([^']+)'\)\); \?>"/g)) {
+		const property = attribute.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+		statsStatus.dataset[property] = serverTranslations[key] ?? key;
+	}
+	element('button', 'hr-stats-retry', statistics).hidden = true;
+	const results = element('div', 'hr-stats-results', statistics); results.hidden = true;
+	for (const id of ['range', 'actual', 'target', 'difference', 'chart']) element('div', 'hr-stats-' + id, results);
+	element('p', 'hr-stats-holiday-warning', results).hidden = true;
+	element('tbody', 'hr-stats-table-body', results);
+	for (const id of ['hr-stat-total-overtime', 'hr-stat-employees-overtime', 'hr-stat-total-negative', 'hr-stat-employees-negative', 'hr-stat-sum-overtimes']) element('span', id, statistics);
 	class FixedDate extends Date { constructor(...values) { super(...(values.length ? values : [now])); } }
 	const minutesToText = minutes => `${minutes < 0 ? '-' : ''}${String(Math.floor(Math.abs(minutes) / 60)).padStart(2, '0')}:${String(Math.abs(minutes) % 60).padStart(2, '0')}`;
 	const context = vm.createContext({
-		document, Date: FixedDate, console: { warn() {} }, innerWidth: 1000, innerHeight: 800,
+		document, Date: FixedDate, AbortController, console: { warn() {} }, innerWidth: 1000, innerHeight: 800,
 		navigator: { language: browserLanguage },
 		OC: { L10N: { register(app, messages) { assert.equal(app, 'timesheet'); Object.assign(accountTranslations, messages); } } },
 		addEventListener() {},
@@ -120,31 +142,146 @@ async function openApp({ available = true, respond = null, records = employees, 
 	return { context, elements, requests, serverRecords, fire, list, accountTranslations, async load() { await context.Timesheet.hr.loadHrUserList(); }, rows: () => list.children, cell: (row, className) => row.querySelector(`.${className}`) };
 }
 
-test('initial reads never write; all assigned employees and their matching statistics are shown by default', async () => {
+test('initial reads never write; active employees and their matching statistics are shown by default', async () => {
 	const app = await openApp(); await app.load();
-	assert.deepEqual(app.rows().map(row => row.querySelector('.hr-load-user').dataset.user), employees.map(employee => employee.id));
-	assert.equal(app.elements.get('hr-stat-total-hours').textContent, '11:15');
+	assert.equal(app.elements.get('hr-employee-filter-mode').value, 'active');
+	assert.deepEqual(app.rows().map(row => row.querySelector('.hr-load-user').dataset.user), employees.filter(employee => employee.isActive).map(employee => employee.id));
 	assert.equal(app.elements.get('hr-stat-total-overtime').textContent, '15:00');
-	assert.equal(app.elements.get('hr-stat-total-negative').textContent, '-13:20');
-	assert.equal(app.elements.get('hr-employee-count').textContent, '6 of 6 employees');
+	assert.equal(app.elements.get('hr-stat-total-negative').textContent, '00:00');
+	assert.equal(app.elements.get('hr-employee-count').textContent, '4 of 6 employees');
 	assert.ok(app.requests.every(request => request.method === 'GET'));
 });
 
 test('all four filters, name search and clear keep rows, counts and statistics consistent', async () => {
 	const app = await openApp(); await app.load();
 	const mode = app.elements.get('hr-employee-filter-mode'); const search = app.elements.get('hr-employee-search');
-	for (const [filter, count, hours] of [['active', 4, '04:15'], ['inactive', 2, '07:00'], ['all', 6, '11:15'], ['freelancers', 2, '06:00']]) {
+	for (const [filter, count, balance] of [['active', 4, '15:00'], ['inactive', 2, '-13:20'], ['all', 6, '01:40'], ['freelancers', 2, '13:20']]) {
 		mode.value = filter; await app.fire(mode, 'change');
-		assert.equal(app.rows().length, count); assert.equal(app.elements.get('hr-stat-total-hours').textContent, hours);
+		assert.equal(app.rows().length, count); assert.equal(app.elements.get('hr-stat-sum-overtimes').textContent, balance);
 	}
 	mode.value = 'all'; await app.fire(mode, 'change'); search.value = ' eXaMpLe '; await app.fire(search, 'input');
-	assert.equal(app.rows().length, 2); assert.equal(app.elements.get('hr-stat-total-hours').textContent, '07:00');
+	assert.equal(app.rows().length, 2); assert.equal(app.elements.get('hr-stat-sum-overtimes').textContent, '-13:20');
 	await app.load(); assert.equal(app.rows().length, 2); assert.equal(search.value, ' eXaMpLe ');
+	assert.equal(mode.value, 'all');
 	mode.value = 'active'; await app.fire(mode, 'change');
 	assert.equal(app.rows().length, 0);
+	mode.value = 'inactive'; await app.fire(mode, 'change');
+	await app.load(); assert.equal(mode.value, 'inactive'); assert.equal(app.rows().length, 2);
 	await app.fire(app.elements.get('hr-employee-filter-clear'), 'click');
-	assert.equal(mode.value, 'all'); assert.equal(search.value, ''); assert.equal(app.rows().length, 6);
-	assert.equal(app.elements.get('hr-stat-total-hours').textContent, '11:15');
+	assert.equal(mode.value, 'active'); assert.equal(search.value, ''); assert.equal(app.rows().length, 4);
+	assert.equal(app.elements.get('hr-stat-sum-overtimes').textContent, '15:00');
+});
+
+function statisticsResponse(request, { actualMinutes = 540, targetMinutes = 480, hasEntries = true, holidayLookupIncomplete = false } = {}) {
+	const { period, employeeIds } = request.body;
+	const [from, to, granularity] = {
+		monthToDate: ['2026-11-01', '2026-11-20', 'day'],
+		yearToDate: ['2026-01-01', '2026-11-20', 'month'],
+		previousYear: ['2025-01-01', '2025-12-31', 'month'],
+		custom: [request.body.from, request.body.to, 'week'],
+	}[period];
+	return {
+		from, to, granularity, employeeCount: employeeIds.length, holidayLookupIncomplete,
+		totals: { actualMinutes, targetMinutes },
+		buckets: [{ from, to, actualMinutes, targetMinutes, hasEntries }],
+	};
+}
+
+test('period statistics load lazily and use the same employee selection and values in totals, chart and table', async () => {
+	const app = await openApp({ respond: request => {
+		if (request.path === '/api/hr/statistics') return statisticsResponse(request, { holidayLookupIncomplete: true });
+	} });
+	const get = key => app.elements.get('hr-stats-' + key);
+	const send = (key, type) => app.fire(get(key), type);
+	const requests = () => app.requests.filter(request => request.path === '/api/hr/statistics');
+	await app.load();
+	assert.equal(requests().length, 0);
+	await send('button', 'click');
+	assert.equal(get('period').value, 'custom');
+	assert.equal(get('custom').hidden, false);
+	assert.equal(get('from').value, '2026-11-01');
+	assert.equal(get('to').value, '2026-11-20');
+	assert.deepEqual(requests()[0].body, {
+		period: 'custom', employeeIds: ['alice', 'bob/slash', 'emma', 'frank'],
+		from: '2026-11-01', to: '2026-11-20',
+	});
+	assert.equal(requests()[0].method, 'POST');
+	assert.equal(get('results').hidden, false);
+	assert.equal(get('holiday-warning').hidden, false);
+	assert.deepEqual(['actual', 'target', 'difference'].map(key => get(key).textContent), ['09:00', '08:00', '01:00']);
+	assert.deepEqual(get('table-body').children[0].children.slice(1).map(cell => cell.textContent), ['09:00', '08:00', '01:00']);
+	assert.equal(get('chart').querySelectorAll('.hr-stats-chart-group').length, get('table-body').children.length);
+	assert.equal(get('chart').querySelector('.hr-stats-chart-actual').style['--hr-stats-bar-height'], '90%');
+	assert.equal(get('chart').querySelector('.hr-stats-chart-target').style['--hr-stats-bar-height'], '80%');
+
+	await send('close', 'click');
+	const mode = app.elements.get('hr-employee-filter-mode'); mode.value = 'all'; await app.fire(mode, 'change');
+	const search = app.elements.get('hr-employee-search'); search.value = 'example'; await app.fire(search, 'input');
+	assert.equal(requests().length, 1);
+	await send('button', 'click');
+	assert.deepEqual(requests()[1].body.employeeIds, ['carol', 'dan']);
+	search.value = 'no employee'; await app.fire(search, 'input');
+	assert.equal(requests().length, 2);
+	assert.equal(get('status').textContent, 'No employees match the current filters.');
+	assert.equal(get('results').hidden, true);
+});
+
+test('period and filter changes ignore late statistics and distinguish errors, empty results and invalid dates', async () => {
+	let settleYear;
+	const pendingYear = new Promise(resolve => { settleYear = resolve; });
+	let previousYearAttempts = 0;
+	const app = await openApp({ respond: request => {
+		if (request.path !== '/api/hr/statistics') return;
+		if (request.body.period === 'yearToDate') return pendingYear;
+		if (request.body.period === 'previousYear') {
+			if (++previousYearAttempts === 1) throw new Error('Unavailable');
+			return statisticsResponse(request, { actualMinutes: 0, targetMinutes: 0, hasEntries: false });
+		}
+		return statisticsResponse(request);
+	} });
+	const get = key => app.elements.get('hr-stats-' + key);
+	const send = (key, type) => app.fire(get(key), type);
+	const requests = () => app.requests.filter(request => request.path === '/api/hr/statistics');
+	await app.load();
+	await send('button', 'click');
+	get('period').value = 'yearToDate'; const stale = send('period', 'change');
+	assert.equal(get('results').hidden, true);
+	assert.equal(get('status').textContent, 'Loading statistics…');
+	get('period').value = 'previousYear'; await send('period', 'change');
+	assert.equal(get('status').textContent, 'Statistics could not be loaded.');
+	assert.equal(get('retry').hidden, false);
+	await send('retry', 'click');
+	assert.equal(get('status').textContent, 'No complete time entries in this period.');
+	assert.equal(get('retry').hidden, true);
+
+	get('period').value = 'custom'; await send('period', 'change');
+	assert.equal(get('custom').hidden, false);
+	assert.equal(get('from').value, '2026-11-01');
+	assert.equal(get('to').max, '2026-11-20');
+	get('from').value = '2024-02-29'; get('to').value = '2024-03-03'; await send('to', 'change');
+	assert.deepEqual(requests().at(-1).body, { period: 'custom', employeeIds: ['alice', 'bob/slash', 'emma', 'frank'], from: '2024-02-29', to: '2024-03-03' });
+	assert.match(get('range').textContent, /2024/);
+	settleYear(statisticsResponse(requests()[1], { actualMinutes: 60 }));
+	await stale;
+	assert.equal(get('actual').textContent, '09:00');
+	assert.match(get('range').textContent, /2024/);
+
+	const count = requests().length;
+	get('to').value = '2026-11-21'; await send('to', 'change');
+	get('from').value = '2025-02-29'; get('to').value = '2025-03-01'; await send('from', 'change');
+	assert.equal(requests().length, count);
+	assert.equal(get('status').textContent, 'Select a valid period up to today.');
+	assert.equal(get('results').hidden, true);
+});
+
+test('statistics uses localized statuses even with no browser catalog', async () => {
+	const app = await openApp({ serverLanguage: 'de', respond: request => {
+		if (request.path === '/api/hr/statistics') throw new Error('Unavailable');
+	} });
+	await app.load();
+	await app.fire(app.elements.get('hr-stats-button'), 'click');
+	assert.equal(app.elements.get('hr-stats-status').textContent, 'Die Statistiken konnten nicht geladen werden.');
+	assert.equal(app.elements.get('hr-stats-retry').hidden, false);
 });
 
 test('duplicate display names remain separate and freelancer identification is not color-only', async () => {
@@ -197,7 +334,9 @@ test('Berlin midnight controls warning thresholds and actual day counts across d
 test('no matches, no assignments and load failures have different visible states', async () => {
 	const app = await openApp(); await app.load(); const search = app.elements.get('hr-employee-search'); search.value = 'nobody'; await app.fire(search, 'input');
 	assert.equal(app.elements.get('hr-employee-list-message').textContent, 'No matching employees.');
-	assert.equal(app.elements.get('hr-stat-total-hours').textContent, '00:00');
+	assert.equal(app.elements.get('hr-stat-sum-overtimes').textContent, '00:00');
+	const inactiveOnly = await openApp({ records: employees.filter(employee => !employee.isActive) }); await inactiveOnly.load();
+	assert.equal(inactiveOnly.elements.get('hr-employee-list-message').textContent, 'No matching employees.');
 	const empty = await openApp({ records: [] }); await empty.load();
 	assert.equal(empty.elements.get('hr-employee-list-message').textContent, 'No employees are assigned.');
 	const failed = await openApp({ respond: request => { if (request.method === 'GET') throw new Error('Unavailable'); } }); await failed.load();
@@ -264,6 +403,7 @@ test('HR details display the selected account status without providing an activi
 
 test('updated server status changes the detail label and filters without changing any account', async () => {
 	const app = await openApp(); await app.load();
+	const mode = app.elements.get('hr-employee-filter-mode'); mode.value = 'all'; await app.fire(mode, 'change');
 	const employee = app.serverRecords[1];
 	app.context.Timesheet.employmentStatus.setHrEmployee(employee.id, employee);
 	assert.equal(app.elements.get('hr-employment-status').textContent, 'Active');
@@ -275,7 +415,7 @@ test('updated server status changes the detail label and filters without changin
 	assert.equal(app.rows().length, 6);
 	const isEmployeeRow = row => row.querySelector('.hr-load-user').dataset.user === employee.id;
 	assert.ok(app.rows().some(isEmployeeRow));
-	const mode = app.elements.get('hr-employee-filter-mode'); mode.value = 'active'; await app.fire(mode, 'change');
+	mode.value = 'active'; await app.fire(mode, 'change');
 	assert.equal(app.rows().length, 3);
 	assert.ok(!app.rows().some(isEmployeeRow));
 	mode.value = 'inactive'; await app.fire(mode, 'change');

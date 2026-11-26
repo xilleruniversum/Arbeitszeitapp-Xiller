@@ -5,6 +5,11 @@
 	if (!timesheet) return;
 	const translate = (message, parameters = {}) => t('timesheet', message, parameters);
 	let initialization;
+	let manualOpening;
+
+	function historyEnabled() {
+		return document.getElementById('timesheet-app')?.dataset.updateNotesEnabled === 'true';
+	}
 
 	function createElement(tag, className = '', text = '') {
 		const element = document.createElement(tag);
@@ -45,8 +50,8 @@
 		content.append(releaseSection);
 	}
 
-	function showHistory(notes) {
-		const previousFocus = document.activeElement;
+	function showHistory(notes, returnFocus) {
+		const previousFocus = returnFocus ?? document.activeElement;
 		const panel = createElement('aside', 'ts-update-notes-panel');
 		panel.id = 'ts-update-notes-panel';
 		panel.setAttribute('aria-labelledby', 'ts-update-notes-title');
@@ -61,7 +66,15 @@
 		closeButton.setAttribute('aria-label', translate('Close'));
 		header.append(title, closeButton);
 		const content = createElement('div', 'ts-update-notes-content');
-		[...notes.releases].reverse().forEach((release, index) => addRelease(content, release, index === 0));
+		const releases = [...notes.releases].reverse();
+		releases.slice(0, 3).forEach((release, index) => addRelease(content, release, index === 0));
+		const olderReleases = releases.slice(3);
+		if (olderReleases.length > 0) {
+			const older = createElement('details', 'ts-update-notes-older');
+			older.append(createElement('summary', '', translate('Older versions')));
+			olderReleases.forEach(release => addRelease(older, release, false));
+			content.append(older);
+		}
 		panel.append(header, content);
 
 		return new Promise((resolve, reject) => {
@@ -81,7 +94,8 @@
 				panel.remove();
 				if (restoreFocus) {
 					const focusTarget = previousFocus?.isConnected && previousFocus !== document.body
-						? previousFocus : document.getElementById('month-display');
+						? previousFocus
+						: document.querySelector('#timesheet-app .ts-tab.active') ?? document.getElementById('month-display');
 					focusTarget?.focus({ preventScroll: true });
 				}
 			}
@@ -109,28 +123,63 @@
 		});
 	}
 
-	async function loadNotes(mode) {
+	async function loadNotes(mode, returnFocus) {
 		try {
 			const notes = await timesheet.api('/api/update-notes', { method: 'POST', body: JSON.stringify({ mode }) });
 			if (mode === 'automatic') return;
 			if (!validateNotes(notes)) throw new Error('Invalid update notes response');
-			if (notes.enabled && notes.releases.length > 0) await showHistory(notes);
+			if (notes.enabled && notes.releases.length > 0) await showHistory(notes, returnFocus);
 		} catch (error) {
 			console.warn('Update notes could not be loaded:', error);
 			if (mode === 'manual') timesheet.notify(translate('The update notes could not be loaded. Please try again.'));
 		}
 	}
 
+	function openHistory(returnFocus) {
+		manualOpening ??= loadNotes('manual', returnFocus).finally(() => { manualOpening = undefined; });
+		return manualOpening;
+	}
+
+	function appPath(url) {
+		return url.pathname.replace(/\/index\.php(?=\/apps\/timesheet\/?$)/, '').replace(/\/$/, '');
+	}
+
+	function handleHistoryLink(event) {
+		if (event.defaultPrevented || event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+		const link = event.target?.closest?.('a[href]');
+		if (!link || !historyEnabled()) return;
+		const target = link.getAttribute('target')?.toLowerCase();
+		if ((target && target !== '_self') || link.getAttribute('download') !== null) return;
+
+		const current = new URL(window.location.href);
+		let destination;
+		try {
+			destination = new URL(link.getAttribute('href'), current);
+		} catch {
+			return;
+		}
+		if (destination.origin !== current.origin || appPath(destination) !== appPath(current)
+			|| destination.search !== '?update-notes=1' || destination.hash) return;
+
+		// Links still navigate normally from other Nextcloud apps and in new tabs.
+		event.preventDefault();
+		const fromBell = link.closest('#notifications, [data-app="timesheet"][data-object-type="update_notes"]');
+		const bellTrigger = fromBell && document.querySelector('#notifications .header-menu__trigger[aria-expanded="true"]');
+		bellTrigger?.click();
+		void openHistory(bellTrigger || link);
+	}
+
 	async function initialize() {
-		const root = document.getElementById('timesheet-app');
-		if (root?.dataset.updateNotesEnabled !== 'true') return;
-		if (takeManualOpenRequest()) {
-			await loadNotes('manual');
+		if (!historyEnabled()) return;
+		if (takeManualOpenRequest() || manualOpening) {
+			await openHistory();
 		} else {
 			// Refresh the native bell without delaying time entry or the introduction.
 			void loadNotes('automatic');
 		}
 	}
+
+	document.addEventListener('click', handleHistoryLink, true);
 
 	timesheet.updateNotes = {
 		init() {

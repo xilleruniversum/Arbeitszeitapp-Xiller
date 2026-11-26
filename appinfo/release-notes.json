@@ -1,6 +1,32 @@
 {
 	"releases": [
 		{
+			"version": "1.4.7",
+			"sections": [
+				{
+					"title": "New features",
+					"items": [
+						"The HR statistics view shows actual and target hours and the difference for a selected period. A bar chart and an expandable table show how hours change over time. The custom period defaults to the start of the month through today. This month, This year and Previous year are also available. The statistics use the employee list's status filter and name search. Current hour balances are available separately.",
+						"Reminder emails and the personal weekly summary can be edited for each language and reset to the original text for that language. Emails are sent in the recipient's Nextcloud account language."
+					]
+				},
+				{
+					"title": "Improvements",
+					"items": [
+						"The HR overview shows active employees by default when opened or when the filters are reset.",
+						"Version history opens in the current app view without reloading the page. The three latest versions are available directly. Earlier entries can be expanded under Older versions.",
+						"When HR group rules are saved, a clear confirmation now appears at the bottom centre of the screen."
+					]
+				},
+				{
+					"title": "Bug fixes",
+					"items": [
+						"The HR employee list now loads on PostgreSQL when the weekend and public holiday rule is enabled."
+					]
+				}
+			]
+		},
+		{
 			"version": "1.4.6",
 			"sections": [
 				{

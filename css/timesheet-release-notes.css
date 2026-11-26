@@ -64,12 +64,12 @@
 }
 
 .ts-update-notes-panel .ts-update-notes-close:hover,
-.ts-update-notes-release summary:hover {
+:is(.ts-update-notes-release, .ts-update-notes-older) > summary:hover {
 	background: var(--color-background-hover, #ededed);
 }
 
 .ts-update-notes-panel .ts-update-notes-close:focus-visible,
-.ts-update-notes-release summary:focus-visible {
+:is(.ts-update-notes-release, .ts-update-notes-older) > summary:focus-visible {
 	outline: 2px solid var(--color-main-text, #222);
 	outline-offset: -2px;
 }
@@ -80,11 +80,12 @@
 	overscroll-behavior: contain;
 }
 
-.ts-update-notes-release + .ts-update-notes-release {
+.ts-update-notes-release + .ts-update-notes-release,
+.ts-update-notes-older {
 	border-block-start: 1px solid var(--color-border, #ccc);
 }
 
-.ts-update-notes-release summary {
+:is(.ts-update-notes-release, .ts-update-notes-older) > summary {
 	box-sizing: border-box;
 	min-block-size: 44px;
 	padding: 11px 16px;
@@ -94,6 +95,11 @@
 
 .ts-update-notes-release-content {
 	padding: 0 16px 14px;
+}
+
+.ts-update-notes-older .ts-update-notes-release > summary,
+.ts-update-notes-older .ts-update-notes-release-content {
+	padding-inline-start: 28px;
 }
 
 .ts-update-notes-release-content h3 {

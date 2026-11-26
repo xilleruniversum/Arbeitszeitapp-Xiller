@@ -314,7 +314,7 @@ test('administrator assignment editor retains rule creation, group constraints a
 	// The role split intentionally differs from the original combined settings page.
 	const result = await (async (root) => {
 		// The unchanged reference checkout retains its original asset and root names.
-		const settingsScript = root === candidateRoot ? 'timesheet-rule-settings-v4.js' : 'admin.js';
+		const settingsScript = root === candidateRoot ? 'timesheet-rule-settings-v6.js' : 'admin.js';
 		const settingsRootId = root === candidateRoot ? 'timesheet-hr-settings' : 'timesheet-admin-settings';
 		const events = new Map();
 		const requests = [];

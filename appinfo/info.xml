@@ -28,6 +28,7 @@ Timesheet gives employees a simple way to record their working hours. The app ha
 ## Overview for HR
 
 - **Employee overview:** View balances, last complete entries and warnings in one place.
+- **HR statistics:** Compare actual and target hours over a chosen period with a bar chart and a detailed table.
 - **Individual view:** Open, edit and export an employee's working time entries.
 - **Personal settings:** Set the daily target and public holiday region for each employee.
 
@@ -69,6 +70,7 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 ## Übersicht für die Personalabteilung
 
 - **Mitarbeitendenübersicht:** Stundenstände, letzte vollständige Einträge und Warnhinweise gesammelt anzeigen.
+- **HR-Statistik:** Ist- und Sollstunden für einen wählbaren Zeitraum im Balkendiagramm und in der Tabelle vergleichen.
 - **Einzelansicht:** Arbeitszeiten einer Person aufrufen, bearbeiten und exportieren.
 - **Persönliche Vorgaben:** Tägliche Sollzeit und Feiertagsregion je Person festlegen.
 
@@ -95,7 +97,7 @@ Mit Timesheet erhalten Mitarbeitende eine einfache Möglichkeit, ihre Arbeitszei
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_hrOverview.png</screenshot>
 	<screenshot>https://nextcloud-agentur.de/timesheet/timesheet_englishSupport.png</screenshot>
 
-	<version>1.4.6</version>
+	<version>1.4.7</version>
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="dgu@xiller.com">David Gun (www.xiller-academy.de)</author>
 	<category>tools</category>

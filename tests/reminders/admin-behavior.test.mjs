@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const hrSettingsSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-rule-settings-v4.js'), 'utf8');
+const hrSettingsSource = readFileSync(resolve(repositoryRoot, 'js/timesheet-rule-settings-v6.js'), 'utf8');
 const copy = value => JSON.parse(JSON.stringify(value));
 const rulesRevision = value => String(value).padStart(64, '0');
 
@@ -100,11 +100,20 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 	}
 
 	for (const id of ['timesheet-hr-settings', 'timesheet-hr-rules', scope === 'assignments' ? 'timesheet-add-hr-rule' : 'timesheet-specialdays-overtime']) element(id);
+	if (scope === 'assignments') element('timesheet-assignment-saved', 'p');
 	elements.get('timesheet-hr-settings').dataset = { settingsScope: scope, rulesRevision: rulesRevision(0), policySection };
 	if (policySection === 'notifications') {
 		elements.delete('timesheet-specialdays-overtime');
 		element('timesheet-notification-rule', 'select');
 		element('hr-notification-save-error', 'p');
+		if (peopleOptions.openNotificationMailEditor) {
+			element('ts-reminder-mail-title', 'h2').textContent = 'Edit email text';
+			element('ts-reminder-mail-editor-data').textContent = JSON.stringify({
+				language,
+				originals: { employee: 'Original {entries}', hr: 'Original HR {entries}' },
+				maxLength: 4000,
+			});
+		}
 	}
 	element('timesheet-all-groups-data').textContent = JSON.stringify(peopleOptions.groups ?? ['HR', 'Staff']);
 	element('timesheet-hr-rules-data').textContent = JSON.stringify(initialRules);
@@ -119,13 +128,13 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 			getElementById: id => elements.get(id),
 			createElement: tag => element(`generated-${++generatedElementId}-${tag}`, tag),
 		},
-		Timesheet: {},
+		Timesheet: { config: { openNotificationMailEditor: peopleOptions.openNotificationMailEditor } },
 		Date: FixedDate,
 		Intl,
 		FormData,
 		URLSearchParams,
 		AbortController,
-		setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
+		setTimeout: (callback, delay) => { const id = ++timerId; timers.set(id, { callback, delay }); return id; },
 		clearTimeout: id => timers.delete(id),
 		crypto: { randomUUID: () => 'new-rule' },
 		t: (_app, message) => translations[message] ?? message,
@@ -164,7 +173,7 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 	if (language === 'de' || language === 'de_DE') {
 		vm.runInContext(readFileSync(resolve(repositoryRoot, `l10n/${language}.js`), 'utf8'), context, { filename: `${language}.js` });
 	}
-	vm.runInContext(hrSettingsSource, context, { filename: 'timesheet-rule-settings-v4.js' });
+	vm.runInContext(hrSettingsSource, context, { filename: 'timesheet-rule-settings-v6.js' });
 	await new Promise(setImmediate);
 
 	return {
@@ -184,9 +193,12 @@ async function openHrSettings(initialRules = [{ id: 'one', hrGroups: ['HR'], use
 			const input = this.picker(purpose).input;
 			input.value = query;
 			this.type(input);
-			const pending = [...timers.values()];
-			timers.clear();
-			await Promise.all(pending.map(callback => callback()));
+			await this.runTimers();
+		},
+		async runTimers(delay) {
+			const pending = [...timers].filter(([, timer]) => delay === undefined || timer.delay === delay);
+			for (const [id] of pending) timers.delete(id);
+			await Promise.all(pending.map(([, timer]) => timer.callback()));
 		},
 		async focusSearch(purpose) {
 			const input = this.picker(purpose).input;
@@ -808,6 +820,41 @@ test('admin saves active and inactive groups independently and reserves each gro
 	assert.equal(dropdown('userGroups').children.find(option => option.value === 'Alumni').disabled, false);
 });
 
+test('admin group confirmation follows the latest successful save and disappears automatically', async () => {
+	let releaseFirst;
+	let releaseSecond;
+	const admin = await openAdminSettings(undefined, async (request, count) => {
+		if (count === 1) await new Promise(resolve => { releaseFirst = resolve; });
+		if (count === 2) await new Promise(resolve => { releaseSecond = resolve; });
+		if (count === 3) return { ok: false, status: 500, text: async () => 'Save failed' };
+		return saveResponse(request);
+	}, 'de', { groups: ['HR', 'Staff', 'Other HR', 'More HR'] });
+	const toast = admin.elements.get('timesheet-assignment-saved');
+	assert.equal(toast.textContent, '');
+
+	const first = admin.addHrGroup('Other HR');
+	await new Promise(setImmediate);
+	assert.equal(toast.textContent, '', 'Pending saves have no success confirmation');
+	const latest = admin.addHrGroup('More HR');
+	releaseFirst();
+	await first;
+	await new Promise(setImmediate);
+	assert.equal(toast.textContent, '', 'A superseded save cannot confirm the latest edit');
+	releaseSecond();
+	await latest;
+	assert.equal(toast.textContent, 'Gespeichert!');
+
+	const failed = admin.removeHrGroup('Other HR');
+	assert.equal(toast.textContent, '', 'A new edit clears the previous confirmation immediately');
+	await failed;
+	assert.equal(toast.textContent, '');
+
+	await admin.removeHrGroup('More HR');
+	assert.equal(toast.textContent, 'Gespeichert!');
+	await admin.runTimers(2200);
+	assert.equal(toast.textContent, '');
+});
+
 test('administrator and HR forms expose only their own controls and never save on load', async () => {
 	const admin = await openAdminSettings();
 	assert.equal(admin.card().querySelectorAll('.ts-rule-select').length, 3);
@@ -835,6 +882,7 @@ test('administrator and HR forms expose only their own controls and never save o
 	assert.ok(hr.card().querySelector('.ts-reminder-settings'));
 	assert.ok(hr.card().querySelector('.ts-balance-settings'));
 	assert.equal(hr.elements.has('timesheet-add-hr-rule'), false);
+	assert.equal(hr.elements.has('timesheet-assignment-saved'), false);
 	assert.ok(hr.elements.has('timesheet-specialdays-overtime'));
 	assert.equal(hr.otherRequests.length, 1);
 	assert.equal(hr.requests.length + admin.requests.length, 0);
@@ -863,6 +911,7 @@ for (const scope of ['assignments', 'policy']) {
 		releaseFirst();
 		await Promise.all([first, queued]);
 		assert.equal(app.requests.length, 1, 'Queued edits from the stale snapshot are not replayed');
+		if (scope === 'assignments') assert.equal(app.elements.get('timesheet-assignment-saved').textContent, '');
 		assert.deepEqual(app.messages, ['Saving failed']);
 		assert.equal(control().value, scope === 'assignments' ? '4' : '9');
 		control().value = '6';
@@ -1108,6 +1157,48 @@ test('group notification help is attached to its controls and follows the select
 	checkRule('second');
 	assert.equal(app.requests.length, 0);
 	assert.equal(app.searchRequests.length, 0);
+});
+
+test('group email drafts and conflict retries only change the selected languages', async () => {
+	const rule = {
+		id: 'first', hrGroups: ['HR'], userGroups: ['Staff'],
+		missingEntryReminders: {
+			mailTemplates: {
+				employee: { de: 'Old German {entries}', fr: 'Old French {entries}' },
+				hr: { nl: 'Old Dutch HR {entries}' },
+			},
+		},
+	};
+	const concurrentRule = copy(rule);
+	concurrentRule.missingEntryReminders.mailTemplates.employee.fr = 'New French {entries}';
+	concurrentRule.missingEntryReminders.mailTemplates.hr.nl = 'New Dutch HR {entries}';
+	let editor;
+	const app = await openHrSettings([rule], (request, count) => count === 1 ? ({
+		ok: false, status: 409,
+		text: async () => JSON.stringify({ code: 'rules_conflict', rules: [concurrentRule], rulesRevision: rulesRevision(50) }),
+	}) : saveResponse(request), 'de', { openNotificationMailEditor: panel => { editor = panel; } }, 'policy', 'notifications');
+	await app.click(app.card().querySelector('[data-edit-reminder-mail="employee"]'));
+	assert.equal(editor.language, 'de');
+	assert.equal(editor.key, 'employee');
+	assert.equal(editor.text('fr'), 'Old French {entries}');
+	assert.equal(editor.text('en_GB'), null);
+	editor.apply('en_GB', 'Custom English {entries}');
+	editor.apply('de', null);
+	assert.equal(app.notificationRules.hasChanges(), true);
+
+	const expectedPatch = { employee: { de: null, en_GB: 'Custom English {entries}' } };
+	await assert.rejects(app.notificationRules.save());
+	assert.deepEqual(app.requests[0].rules[0].missingEntryReminders.mailTemplates, expectedPatch);
+	await app.click(app.card().querySelector('[data-edit-reminder-mail="employee"]'));
+	assert.equal(editor.text('fr'), 'New French {entries}');
+	assert.equal(editor.text('en_GB'), 'Custom English {entries}');
+	assert.equal(editor.text('de'), null);
+	await app.click(app.card().querySelector('[data-edit-reminder-mail="hr"]'));
+	assert.equal(editor.text('nl'), 'New Dutch HR {entries}');
+
+	await app.notificationRules.save();
+	assert.deepEqual(app.requests[1].rules[0].missingEntryReminders.mailTemplates, expectedPatch);
+	assert.equal(app.requests[1].rulesRevision, rulesRevision(50));
 });
 
 test('a conflict retains a still-present rule selection and falls back when that rule was removed', async () => {

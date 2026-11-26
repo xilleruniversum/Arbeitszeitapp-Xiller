@@ -43,6 +43,9 @@ namespace OCP {
 namespace OCP\L10N {
 	interface IFactory {
 		public function getLanguageIterator(\OCP\IUser $user): \Iterator;
+		public function getLanguages(): array;
+		public function languageExists($app, $lang);
+		public function findGenericLanguage(?string $appId = null): string;
 		public function get(string $app, ?string $language = null): \OCP\IL10N;
 	}
 }
@@ -230,6 +233,9 @@ namespace {
 			return $this->language;
 		}
 		public function t(string $text, array $parameters = []): string {
+			if ($this->language === 'fr' && $text === 'Too much overtime:') {
+				$text = 'Trop d’heures supplémentaires :';
+			}
 			if ($text === 'Hello %1$s,') {
 				$text = match ($this->language) {
 					'de_DE' => 'Hallo %1$s,',
@@ -243,6 +249,21 @@ namespace {
 	class TourMailLanguageFixture implements \OCP\L10N\IFactory {
 		public array $requestedLanguages = [];
 		public function __construct(private string $deliveryLanguage = 'en', private ?string $forcedLanguage = null) {
+		}
+		public function getLanguages(): array {
+			return [
+				'commonLanguages' => [['code' => 'en', 'name' => 'English (US)']],
+				'otherLanguages' => [
+					['code' => 'fr', 'name' => 'Français'],
+					['code' => 'fy', 'name' => 'Frysk'],
+				],
+			];
+		}
+		public function languageExists($app, $lang): bool {
+			return $lang !== 'fy';
+		}
+		public function findGenericLanguage(?string $appId = null): string {
+			return 'en';
 		}
 		public function getLanguageIterator(\OCP\IUser $user): \Iterator {
 			return new \ArrayIterator([$this->deliveryLanguage]);
@@ -340,8 +361,8 @@ namespace {
 			$expectSame(false, in_array('timesheet-guided-tour-v6', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-main-v2', \OCP\Util::$scripts, true));
 			$expectSame(true, in_array('timesheet-header', \OCP\Util::$scripts, true));
-			$expectedStyles = ['timesheet-layout-v8'];
-			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v5', 'timesheet-hr-settings-v8']);
+			$expectedStyles = ['timesheet-layout-v9'];
+			if ($isHr) $expectedStyles = array_merge($expectedStyles, ['timesheet-history-v5', 'timesheet-hr-settings-v10']);
 			$expectedStyles[] = 'timesheet-release-notes';
 			$expectedStyles[] = 'timesheet-help-panels-v3';
 			$expectSame($expectedStyles, \OCP\Util::$styles);
@@ -579,7 +600,7 @@ namespace {
 		$expectSame(true, array_search('timesheet-mail-help-v2', \OCP\Util::$scripts, true) < array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true));
 		$expectSame(true, array_search('timesheet-tour-launcher', \OCP\Util::$scripts, true) < array_search('timesheet-guided-tour-v6', \OCP\Util::$scripts, true));
 		$expectSame(true, array_search('timesheet-guided-tour-v6', \OCP\Util::$scripts, true) < array_search('timesheet-main-v2', \OCP\Util::$scripts, true));
-		$expectSame(['timesheet-layout-v8', 'timesheet-release-notes', 'timesheet-help-panels-v3', 'timesheet-tour'], \OCP\Util::$styles);
+		$expectSame(['timesheet-layout-v9', 'timesheet-release-notes', 'timesheet-help-panels-v3', 'timesheet-tour'], \OCP\Util::$styles);
 		$expectSame([], $logger->warnings);
 	});
 	$test('A tour-state read failure leaves the main timesheet renderable', static function () use ($fixture, $expectSame): void {
@@ -618,6 +639,12 @@ namespace {
 			$expectSame([], $logger->warnings);
 			if ($isHr) {
 				$expectSame('de_DE', $weekly['language']);
+				$expectSame([
+					['code' => 'en', 'name' => 'English (US)'],
+					['code' => 'fr', 'name' => 'Français'],
+					['code' => 'fy', 'name' => 'Frysk'],
+					['code' => 'de_DE', 'name' => 'de_DE'],
+				], $weekly['languages']);
 				$expectSame(4000, $weekly['maxLength']);
 				$expectSame("No complete entry for at least {threshold} days:\n{entries}", $weekly['originals']['noEntry']);
 				$expectSame("Too much overtime:\n{entries}", $weekly['originals']['overtime']);
@@ -656,6 +683,36 @@ namespace {
 			$expectSame($deliveryLanguage, $reminder['language']);
 			$expectSame($deliveryLanguage, $parameters['weeklyMailEditor']['language']);
 			$expectSame(true, str_starts_with($reminder['originals']['employee'], $previewGreeting));
+		}
+	});
+	$test('Mail originals are read-only and selected by the requested account language', static function () use ($fixture, $expectSame): void {
+		foreach ([false, true] as $isHr) {
+			[, $store, $config, $locks, $session, $hrService, $groupManager] = $fixture('alice', $isHr);
+			$languages = new TourMailLanguageFixture('de_DE');
+			$page = new PageController(
+				'timesheet', new TourRequestFixture(), $hrService, new UserPreferencesStore($config, $locks),
+				$session, $store, new TourLoggerFixture(), $groupManager, new AbsenceCommentCatalog(),
+				new TourTranslationFixture('de_DE'), new EmploymentStatusStore($config, $locks, new TourTimeFixture(), $groupManager),
+				new \OCA\Timesheet\Settings\RuleSettingsForm(), $languages,
+			);
+			$response = $page->getNotificationMailOriginals('fr');
+			if (!$isHr) {
+				$expectSame(403, $response->getStatus());
+				$expectSame([], $languages->requestedLanguages);
+				continue;
+			}
+
+			$expectSame(200, $response->getStatus());
+			$expectSame("Trop d’heures supplémentaires :\n{entries}", $response->getData()['weekly']['overtime']);
+			$expectSame(true, str_starts_with($response->getData()['reminder']['employee'], 'Bonjour {recipient},'));
+			$expectSame(1, substr_count($response->getData()['reminder']['hr'], '{entries}'));
+			$expectSame(200, $page->getNotificationMailOriginals('de_DE')->getStatus());
+			$expectSame(200, $page->getNotificationMailOriginals('fy')->getStatus());
+			foreach (['zz', '../en', ['fr'], null] as $invalidLanguage) {
+				$expectSame(400, $page->getNotificationMailOriginals($invalidLanguage)->getStatus());
+			}
+			$expectSame([['timesheet', 'fr'], ['timesheet', 'de_DE'], ['timesheet', 'en']], $languages->requestedLanguages);
+			$expectSame([], $config->writes);
 		}
 	});
 	$test('Page attributes expose only employee introduction state', static function () use ($expectSame): void {

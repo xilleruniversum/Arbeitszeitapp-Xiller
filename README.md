@@ -42,7 +42,7 @@ Feiertage werden für deutsche Bundesländer unterstützt. E-Mail-Hinweise gehen
 
 ## Voraussetzungen
 
-Für Version 1.4.6 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompatibilität vorgesehen:
+Für Version 1.4.7 ist in den [App-Metadaten](appinfo/info.xml) folgende Kompatibilität vorgesehen:
 
 - Nextcloud 30–34
 - PHP 8.2–8.5
@@ -112,7 +112,7 @@ Public holidays are supported for German federal states. Email notifications cur
 
 ## Requirements
 
-The [app metadata](appinfo/info.xml) declares the following compatibility for version 1.4.6:
+The [app metadata](appinfo/info.xml) declares the following compatibility for version 1.4.7:
 
 - Nextcloud 30–34
 - PHP 8.2–8.5

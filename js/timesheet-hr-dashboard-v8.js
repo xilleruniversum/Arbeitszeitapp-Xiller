@@ -38,10 +38,12 @@
 	let allEmployees = [];
 	let visibleEmployees = [];
 	let listGeneration = 0;
-	let listLoaded = false;
+	let listState = 'idle';
+	let statistics;
 	let initialized = false;
 	let listPopups = [];
-	const employeeFilter = { mode: 'all', name: '' };
+	const defaultEmployeeFilterMode = 'active';
+	const employeeFilter = { mode: defaultEmployeeFilterMode, name: '' };
 	const translate = (message, parameters = {}) => t(appState.appName, message, parameters);
 	const berlinCalendar = new Intl.DateTimeFormat('en-CA', {
 		timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -51,21 +53,18 @@
 		return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 	}
 
-	// The list and statistics always use exactly the same filtered data.
+	// The current balances always use the same selection as the employee list.
 	function updateHrStats() {
-		let totalWorkedMinutes = 0;
 		let positiveMinutes = 0;
 		let negativeMinutes = 0;
 		let positiveCount = 0;
 		let negativeCount = 0;
 		for (const employee of visibleEmployees) {
-			totalWorkedMinutes += finiteMinutes(employee.totalMinutes);
 			const balance = finiteMinutes(employee.overtimeMinutes);
 			if (balance > 0) { positiveMinutes += balance; positiveCount++; }
 			if (balance < 0) { negativeMinutes += balance; negativeCount++; }
 		}
 		const values = {
-			'hr-stat-total-hours': utils.minToHm(totalWorkedMinutes),
 			'hr-stat-total-overtime': utils.minToHm(positiveMinutes),
 			'hr-stat-employees-overtime': String(positiveCount),
 			'hr-stat-total-negative': utils.minToHm(negativeMinutes),
@@ -78,11 +77,15 @@
 		}
 	}
 
+	function berlinToday() {
+		const parts = Object.fromEntries(berlinCalendar.formatToParts(new Date()).map(part => [part.type, part.value]));
+		return `${parts.year}-${parts.month}-${parts.day}`;
+	}
+
 	function daysSince(date) {
 		if (!date) return null;
 		// Compare calendar dates in the same zone used by employment phases and reminders.
-		const parts = Object.fromEntries(berlinCalendar.formatToParts(new Date()).map(part => [part.type, part.value]));
-		const today = Date.parse(`${parts.year}-${parts.month}-${parts.day}`);
+		const today = Date.parse(berlinToday());
 		const timestamp = Date.parse(date);
 		return Number.isFinite(timestamp) ? Math.max(0, Math.floor((today - timestamp) / 86400000)) : null;
 	}
@@ -189,11 +192,14 @@
 		const message = document.getElementById('hr-employee-list-message');
 		if (message) message.textContent = !allEmployees.length ? translate('No employees are assigned.') : !visibleEmployees.length ? translate('No matching employees.') : '';
 		updateHrStats();
+		statistics?.refresh();
 	}
 
 	async function loadHrUserList() {
 		if (!document.getElementById('hr-userlist')) return;
 		const generation = ++listGeneration;
+		listState = 'loading';
+		statistics?.refresh();
 		const message = document.getElementById('hr-employee-list-message');
 		const retry = document.getElementById('hr-employee-list-retry');
 		if (message) message.textContent = translate('Loading employees…');
@@ -205,16 +211,209 @@
 			if (!Array.isArray(employees)) throw new Error('Invalid HR employee list');
 			// UID, rather than display name, identifies a person across groups and edits.
 			allEmployees = [...new Map(employees.filter(employee => employee && typeof employee.id === 'string' && employee.id).map(employee => [employee.id, employee])).values()];
-			listLoaded = true;
+			listState = 'ready';
 			renderEmployees();
 		} catch (error) {
 			if (generation !== listGeneration) return;
+			listState = 'error';
 			allEmployees = [];
 			renderEmployees();
 			if (message) message.textContent = translate('Employee list could not be loaded.');
 			if (retry) retry.hidden = false;
 			console.warn('Failed to load HR user list:', error);
 		}
+	}
+
+	function dateForStatistics(value) {
+		return new Date(`${value}T00:00:00Z`);
+	}
+
+	function isStatisticsDate(value) {
+		if (!/^(?!0000)\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+		const date = dateForStatistics(value);
+		return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+	}
+
+	function initializeStatistics() {
+		const get = name => document.getElementById(`hr-stats-${name}`);
+		const popup = get('section');
+		const period = get('period');
+		if (!popup || !period) return;
+
+		const custom = get('custom');
+		const from = get('from');
+		const to = get('to');
+		const status = get('status');
+		const retry = get('retry');
+		const results = get('results');
+		const holidayWarning = get('holiday-warning');
+		const chart = get('chart');
+		const table = get('table-body');
+		const totals = { actual: get('actual'), target: get('target'), difference: get('difference') };
+		const range = get('range');
+		const button = get('button');
+		let requestKey;
+		let requestController;
+
+		const accountLocale = window.OC?.getLocale?.() || document.documentElement?.lang || navigator.language;
+		let locale;
+		try {
+			[locale] = Intl.getCanonicalLocales(accountLocale?.replaceAll('_', '-'));
+		} catch {}
+		const dateOptions = { timeZone: 'UTC', calendar: 'gregory' };
+		const fullDate = new Intl.DateTimeFormat(locale, { ...dateOptions, year: 'numeric', month: 'short', day: 'numeric' });
+		const dayLabel = new Intl.DateTimeFormat(locale, { ...dateOptions, month: 'short', day: 'numeric' });
+		const monthLabel = new Intl.DateTimeFormat(locale, { ...dateOptions, month: 'short', year: '2-digit' });
+		const yearLabel = new Intl.DateTimeFormat(locale, { ...dateOptions, year: 'numeric' });
+		const number = new Intl.NumberFormat(locale);
+		const dateRange = (start, end) => fullDate.formatRange(dateForStatistics(start), dateForStatistics(end));
+		const header = document.getElementById('header');
+
+		function position() {
+			if (popup.hidden) return;
+			timesheet.mailHelp?.positionPopup(popup, button);
+			if (header) {
+				const minimumTop = header.getBoundingClientRect().bottom + 12;
+				if (popup.getBoundingClientRect().top < minimumTop) popup.style.top = `${minimumTop}px`;
+			}
+		}
+
+		function showStatus(message, canRetry = false) {
+			results.hidden = true;
+			holidayWarning.hidden = true;
+			status.textContent = message;
+			retry.hidden = !canRetry;
+			position();
+		}
+
+		function chartNode(parent, className, text = '') {
+			const node = document.createElement('div');
+			node.className = className;
+			node.textContent = text;
+			parent.appendChild(node);
+			return node;
+		}
+
+		function render(data) {
+			if (!data.buckets.some(bucket => bucket.hasEntries)) {
+				showStatus(status.dataset.emptyMessage);
+				return;
+			}
+
+			const { actualMinutes, targetMinutes } = data.totals;
+			totals.actual.textContent = utils.minToHm(actualMinutes);
+			totals.target.textContent = utils.minToHm(targetMinutes);
+			totals.difference.textContent = utils.minToHm(actualMinutes - targetMinutes);
+			range.textContent = dateRange(data.from, data.to);
+
+			const peakMinutes = data.buckets.reduce((peak, bucket) => Math.max(peak, bucket.actualMinutes, bucket.targetMinutes), 0);
+			const axisHours = Math.max(2, Math.ceil(peakMinutes / 120) * 2);
+			const shortDate = data.granularity === 'year' ? yearLabel : data.granularity === 'month' ? monthLabel : dayLabel;
+			chart.dataset.granularity = data.granularity;
+			chart.replaceChildren();
+			table.replaceChildren();
+			const axis = chartNode(chart, 'hr-stats-chart-scale');
+			for (const hour of [axisHours, axisHours / 2, 0]) chartNode(axis, 'hr-stats-chart-tick', number.format(hour));
+			const bars = chartNode(chart, 'hr-stats-chart-bars');
+			for (const bucket of data.buckets) {
+				const label = dateRange(bucket.from, bucket.to);
+				const actual = utils.minToHm(bucket.actualMinutes);
+				const target = utils.minToHm(bucket.targetMinutes);
+				const difference = utils.minToHm(bucket.actualMinutes - bucket.targetMinutes);
+				const group = chartNode(bars, 'hr-stats-chart-group');
+				group.title = [label, `${translate('Actual hours')} ${actual}`, `${translate('Target hours')} ${target}`].join('\n');
+				const columns = chartNode(group, 'hr-stats-chart-columns');
+				const actualBar = chartNode(columns, 'hr-stats-chart-actual');
+				const targetBar = chartNode(columns, 'hr-stats-chart-target');
+				actualBar.style.setProperty('--hr-stats-bar-height', `${bucket.actualMinutes / (axisHours * 60) * 100}%`);
+				targetBar.style.setProperty('--hr-stats-bar-height', `${bucket.targetMinutes / (axisHours * 60) * 100}%`);
+				chartNode(group, 'hr-stats-chart-label', shortDate.format(dateForStatistics(bucket.from)));
+
+				const row = document.createElement('tr');
+				for (const value of [label, actual, target, difference]) appendCell(row, '', value);
+				table.appendChild(row);
+			}
+			status.textContent = '';
+			retry.hidden = true;
+			results.hidden = false;
+			holidayWarning.hidden = !data.holidayLookupIncomplete;
+			position();
+		}
+
+		function cancelRequest() {
+			requestController?.abort();
+			requestController = undefined;
+			requestKey = undefined;
+		}
+
+		async function refresh() {
+			if (popup.hidden) return;
+			const today = berlinToday();
+			custom.hidden = period.value !== 'custom';
+			from.max = today;
+			to.max = today;
+			if (!custom.hidden) {
+				if (!isStatisticsDate(from.value) || !isStatisticsDate(to.value) || from.value > to.value || to.value > today) {
+					cancelRequest();
+					showStatus(status.dataset.invalidPeriodMessage);
+					return;
+				}
+			}
+
+			if (listState !== 'ready' || visibleEmployees.length === 0) {
+				cancelRequest();
+				if (listState === 'error') showStatus(status.dataset.employeeLoadErrorMessage, true);
+				else if (listState === 'ready') showStatus(status.dataset.noEmployeesMessage);
+				else showStatus(status.dataset.employeeLoadingMessage);
+				return;
+			}
+
+			const query = { period: period.value, employeeIds: visibleEmployees.map(employee => employee.id).sort() };
+			if (!custom.hidden) {
+				query.from = from.value;
+				query.to = to.value;
+			}
+			const key = JSON.stringify(query);
+			if (key === requestKey) return;
+			cancelRequest();
+			requestKey = key;
+			const controller = new AbortController();
+			requestController = controller;
+			showStatus(status.dataset.loadingMessage);
+			try {
+				const data = await timesheet.api('/api/hr/statistics', {
+					method: 'POST', body: key, signal: controller.signal,
+				});
+				if (requestController === controller) render(data);
+			} catch (error) {
+				if (requestController !== controller) return;
+				showStatus(status.dataset.errorMessage, true);
+				console.warn('Failed to load HR statistics:', error);
+			} finally {
+				if (requestController === controller) requestController = undefined;
+			}
+		}
+
+		function selectPeriod() {
+			if (period.value === 'custom' && !from.value && !to.value) {
+				const today = berlinToday();
+				from.value = `${today.slice(0, 7)}-01`;
+				to.value = today;
+			}
+			return refresh();
+		}
+
+		period.value = 'custom';
+		selectPeriod();
+		period.addEventListener('change', selectPeriod);
+		from.addEventListener('change', refresh);
+		to.addEventListener('change', refresh);
+		retry.addEventListener('click', () => {
+			cancelRequest();
+			return listState === 'error' ? loadHrUserList() : refresh();
+		});
+		if (typeof ResizeObserver === 'function') new ResizeObserver(position).observe(popup);
+		return { refresh, position, visibilityChanged: open => open ? refresh() : cancelRequest() };
 	}
 
 	function closeListPopups() {
@@ -225,7 +424,7 @@
 		listPopups.forEach(popup => popup.position());
 	}
 
-	function bindListPopup(buttonId, popupId, closeId, focusId = closeId) {
+	function bindListPopup(buttonId, popupId, closeId, { focusId = closeId, visibilityChanged, positionPopup = timesheet.mailHelp?.positionPopup } = {}) {
 		const button = document.getElementById(buttonId);
 		const popup = document.getElementById(popupId);
 		if (!button || !popup) return null;
@@ -234,12 +433,11 @@
 			if (popup.hidden) return;
 			popup.hidden = true;
 			button.setAttribute('aria-expanded', 'false');
+			visibilityChanged?.(false);
 			if (restoreFocus) button.focus({ preventScroll: true });
 		}
 
-		function position() {
-			timesheet.mailHelp?.positionPopup(popup, button);
-		}
+		const position = () => positionPopup?.(popup, button);
 
 		button.addEventListener('click', () => {
 			if (!popup.hidden) {
@@ -251,6 +449,7 @@
 			button.setAttribute('aria-expanded', 'true');
 			position();
 			document.getElementById(focusId)?.focus({ preventScroll: true });
+			return visibilityChanged?.(true);
 		});
 		document.getElementById(closeId)?.addEventListener('click', () => close(true));
 		popup.addEventListener('keydown', event => {
@@ -269,19 +468,25 @@
 	}
 
 	function initializeFilters() {
+		statistics = initializeStatistics();
 		listPopups = [
-			bindListPopup('hr-stats-button', 'hr-stats-section', 'hr-stats-close'),
-			bindListPopup('hr-employee-filter-button', 'hr-employee-filter-popup', 'hr-employee-filter-close', 'hr-employee-search'),
+			bindListPopup('hr-stats-button', 'hr-stats-section', 'hr-stats-close', {
+				visibilityChanged: statistics?.visibilityChanged,
+				positionPopup: statistics?.position,
+			}),
+			bindListPopup('hr-employee-filter-button', 'hr-employee-filter-popup', 'hr-employee-filter-close', { focusId: 'hr-employee-search' }),
 		].filter(Boolean);
 		window.addEventListener('resize', positionListPopups);
 		window.addEventListener('scroll', positionListPopups, true);
 
 		const search = document.getElementById('hr-employee-search');
 		const mode = document.getElementById('hr-employee-filter-mode');
+		if (mode) mode.value = employeeFilter.mode;
 		search?.addEventListener('input', () => { employeeFilter.name = search.value; renderEmployees(); });
 		mode?.addEventListener('change', () => { employeeFilter.mode = mode.value; renderEmployees(); });
 		document.getElementById('hr-employee-filter-clear')?.addEventListener('click', () => {
-			employeeFilter.mode = 'all'; employeeFilter.name = '';
+			employeeFilter.mode = defaultEmployeeFilterMode;
+			employeeFilter.name = '';
 			if (mode) mode.value = employeeFilter.mode;
 			if (search) search.value = '';
 			renderEmployees();
@@ -407,7 +612,7 @@
 		initializeViewWidth();
 		if (!document.getElementById('hr-userlist')) return;
 		initializeFilters();
-		timesheet.employmentStatus?.onChange(() => { if (listLoaded) loadHrUserList(); });
+		timesheet.employmentStatus?.onChange(() => { if (listState === 'ready') loadHrUserList(); });
 		// Load HR user entries on button click
 		document.addEventListener('click', async event => {
 			const userButton = event.target.closest('.hr-load-user');

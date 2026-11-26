@@ -27,6 +27,7 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 	const warnings = [];
 	const frames = new Map();
 	const events = new Map();
+	const capturedClicks = [];
 	let document;
 	let frameNumber = 0;
 	class Element {
@@ -47,6 +48,22 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 		contains(target) { return this === target || this.children.some(child => child.contains(target)); }
 		setAttribute(name, value) { this.attributes.set(name, String(value)); }
 		getAttribute(name) { return this.attributes.get(name) ?? null; }
+		hasAttribute(name) { return this.attributes.has(name); }
+		get href() { return this.getAttribute('href') ?? ''; }
+		get target() { return this.getAttribute('target') ?? ''; }
+		closest(selector) {
+			for (let element = this; element; element = element.parentElement) {
+				const tag = selector.match(/^[\w-]+/)?.[0];
+				const id = selector.match(/#([\w-]+)/)?.[1];
+				const classes = [...selector.matchAll(/\.([\w-]+)/g)].map(match => match[1]);
+				const attrs = [...selector.matchAll(/\[([\w-]+)(?:=["']?([\w-]+)["']?)?\]/g)];
+				if ((!tag || element.tagName === tag.toUpperCase()) && (!id || element.id === id)
+					&& classes.every(name => element.className.split(' ').includes(name))
+					&& attrs.every(([, name, value]) => element.hasAttribute(name)
+						&& (value === undefined || element.getAttribute(name) === value))) return element;
+			}
+			return null;
+		}
 		addEventListener(name, callback) { this.listeners.set(name, [...(this.listeners.get(name) || []), callback]); }
 		focus() { document.activeElement = this; }
 		getClientRects() { return this.isConnected ? [{}] : []; }
@@ -58,7 +75,13 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 		getElementById: id => [document.body, ...descendants(document.body)].find(element => element.id === id) || null,
 		querySelectorAll: () => [],
 		querySelector: () => null,
-		addEventListener(name, callback) { events.set(name, [...(events.get(name) || []), callback]); },
+		addEventListener(name, callback, options) {
+			if (name === 'click' && (options === true || options?.capture)) {
+				capturedClicks.push(callback);
+				return;
+			}
+			events.set(name, [...(events.get(name) || []), callback]);
+		},
 		removeEventListener(name, callback) { events.set(name, (events.get(name) || []).filter(listener => listener !== callback)); },
 	};
 	document.body = new Element('body'); document.body.style.overflow = 'auto';
@@ -70,7 +93,7 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 	const replacements = [];
 	const historyState = { retained: 'state' };
 	const context = vm.createContext({
-		document, URL, location,
+		document, Element, URL, location,
 		history: { state: historyState, replaceState(state, title, href) { replacements.push({ state, title, href }); location.href = href; } },
 		requestAnimationFrame(callback) { const id = ++frameNumber; frames.set(id, callback); return id; },
 		cancelAnimationFrame(id) { frames.delete(id); },
@@ -94,7 +117,22 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 		get: id => document.getElementById(id),
 		all: className => descendants(document.body).filter(element => element.className === className),
 		async paint() { const callbacks = [...frames.values()]; frames.clear(); for (const callback of callbacks) callback(); await flush(); },
-		click(element) { for (const callback of element.listeners.get('click') || []) callback({ target: element }); },
+		click(element, options = {}) {
+			const event = {
+				target: element, button: 0, cancelable: true, defaultPrevented: false, propagationStopped: false,
+				preventDefault() { this.defaultPrevented = true; },
+				stopPropagation() { this.propagationStopped = true; },
+				...options,
+			};
+			for (const callback of capturedClicks) callback(event);
+			for (let target = element; target && !event.propagationStopped; target = target.parentElement) {
+				for (const callback of target.listeners.get('click') || []) callback(event);
+			}
+			if (!event.propagationStopped) {
+				for (const callback of events.get('click') || []) callback(event);
+			}
+			return event;
+		},
 		key(element, key) {
 			const event = { key, prevented: false, preventDefault() { this.prevented = true; }, stopPropagation() {} };
 			while (element) {
@@ -106,6 +144,25 @@ function fixture({ enabled = true, url = appUrl, payload = notes, respond, hidde
 		},
 		visibility(value) { document.visibilityState = value; for (const callback of events.get('visibilitychange') || []) callback(); },
 	};
+}
+
+function bellLink(fixture, href, attributes = {}) {
+	const bell = fixture.get('notifications') ?? fixture.document.createElement('div');
+	bell.id = 'notifications';
+	if (!bell.isConnected) fixture.header.append(bell);
+	const notification = fixture.document.createElement('li');
+	notification.className = 'notification';
+	notification.setAttribute('data-app', 'timesheet');
+	notification.setAttribute('data-object-type', 'update_notes');
+	const link = fixture.document.createElement('a');
+	link.setAttribute('href', href);
+	for (const [name, value] of Object.entries(attributes)) link.setAttribute(name, value);
+	const label = fixture.document.createElement('span');
+	label.textContent = 'View changes';
+	link.append(label);
+	notification.append(link);
+	bell.append(notification);
+	return label;
 }
 
 test('automatic initialization refreshes the bell once without rendering or acknowledging any new notes', async () => {
@@ -125,8 +182,66 @@ test('automatic initialization refreshes the bell once without rendering or ackn
 test('an ineligible page neither requests nor displays the history', async () => {
 	const app = fixture({ enabled: false, url: historyUrl });
 	await app.init();
+	assert.equal(app.click(bellLink(app, historyUrl)).defaultPrevented, false);
 	assert.deepEqual(app.requests, []);
 	assert.equal(app.get('ts-update-notes-panel'), null);
+});
+
+test('a same-page bell link opens once in place and can reopen after closing', async () => {
+	let finishManual;
+	const pendingManual = new Promise(resolve => { finishManual = resolve; });
+	const currentUrl = appUrl + '?other=keep#hr';
+	const app = fixture({ url: currentUrl, respond: request => request.body.mode === 'manual' ? pendingManual : undefined });
+	const link = bellLink(app, '/index.php/apps/timesheet?update-notes=1');
+	const hrView = app.document.createElement('section');
+	hrView.id = 'tab-hr';
+	hrView.className = 'ts-tabview active';
+	app.app.append(hrView);
+	await app.init();
+
+	assert.equal(app.click(link).defaultPrevented, true, 'The browser must not follow the bell link');
+	assert.equal(app.click(link).defaultPrevented, true, 'Clicks while the request is pending stay on the page');
+	await flush();
+	const manualRequests = () => app.requests.filter(request => request.body.mode === 'manual');
+	assert.equal(manualRequests().length, 1);
+	finishManual(notes);
+	await flush();
+	assert.equal(app.click(link).defaultPrevented, true, 'Clicks while the panel is open stay on the page');
+	assert.equal(manualRequests().length, 1);
+	assert.equal(app.all('ts-update-notes-panel').length, 1);
+	assert.equal(app.context.location.href, currentUrl);
+	assert.deepEqual(app.replacements, []);
+	assert.equal(app.get('tab-hr'), hrView);
+	assert.equal(hrView.className, 'ts-tabview active');
+
+	app.click(app.all('ts-update-notes-close')[0]);
+	await flush();
+	assert.equal(app.get('ts-update-notes-panel'), null);
+	assert.equal(app.click(link).defaultPrevented, true);
+	await flush();
+	assert.equal(manualRequests().length, 2);
+	app.click(app.all('ts-update-notes-close')[0]);
+});
+
+test('modified clicks and other destinations keep the browser link behavior', async () => {
+	const app = fixture();
+	await app.init();
+	const link = bellLink(app, historyUrl);
+	for (const options of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
+		assert.equal(app.click(link, options).defaultPrevented, false);
+	}
+	for (const [href, attributes] of [
+		['https://elsewhere.test/apps/timesheet/?update-notes=1'],
+		['/apps/files/?update-notes=1'],
+		[appUrl],
+		[historyUrl + '&other=keep'],
+		[historyUrl + '#target'],
+		[historyUrl, { target: '_blank' }],
+		[historyUrl, { download: '' }],
+	]) {
+		assert.equal(app.click(bellLink(app, href, attributes)).defaultPrevented, false);
+	}
+	assert.equal(app.requests.length, 1);
 });
 
 test('the bell link opens all releases with the newest expanded and preserves unrelated URL state', async () => {
@@ -147,6 +262,7 @@ test('the bell link opens all releases with the newest expanded and preserves un
 		['DETAILS', 'SUMMARY', 'Version 1.3.0', false],
 	]);
 	assert.deepEqual(notes.releases.map(release => release.version), ['1.3.0', '1.4.3', '1.4.5']);
+	assert.equal(app.all('ts-update-notes-older').length, 0);
 	assert.equal(app.header.inert, false);
 	assert.equal(app.app.inert, false);
 	assert.equal(app.document.body.style.overflow, 'auto');
@@ -157,6 +273,31 @@ test('the bell link opens all releases with the newest expanded and preserves un
 	assert.equal(app.get('ts-update-notes-panel'), null);
 	assert.equal(app.document.activeElement, app.month);
 	assert.equal(app.requests.length, 2, 'Closing the panel does not dismiss the bell');
+});
+
+test('only three newest release headings are outside the collapsed older versions group', async () => {
+	const releases = [...notes.releases, { ...notes.releases[2], version: '1.4.6' }, { ...notes.releases[2], version: '1.4.7' }];
+	const app = fixture({
+		url: historyUrl, payload: { ...notes, releases, throughVersion: '1.4.7' },
+		translate: message => message === 'Older versions' ? 'Ältere Versionen' : message,
+	});
+	const complete = app.init();
+	await flush();
+	const [archive] = app.all('ts-update-notes-older');
+	assert.equal(archive?.tagName, 'DETAILS');
+	assert.equal(archive.children[0].tagName, 'SUMMARY');
+	assert.equal(archive.children[0].textContent, 'Ältere Versionen');
+	assert.ok(!archive.open);
+	const details = app.all('ts-update-notes-release');
+	const headings = releases => releases.map(release => [release.children[0].textContent, release.open]);
+	assert.deepEqual(headings(details.filter(release => !archive.contains(release))), [
+		['Version 1.4.7', true], ['Version 1.4.6', false], ['Version 1.4.5', false],
+	]);
+	assert.deepEqual(headings(details.filter(release => archive.contains(release))), [
+		['Version 1.4.3', false], ['Version 1.3.0', false],
+	]);
+	app.click(app.all('ts-update-notes-close')[0]);
+	await complete;
 });
 
 test('history content is literal text and title and close controls use account translations', async () => {

@@ -32,6 +32,7 @@
 	<button type="button" class="button" id="timesheet-add-hr-rule">
 		<?php p($l->t('Add new rule')); ?>
 	</button>
+	<p id="timesheet-assignment-saved" class="ts-save-confirmation" role="status" aria-atomic="true"></p>
 	<?php endif; ?>
 
 	<!-- Initial data for the HR rule editor -->

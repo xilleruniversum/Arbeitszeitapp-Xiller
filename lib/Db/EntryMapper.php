@@ -8,6 +8,10 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class EntryMapper extends QBMapper {
+
+	private const RAW_DURATION_SQL = '((CASE WHEN end_min < start_min THEN end_min + 1440 ELSE end_min END) - start_min - COALESCE(break_minutes, 0))';
+	private const ACTUAL_MINUTES_SQL = 'CASE WHEN ' . self::RAW_DURATION_SQL . ' < 0 THEN 0 ELSE ' . self::RAW_DURATION_SQL . ' END';
+
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, 'ts_entries', Entry::class);
 	}
@@ -90,6 +94,35 @@ class EntryMapper extends QBMapper {
 		return $this->findEntities($queryBuilder);
 	}
 
+	/**
+	 * @param string[] $userIds
+	 * @return iterable<array{user_id:string,work_date:string,actual_minutes:int|string}>
+	 */
+	public function readCompletedWorkMinutesForUsers(array $userIds, string $fromYmd, string $toYmd): iterable {
+		if ($userIds === []) {
+			return;
+		}
+
+		$query = $this->db->getQueryBuilder();
+		$query->select('user_id', 'work_date')
+			->selectAlias($query->createFunction(self::ACTUAL_MINUTES_SQL), 'actual_minutes')
+			->from($this->getTableName())
+			->where($query->expr()->in('user_id', $query->createNamedParameter($userIds, IQueryBuilder::PARAM_STR_ARRAY)))
+			->andWhere($query->expr()->gte('work_date', $query->createNamedParameter($fromYmd)))
+			->andWhere($query->expr()->lte('work_date', $query->createNamedParameter($toYmd)))
+			->andWhere($query->expr()->isNotNull('start_min'))
+			->andWhere($query->expr()->isNotNull('end_min'));
+
+		$result = $query->executeQuery();
+		try {
+			while (($row = $result->fetch()) !== false) {
+				yield $row;
+			}
+		} finally {
+			$result->closeCursor();
+		}
+	}
+
 	public function findDistinctUserIds(): array {
 		$queryBuilder = $this->db->getQueryBuilder();
 		$queryBuilder->selectDistinct('user_id')
@@ -106,16 +139,12 @@ class EntryMapper extends QBMapper {
 		$queryBuilder = $this->db->getQueryBuilder();
 
 		// Account for overnight entries and clamp negative durations to zero.
-		$durationExpression = '((CASE WHEN end_min < start_min THEN end_min + 1440 ELSE end_min END) - start_min - COALESCE(break_minutes, 0))';
-		$totalMinutesExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE CASE WHEN '
-			. $durationExpression
-			. ' < 0 THEN 0 ELSE '
-			. $durationExpression
-			. ' END END)';
+		$totalMinutesExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE ' . self::ACTUAL_MINUTES_SQL . ' END)';
 		$workdaysExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE 1 END)';
 
 		if ($excludeSpecialDays) {
-			$workdaysExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 WHEN WEEKDAY(`work_date`) >= 5 THEN 0 ELSE 1 END)';
+			$workdaysExpression = 'SUM(CASE WHEN start_min IS NOT NULL AND end_min IS NOT NULL AND '
+				. $this->workdayPredicate() . ' THEN 1 ELSE 0 END)';
 		}
 
 		$queryBuilder->select('user_id')
@@ -162,16 +191,12 @@ class EntryMapper extends QBMapper {
 		$queryBuilder = $this->db->getQueryBuilder();
 
 		// Account for overnight entries and clamp negative durations to zero.
-		$durationExpression = '((CASE WHEN end_min < start_min THEN end_min + 1440 ELSE end_min END) - start_min - COALESCE(break_minutes, 0))';
-		$totalMinutesExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE CASE WHEN '
-			. $durationExpression
-			. ' < 0 THEN 0 ELSE '
-			. $durationExpression
-			. ' END END)';
+		$totalMinutesExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE ' . self::ACTUAL_MINUTES_SQL . ' END)';
 		$workdaysExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 ELSE 1 END)';
 
 		if ($excludeSpecialDays) {
-			$workdaysExpression = 'SUM(CASE WHEN start_min IS NULL OR end_min IS NULL THEN 0 WHEN WEEKDAY(`work_date`) >= 5 THEN 0 ELSE 1 END)';
+			$workdaysExpression = 'SUM(CASE WHEN start_min IS NOT NULL AND end_min IS NOT NULL AND '
+				. $this->workdayPredicate() . ' THEN 1 ELSE 0 END)';
 		}
 
 		$queryBuilder->select('user_id')
@@ -269,9 +294,15 @@ class EntryMapper extends QBMapper {
 			->andWhere($queryBuilder->expr()->in('work_date', $queryBuilder->createNamedParameter(array_values($ymdDates), IQueryBuilder::PARAM_STR_ARRAY)))
 			->andWhere($queryBuilder->expr()->isNotNull('start_min'))
 			->andWhere($queryBuilder->expr()->isNotNull('end_min'))
-			->andWhere('WEEKDAY(`work_date`) < 5');
+			->andWhere($this->workdayPredicate());
 
 		$countRow = $queryBuilder->executeQuery()->fetch();
 		return (int) $countRow['cnt'] ?? 0;
+	}
+
+	private function workdayPredicate(): string {
+		return $this->db->getDatabaseProvider() === IDBConnection::PLATFORM_POSTGRES
+			? 'EXTRACT(ISODOW FROM work_date) <= 5'
+			: 'WEEKDAY(work_date) < 5';
 	}
 }
